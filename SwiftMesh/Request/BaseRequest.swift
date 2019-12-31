@@ -35,6 +35,7 @@ struct BaseModel: Decodable {
 class BaseRequest : MeshManager{
     
     static func setHeader() {
+//        MeshManager.shared.canLogging = true
         MeshManager.shared.setGlobalHeaders(["aaa":"bbb"])
         MeshManager.shared.setDefaultParameters(["String" : "Any","a":"1","b":"2"])
     }
@@ -42,10 +43,18 @@ class BaseRequest : MeshManager{
     static func get(_ url: String, parameters: [String: Any] = [:], success: RequestSuccess?, failure: RequestFailure?) {
         
         MeshManager.shared.requestWithConfig(configBlock: { (config) in
-            config.requestType = .get
+            config.requestMethod = .get
             config.URLString = url
             config.parameters = parameters
         }, success: success, failure: failure)
         
     }
+    
+    
+    static func decoderJson<T : Decodable>(_ type:[T].Type ,_ data:Data) throws -> T {
+        let decoder = JSONDecoder()
+        let model = try! decoder.decode(type, from: data)
+        return model as! T
+    }
+    
 }
