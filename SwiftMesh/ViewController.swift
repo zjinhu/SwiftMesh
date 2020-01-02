@@ -14,7 +14,7 @@ struct BaseModel: Codable {
 }
 
 struct TestModel: Codable {
-    let code: Int
+    let code: Int 
     let message: String
     let result: [Item]
 }
