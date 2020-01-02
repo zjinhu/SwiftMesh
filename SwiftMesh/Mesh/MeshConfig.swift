@@ -8,44 +8,54 @@
 
 import Foundation
 import Alamofire
-enum DownloadType : Int {
+
+public enum DownloadType : Int {
     case download , resume
 }
-enum UploadType : Int {
+public enum UploadType : Int {
     case file , data , stream , multipart
 }
-public class MeshConfig {
+
+public enum RequestCode : Int {
+    case success = 0 //请求成功的状态吗
+    case errorResult = -1 //接口请求失败,有错误返回
+    case errorResponse = -2 //请求返回的数据为空
+    case errorRequest = -3 //请求失败,无网络
+}
+
+/// 网络请求配置
+open class MeshConfig {
     /// 超时配置
-    var timeout : TimeInterval = 15.0
+    public var timeout : TimeInterval = 15.0
     /// 添加请求头
-    var addHeads : HTTPHeaders?
+    public var addHeads : HTTPHeaders?
     /// 请求方式
-    var requestMethod : HTTPMethod = .get
+    public var requestMethod : HTTPMethod = .get
     /// 请求编码
-    var requestEncoding: ParameterEncoding = URLEncoding.default  //PropertyListEncoding.xml//JSONEncoding.default
+    public var requestEncoding: ParameterEncoding = URLEncoding.default  //PropertyListEncoding.xml//JSONEncoding.default
     /// 请求地址
-    var URLString : String?
+    public var URLString : String?
     ///参数  表单上传也可以用
-    var parameters : [String: Any]?
+    public var parameters : [String: Any]?
     ///下载用 设置文件下载地址覆盖方式等等
-    var destination : DownloadRequest.DownloadFileDestination?
+    public var destination : DownloadRequest.DownloadFileDestination?
     //服务端返回参数 定义错误码 错误信息 或者 正确信息
-    var code : Int?
-    var mssage : String?
+    public var code : Int?
+    public var mssage : String?
     ///请求成功返回的数据 用 codable 解析
-    var responseData : Data?
+    public var responseData : Data?
     ///下载完
-    var downloadType : DownloadType = .download
-    var downloadData : Data?
-    var temporaryURL: URL?
-    var destinationURL: URL?
-    var resumeData : Data?
+    public var downloadType : DownloadType = .download
+    public var downloadData : Data?
+    public var temporaryURL: URL?
+    public var destinationURL: URL?
+    public var resumeData : Data?
     ///上传
-    var uploadType : UploadType = .file
-    var fileURL: URL?
-    var fileData: Data?
-    var stream: InputStream?
-    var uploadDatas : [MeshMultipartConfig]?
+    public var uploadType : UploadType = .file
+    public var fileURL: URL?
+    public var fileData: Data?
+    public var stream: InputStream?
+    public var uploadDatas : [MeshMultipartConfig]?
     
     /// 表单数组快速添加表单
     /// - Parameters:
@@ -54,23 +64,24 @@ public class MeshConfig {
     ///   - fileData: 文件 Data
     ///   - fileURL:  文件地址
     ///   - mimeType: 数据类型
-    func addformData(name: String, fileName: String? = nil, fileData: Data? = nil, fileURL: URL? = nil, mimeType: String? = nil) {
+    public func addformData(name: String, fileName: String? = nil, fileData: Data? = nil, fileURL: URL? = nil, mimeType: String? = nil) {
         let config = MeshMultipartConfig.formData(name: name, fileName: fileName, fileData: fileData, fileURL: fileURL, mimeType: mimeType)
         self.uploadDatas?.append(config)
     }
 }
 
-public class MeshMultipartConfig {
-
-    var name : String?
-
-    var fileName : String?
+/// 表单上传配置
+open class MeshMultipartConfig {
     
-    var mimeType : String?
-     
-    var fileData : Data?
-
-    var fileURL: URL?
+    public var name : String?
+    
+    public var fileName : String?
+    
+    public var mimeType : String?
+    
+    public var fileData : Data?
+    
+    public var fileURL: URL?
     
     /// 快速返回表单配置
     /// - Parameters:
@@ -79,7 +90,7 @@ public class MeshMultipartConfig {
     ///   - fileData: 文件 Data
     ///   - fileURL:  文件地址
     ///   - mimeType: 数据类型
-   static func formData(name: String, fileName: String? = nil, fileData: Data? = nil, fileURL: URL? = nil, mimeType: String? = nil) -> MeshMultipartConfig {
+    public class func formData(name: String, fileName: String? = nil, fileData: Data? = nil, fileURL: URL? = nil, mimeType: String? = nil) -> MeshMultipartConfig {
         let config = MeshMultipartConfig.init()
         config.name = name
         config.fileName = fileName

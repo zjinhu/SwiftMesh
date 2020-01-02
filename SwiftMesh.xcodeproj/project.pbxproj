@@ -15,7 +15,8 @@
 		8147206123B494A700F95566 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8147206023B494A700F95566 /* Assets.xcassets */; };
 		8147206423B494A700F95566 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8147206223B494A700F95566 /* LaunchScreen.storyboard */; };
 		8147206D23B496BF00F95566 /* MeshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8147206C23B496BF00F95566 /* MeshManager.swift */; };
-		8147207023B5B50700F95566 /* BaseRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8147206F23B5B50700F95566 /* BaseRequest.swift */; };
+		8147207023B5B50700F95566 /* MeshRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8147206F23B5B50700F95566 /* MeshRequest.swift */; };
+		8165DF8123BB1B0500AB0EF1 /* MeshCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8165DF8023BB1B0500AB0EF1 /* MeshCertificate.swift */; };
 		81C8959B23B5DDAB0096F269 /* MeshConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C8959A23B5DDAB0096F269 /* MeshConfig.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,7 +30,8 @@
 		8147206323B494A700F95566 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8147206523B494A700F95566 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8147206C23B496BF00F95566 /* MeshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshManager.swift; sourceTree = "<group>"; };
-		8147206F23B5B50700F95566 /* BaseRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseRequest.swift; sourceTree = "<group>"; };
+		8147206F23B5B50700F95566 /* MeshRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshRequest.swift; sourceTree = "<group>"; };
+		8165DF8023BB1B0500AB0EF1 /* MeshCertificate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshCertificate.swift; sourceTree = "<group>"; };
 		81C8959A23B5DDAB0096F269 /* MeshConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshConfig.swift; sourceTree = "<group>"; };
 		A04860132602EEF4582E8490 /* Pods-SwiftMesh.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftMesh.release.xcconfig"; path = "Target Support Files/Pods-SwiftMesh/Pods-SwiftMesh.release.xcconfig"; sourceTree = "<group>"; };
 		A37E7D87E24A1381CA402A0E /* Pods_SwiftMesh.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftMesh.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -104,6 +106,7 @@
 			children = (
 				8147206C23B496BF00F95566 /* MeshManager.swift */,
 				81C8959A23B5DDAB0096F269 /* MeshConfig.swift */,
+				8165DF8023BB1B0500AB0EF1 /* MeshCertificate.swift */,
 			);
 			path = Mesh;
 			sourceTree = "<group>";
@@ -111,7 +114,7 @@
 		8147206E23B5B4EC00F95566 /* Request */ = {
 			isa = PBXGroup;
 			children = (
-				8147206F23B5B50700F95566 /* BaseRequest.swift */,
+				8147206F23B5B50700F95566 /* MeshRequest.swift */,
 			);
 			path = Request;
 			sourceTree = "<group>";
@@ -231,7 +234,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8147207023B5B50700F95566 /* BaseRequest.swift in Sources */,
+				8165DF8123BB1B0500AB0EF1 /* MeshCertificate.swift in Sources */,
+				8147207023B5B50700F95566 /* MeshRequest.swift in Sources */,
 				8147206D23B496BF00F95566 /* MeshManager.swift in Sources */,
 				81C8959B23B5DDAB0096F269 /* MeshConfig.swift in Sources */,
 				8147205C23B494A600F95566 /* ViewController.swift in Sources */,

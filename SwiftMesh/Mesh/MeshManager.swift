@@ -23,7 +23,6 @@ open class MeshManager{
     public typealias RequestConfig = (_ config: MeshConfig) -> Void
     public typealias RequestSuccess = (_ config: MeshConfig) -> Void
     public typealias RequestFailure = (_ config: MeshConfig) -> Void
-    public typealias RequestCancel = (_ result: Bool , _ url: String) -> Void
     public typealias ProgressListener = (_ progress: Progress) -> Void 
     
     public var canLogging = false
@@ -79,33 +78,31 @@ open class MeshManager{
             Alamofire.request(config.URLString ?? "", method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads).responseJSON { (response) in
                 
                 guard let json = response.data else {
+                    config.code = RequestCode.errorResponse.rawValue
                     failure!(config)
                     return
                 }
                 ///打印输出
                 self.meshLog(config, response: response)
-                
-                //                //统一解析
-                //                let decoder = JSONDecoder()
-                //                let model = try? decoder.decode(MeshModel.self, from: json)
-                //
-                //                config.code = model?.serverCode ?? -1
-                //                config.mssage = model?.serverMessage
+                ///配置信息赋值用于解析
                 config.responseData = json
                 
                 switch response.result {
                 case .success:
                     //可添加统一解析
+                    config.code = RequestCode.success.rawValue
                     if success != nil {
                         success!(config)
                     }
                 case .failure:
+                    config.code = RequestCode.errorResult.rawValue
                     if failure != nil {
                         failure!(config)
                     }
                 }
             }
         } else {
+            config.code = RequestCode.errorRequest.rawValue
             if failure != nil {
                 failure!(config)
             }
@@ -129,7 +126,7 @@ open class MeshManager{
         default:
             self.sendDownload(config: config, progress: progress, success: success, failure: failure)
         }
-
+        
     }
     // MARK: 下载文件
     public func sendDownload(config: MeshConfig!, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
@@ -146,10 +143,14 @@ open class MeshManager{
             
             switch responseData.result {
             case .success:
+                config.mssage = "下载完成"
+                config.code = RequestCode.success.rawValue
                 if success != nil {
                     success!(config)
                 }
             case .failure:
+                config.mssage = "下载失败"
+                config.code = RequestCode.errorResult.rawValue
                 if failure != nil {
                     failure!(config)
                 }
@@ -163,7 +164,7 @@ open class MeshManager{
                 progress!(progr)
             }
         }).responseData { (responseData) in
-                        
+            
             config.temporaryURL = responseData.temporaryURL
             config.destinationURL = responseData.destinationURL
             config.downloadData = responseData.result.value
@@ -171,17 +172,21 @@ open class MeshManager{
             
             switch responseData.result {
             case .success:
+                config.mssage = "下载完成"
+                config.code = RequestCode.success.rawValue
                 if success != nil {
                     success!(config)
                 }
             case .failure:
+                config.mssage = "下载失败"
+                config.code = RequestCode.errorResult.rawValue
                 if failure != nil {
                     failure!(config)
                 }
             }
-
+            
         }
-
+        
     }
     // MARK: 统一上传方法
     public func uploadWithConfig(configBlock: RequestConfig?, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
@@ -202,7 +207,7 @@ open class MeshManager{
         }
     }
     // MARK: 简单上传文件方法
-   public func sendUpload(config: MeshConfig!, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
+    public func sendUpload(config: MeshConfig!, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
         
         let uploadRequest : UploadRequest
         
@@ -212,10 +217,10 @@ open class MeshManager{
             
         case .stream:
             uploadRequest = Alamofire.upload(config.stream!, to: config.URLString!, method: config.requestMethod, headers: config.addHeads)
-
+            
         default:
             uploadRequest = Alamofire.upload(config.fileData!, to: config.URLString!, method: config.requestMethod, headers: config.addHeads)
-
+            
         }
         
         uploadRequest.uploadProgress { (progr) in
@@ -227,18 +232,20 @@ open class MeshManager{
         uploadRequest.responseJSON { (response) in
             switch response.result {
             case .success:
+                config.code = RequestCode.success.rawValue
                 config.mssage = "上传成功"
                 if success != nil {
                     success!(config)
                 }
             case .failure:
+                config.code = RequestCode.errorResult.rawValue
                 config.mssage = "上传失败"
                 if failure != nil {
                     failure!(config)
                 }
             }
         }
-         
+        
     }
     // MARK: 表单上传
     public func sendUploadMultipart(config: MeshConfig!, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
@@ -260,17 +267,48 @@ open class MeshManager{
                     }
                 }
             }
-
+            
         }, to: config.URLString!, method: config.requestMethod, headers: config.addHeads) { (result) in
-                        print(result)
-                        switch result {
-                        case .failure(let error):
-                            print(error)
-                        case .success(let upload,_,_):
-                            upload.response(completionHandler: { (response) in
-                                print("****:\(response) ****")
-                            })
-                        }
+            print(result)
+            switch result {
+            case .failure(let error):
+                config.code = RequestCode.errorResult.rawValue
+                config.mssage = "上传失败"
+                if failure != nil {
+                    failure!(config)
+                }
+                print(error)
+            case .success(let upload,_,_):
+                upload.response(completionHandler: { (response) in
+                    config.code = RequestCode.success.rawValue
+                    config.mssage = "上传成功"
+                    if success != nil {
+                        success!(config)
+                    }
+                    print("****:\(response) ****")
+                })
+            }
+        }
+    }
+    
+    /// 取消特定请求
+    /// - Parameter url: 请求的地址,内部判断是否包含,请添加详细的 path
+    public func cancelRequest(_ url :String){
+        SessionManager.default.session.getAllTasks { (tasks) in
+            tasks.forEach { (task) in
+                if (task.currentRequest?.url?.absoluteString.contains(url))!{
+                    task.cancel()
+                }
+            }
+        }
+    }
+    
+    /// 清空所有请求
+    public func cancelAllRequest(){
+        SessionManager.default.session.getAllTasks { (tasks) in
+            tasks.forEach { (task) in
+                task.cancel()
+            }
         }
     }
     
