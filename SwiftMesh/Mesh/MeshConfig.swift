@@ -24,7 +24,7 @@ public enum RequestCode : Int {
 }
 
 /// 网络请求配置
-open class MeshConfig {
+public class MeshConfig {
     /// 超时配置
     public var timeout : TimeInterval = 15.0
     /// 添加请求头
@@ -71,7 +71,7 @@ open class MeshConfig {
 }
 
 /// 表单上传配置
-open class MeshMultipartConfig {
+public class MeshMultipartConfig {
     
     public var name : String?
     

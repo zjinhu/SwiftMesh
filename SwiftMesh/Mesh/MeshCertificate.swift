@@ -8,7 +8,7 @@
 
 import UIKit
 import Alamofire
-open class MeshCertificate {
+public class MeshCertificate {
     
     /// 信任服务端证书
     public class func trustServerCertificate(){

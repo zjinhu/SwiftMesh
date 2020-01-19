@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 
 /// 泛型封装普通请求,支持解析后直接返回泛型model
-open class MeshRequest <T: Codable> {
+public class MeshRequest <T: Codable> {
     
     public typealias requestCallBack = (_ data: T?) -> Void
     

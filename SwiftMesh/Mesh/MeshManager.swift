@@ -15,7 +15,7 @@ public enum NetworkStatus {
     case wwan
 }
 
-open class MeshManager{
+public class MeshManager{
     //单例
     public static let shared = MeshManager()
     
