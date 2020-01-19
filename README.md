@@ -32,6 +32,7 @@
 默认情况`pod ‘SwiftMesh‘`
 
 依赖Alamofire5.0.0版本的请pod 1.0版本以上（包含1.0.0）
+
 依赖Alamofire4.9.1版本的请pod 1.0版本以下
 
 ### 手动导入
