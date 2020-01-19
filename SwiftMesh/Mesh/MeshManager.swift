@@ -9,10 +9,10 @@ import Foundation
 import Alamofire
 
 public enum NetworkStatus {
-    case notReachable
-    case unknown
-    case ethernetOrWiFi
-    case wwan
+    case noReachable
+    case unKnown
+    case onWiFi
+    case onCellular
 }
 
 public class MeshManager{
@@ -53,9 +53,9 @@ public class MeshManager{
         }
     }
     // MARK: 是否WWAN
-    public var isReachableWWAN: Bool {
+    public var isReachableCellular: Bool {
         get {
-            return self.networkManager.isReachableOnWWAN
+            return self.networkManager.isReachableOnCellular
         }
     }
     
@@ -75,7 +75,7 @@ public class MeshManager{
         self.changeConfig(config)
         ///先判断网络状态
         if self.isReachable {
-            Alamofire.request(config.URLString ?? "", method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads).responseJSON { (response) in
+            AF.request(config.URLString ?? "", method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads).responseJSON { (response) in
                 
                 guard let json = response.data else {
                     config.code = RequestCode.errorResponse.rawValue
@@ -130,15 +130,13 @@ public class MeshManager{
     }
     // MARK: 下载文件
     public func sendDownload(config: MeshConfig!, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
-        Alamofire.download(config.URLString ?? "", method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads, to: config.destination).downloadProgress(closure: { (progr) in
+        AF.download(config.URLString ?? "", method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads, to: config.destination).downloadProgress(closure: { (progr) in
             if progress != nil{
                 progress!(progr)
             }
         }).responseData { (responseData) in
             
-            config.temporaryURL = responseData.temporaryURL
-            config.destinationURL = responseData.destinationURL
-            config.downloadData = responseData.result.value
+            config.fileURL = responseData.fileURL
             config.resumeData = responseData.resumeData
             
             switch responseData.result {
@@ -159,15 +157,13 @@ public class MeshManager{
     }
     // MARK: 下载文件续传
     public func sendDownloadResume(config: MeshConfig!, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
-        Alamofire.download(resumingWith: config.resumeData!, to: config.destination).downloadProgress(closure: { (progr) in
+        AF.download(resumingWith: config.resumeData!, to: config.destination).downloadProgress(closure: { (progr) in
             if progress != nil{
                 progress!(progr)
             }
         }).responseData { (responseData) in
             
-            config.temporaryURL = responseData.temporaryURL
-            config.destinationURL = responseData.destinationURL
-            config.downloadData = responseData.result.value
+            config.fileURL = responseData.fileURL
             config.resumeData = responseData.resumeData
             
             switch responseData.result {
@@ -213,13 +209,13 @@ public class MeshManager{
         
         switch config.uploadType {
         case .file:
-            uploadRequest = Alamofire.upload(config.fileURL!, to: config.URLString!, method: config.requestMethod, headers: config.addHeads)
+            uploadRequest = AF.upload(config.fileURL!, to: config.URLString!, method: config.requestMethod, headers: config.addHeads)
             
         case .stream:
-            uploadRequest = Alamofire.upload(config.stream!, to: config.URLString!, method: config.requestMethod, headers: config.addHeads)
+            uploadRequest = AF.upload(config.stream!, to: config.URLString!, method: config.requestMethod, headers: config.addHeads)
             
         default:
-            uploadRequest = Alamofire.upload(config.fileData!, to: config.URLString!, method: config.requestMethod, headers: config.addHeads)
+            uploadRequest = AF.upload(config.fileData!, to: config.URLString!, method: config.requestMethod, headers: config.addHeads)
             
         }
         
@@ -249,7 +245,7 @@ public class MeshManager{
     }
     // MARK: 表单上传
     public func sendUploadMultipart(config: MeshConfig!, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
-        Alamofire.upload(multipartFormData: { (multi) in
+        AF.upload(multipartFormData: { (multi) in
             for  updataConfig in config.uploadDatas!{
                 if updataConfig.fileData != nil {
                     ///Data数据表单,图片等类型
@@ -268,9 +264,16 @@ public class MeshManager{
                 }
             }
             
-        }, to: config.URLString!, method: config.requestMethod, headers: config.addHeads) { (result) in
-            print(result)
-            switch result {
+        }, to: config.URLString!, method: config.requestMethod, headers: config.addHeads).response { (response) in
+            
+            switch response.result{
+            case .success( _):
+                config.code = RequestCode.success.rawValue
+                config.mssage = "上传成功"
+                if success != nil {
+                    success!(config)
+                }
+                print("****:\(response) ****")
             case .failure(let error):
                 config.code = RequestCode.errorResult.rawValue
                 config.mssage = "上传失败"
@@ -278,23 +281,15 @@ public class MeshManager{
                     failure!(config)
                 }
                 print(error)
-            case .success(let upload,_,_):
-                upload.response(completionHandler: { (response) in
-                    config.code = RequestCode.success.rawValue
-                    config.mssage = "上传成功"
-                    if success != nil {
-                        success!(config)
-                    }
-                    print("****:\(response) ****")
-                })
             }
+
         }
     }
     
     /// 取消特定请求
     /// - Parameter url: 请求的地址,内部判断是否包含,请添加详细的 path
     public func cancelRequest(_ url :String){
-        SessionManager.default.session.getAllTasks { (tasks) in
+        Session.default.session.getAllTasks { (tasks) in
             tasks.forEach { (task) in
                 if (task.currentRequest?.url?.absoluteString.contains(url))!{
                     task.cancel()
@@ -305,7 +300,7 @@ public class MeshManager{
     
     /// 清空所有请求
     public func cancelAllRequest(){
-        SessionManager.default.session.getAllTasks { (tasks) in
+        Session.default.session.getAllTasks { (tasks) in
             tasks.forEach { (task) in
                 task.cancel()
             }
@@ -318,41 +313,44 @@ public class MeshManager{
         var param = self.defaultParameters ?? [:]
         param.merge(config.parameters ?? [:]) { (_, new) in new}
         config.parameters = param
-        
-        var header = self.globalHeaders ?? [:]
-        header.merge(config.addHeads ?? [:]) { (_, new) in new}
-        config.addHeads = header
+
+        guard let headers = self.globalHeaders else {
+            return
+        }
+        headers.forEach {
+            config.addHeads?.update($0)
+        }
     }
     // MARK: 网络监视
     var isStartNetworkMonitoring = false
     let networkManager = NetworkReachabilityManager(host: "www.baidu.com")!
     
     func startNetworkMonitoring(listener: NetworkStatusListener? = nil) {
-        self.networkManager.listener = { status in
+
+        networkManager.startListening { (status) in
             self.isStartNetworkMonitoring = true
-            var netStatus = NetworkStatus.notReachable
-            switch status {
+            var netStatus = NetworkStatus.noReachable
+            switch status{
             case .notReachable:
-                netStatus = NetworkStatus.notReachable
+                netStatus = .noReachable
             case .unknown:
-                netStatus = NetworkStatus.unknown
+                netStatus = .unKnown
             case .reachable(.ethernetOrWiFi):
-                netStatus = NetworkStatus.ethernetOrWiFi
-            case .reachable(.wwan):
-                netStatus = NetworkStatus.wwan
+                netStatus = .onWiFi
+            case .reachable(.cellular):
+                netStatus = .onCellular
             }
             if listener != nil {
                 listener!(netStatus)
             }
         }
-        self.networkManager.startListening()
     }
     // MARK:- 打印输出
-    private func meshLog(_ config: MeshConfig, response: DataResponse<Any>) {
+    private func meshLog(_ config: MeshConfig, response: AFDataResponse<Any>?) {
         #if DEBUG
         
         if self.canLogging{
-            print("\n\n<><><><><>-「Alamofire Log」-<><><><><>\n\n>>>>>>>>>>>>>>>API:>>>>>>>>>>>>>>>\n\n\(String(describing: config.URLString))\n\n>>>>>>>>>>>>>>>parameters:>>>>>>>>>>>>>>>\n\n\(String(describing: config.parameters))\n\n>>>>>>>>>>>>>>>headers:>>>>>>>>>>>>>>>\n\n\(String(describing: config.addHeads))\n\n>>>>>>>>>>>>>>>response:>>>>>>>>>>>>>>>\n\n\(response)\n\n<><><><><>-「Alamofire END」-<><><><><>\n\n")
+            print("\n\n<><><><><>-「Alamofire Log」-<><><><><>\n\n>>>>>>>>>>>>>>>API:>>>>>>>>>>>>>>>\n\n\(String(describing: config.URLString))\n\n>>>>>>>>>>>>>>>parameters:>>>>>>>>>>>>>>>\n\n\(String(describing: config.parameters))\n\n>>>>>>>>>>>>>>>headers:>>>>>>>>>>>>>>>\n\n\(String(describing: config.addHeads))\n\n>>>>>>>>>>>>>>>response:>>>>>>>>>>>>>>>\n\n\(String(describing: response))\n\n<><><><><>-「Alamofire END」-<><><><><>\n\n")
         }
         
         #endif
