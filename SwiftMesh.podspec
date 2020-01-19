@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.frameworks   =  "Foundation" #支持的框架
-  s.dependency 'Alamofire'
+  s.dependency 'Alamofire' , '~> 5.0-rc.3'
   s.subspec 'Mesh' do |ss|
       ss.source_files = 'SwiftMesh/Mesh/**/*' 
     end
