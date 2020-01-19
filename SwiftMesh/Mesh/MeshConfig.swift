@@ -38,7 +38,7 @@ open class MeshConfig {
     ///参数  表单上传也可以用
     public var parameters : [String: Any]?
     ///下载用 设置文件下载地址覆盖方式等等
-    public var destination : DownloadRequest.DownloadFileDestination?
+    public var destination : DownloadRequest.Destination?
     //服务端返回参数 定义错误码 错误信息 或者 正确信息
     public var code : Int?
     public var mssage : String?
@@ -46,13 +46,10 @@ open class MeshConfig {
     public var responseData : Data?
     ///下载完
     public var downloadType : DownloadType = .download
-    public var downloadData : Data?
-    public var temporaryURL: URL?
-    public var destinationURL: URL?
+    public var fileURL: URL?   
     public var resumeData : Data?
     ///上传
     public var uploadType : UploadType = .file
-    public var fileURL: URL?
     public var fileData: Data?
     public var stream: InputStream?
     public var uploadDatas : [MeshMultipartConfig]?

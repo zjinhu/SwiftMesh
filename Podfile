@@ -7,5 +7,6 @@ target 'SwiftMesh' do
 
   # Pods for SwiftMesh
 #网络请求以及封装
-   pod 'Alamofire' 
+#   pod 'Alamofire'
+   pod 'Alamofire', '~> 5.0.0-rc.3'
 end
