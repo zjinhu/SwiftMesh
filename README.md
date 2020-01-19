@@ -30,5 +30,6 @@
 ### cocoapods导入
 不需要Codable解析的可以直接`pod ‘SwiftMesh/Mesh’`
 默认情况`pod ‘SwiftMesh‘`
+依赖Alamofire5.0版本的请pod 1.0版本以上，1.0版本以下为依赖Alamofire4.9.1
 ### 手动导入
 拖入代码即可
