@@ -64,7 +64,6 @@ public class MeshManager{
         let config = MeshConfig.init()
         if configBlock != nil {
             configBlock!(config)
-            print(config)
         }
         self.sendRequest(config: config, success: success, failure: failure)
     }
@@ -115,7 +114,6 @@ public class MeshManager{
         let config = MeshConfig.init()
         if configBlock != nil {
             configBlock!(config)
-            print(config)
         }
         
         self.changeConfig(config)
@@ -190,7 +188,6 @@ public class MeshManager{
         let config = MeshConfig.init()
         if configBlock != nil {
             configBlock!(config)
-            print(config)
         }
         
         self.changeConfig(config)
@@ -273,14 +270,14 @@ public class MeshManager{
                 if success != nil {
                     success!(config)
                 }
-                print("****:\(response) ****")
+                debugPrint("****:\(response) ****")
             case .failure(let error):
                 config.code = RequestCode.errorResult.rawValue
                 config.mssage = "上传失败"
                 if failure != nil {
                     failure!(config)
                 }
-                print(error)
+                debugPrint(error)
             }
 
         }
@@ -350,7 +347,7 @@ public class MeshManager{
         #if DEBUG
         
         if self.canLogging{
-            print("\n\n<><><><><>-「Alamofire Log」-<><><><><>\n\n>>>>>>>>>>>>>>>API:>>>>>>>>>>>>>>>\n\n\(String(describing: config.URLString))\n\n>>>>>>>>>>>>>>>parameters:>>>>>>>>>>>>>>>\n\n\(String(describing: config.parameters))\n\n>>>>>>>>>>>>>>>headers:>>>>>>>>>>>>>>>\n\n\(String(describing: config.addHeads))\n\n>>>>>>>>>>>>>>>response:>>>>>>>>>>>>>>>\n\n\(String(describing: response))\n\n<><><><><>-「Alamofire END」-<><><><><>\n\n")
+            print("\n\n<><><><><>-「Alamofire Log」-<><><><><>\n\n>>>>>>>>>>>>>>>接口API:>>>>>>>>>>>>>>>\n\n\(String(describing: config.URLString))\n\n>>>>>>>>>>>>>>>参数parameters:>>>>>>>>>>>>>>>\n\n\(String(describing: config.parameters))\n\n>>>>>>>>>>>>>>>头headers:>>>>>>>>>>>>>>>\n\n\(String(describing: config.addHeads))\n\n>>>>>>>>>>>>>>>报文response:>>>>>>>>>>>>>>>\n\n\(String(describing: response))\n\n<><><><><>-「Alamofire END」-<><><><><>\n\n")
         }
         
         #endif
