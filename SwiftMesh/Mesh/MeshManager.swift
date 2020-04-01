@@ -29,7 +29,7 @@ public class MeshManager{
     
     private var globalHeaders: HTTPHeaders?
     private var defaultParameters: [String: Any]?
-    
+    private let networkManager = NetworkReachabilityManager()
     // MARK: 设置全局 headers
     public func setGlobalHeaders(_ headers: HTTPHeaders?) {
         self.globalHeaders = headers
@@ -43,42 +43,48 @@ public class MeshManager{
     // MARK: 是否联网
     public var isReachable: Bool {
         get {
-            return self.isStartNetworkMonitoring ? self.networkManager.isReachable : true
+            return networkManager?.isReachable ?? false
         }
     }
     // MARK: 是否WiFi
     public var isReachableWiFi: Bool {
         get {
-            return self.networkManager.isReachableOnEthernetOrWiFi
+            return networkManager?.isReachableOnEthernetOrWiFi ?? false
         }
     }
     // MARK: 是否WWAN
     public var isReachableCellular: Bool {
         get {
-            return self.networkManager.isReachableOnCellular
+            return networkManager?.isReachableOnCellular ?? false
         }
     }
     
     // MARK: 统一发起请求(回调配置) 支持 GET POST PUT DELETE
     public func requestWithConfig(configBlock: RequestConfig?, success: RequestSuccess?, failure: RequestFailure?){
-        let config = MeshConfig.init()
-        if configBlock != nil {
-            configBlock!(config)
+        guard let block = configBlock else {
+            return
         }
+        let config = MeshConfig.init()
+        block(config)
+        
         self.sendRequest(config: config, success: success, failure: failure)
     }
     
     // MARK: 发起请求(需要配置) 支持GET POST PUT DELETE
-    public func sendRequest(config: MeshConfig!, success: RequestSuccess?, failure: RequestFailure?) {
+    public func sendRequest(config: MeshConfig, success: RequestSuccess?, failure: RequestFailure?) {
+        
+        guard let url = config.URLString else {
+            return
+        }
         ///设置默认参数 header
         self.changeConfig(config)
         ///先判断网络状态
         if self.isReachable {
-            AF.request(config.URLString ?? "", method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads).responseJSON { (response) in
+            AF.request(url, method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads).responseJSON { (response) in
                 
                 guard let json = response.data else {
                     config.code = RequestCode.errorResponse.rawValue
-                    failure!(config)
+                    failure?(config)
                     return
                 }
                 ///打印输出
@@ -90,31 +96,26 @@ public class MeshManager{
                 case .success:
                     //可添加统一解析
                     config.code = RequestCode.success.rawValue
-                    if success != nil {
-                        success!(config)
-                    }
+                    success?(config)
                 case .failure:
                     config.code = RequestCode.errorResult.rawValue
-                    if failure != nil {
-                        failure!(config)
-                    }
+                    failure?(config)
                 }
             }
         } else {
             config.code = RequestCode.errorRequest.rawValue
-            if failure != nil {
-                failure!(config)
-            }
+            failure?(config)
         }
         
     }
     // MARK: 统一下载 需要配置更改配置参数
     public func downLoadWithConfig(configBlock: RequestConfig?, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
         
-        let config = MeshConfig.init()
-        if configBlock != nil {
-            configBlock!(config)
+        guard let block = configBlock else {
+            return
         }
+        let config = MeshConfig.init()
+        block(config)
         
         self.changeConfig(config)
         
@@ -127,11 +128,16 @@ public class MeshManager{
         
     }
     // MARK: 下载文件
-    public func sendDownload(config: MeshConfig!, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
-        AF.download(config.URLString ?? "", method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads, to: config.destination).downloadProgress(closure: { (progr) in
-            if progress != nil{
-                progress!(progr)
-            }
+    public func sendDownload(config: MeshConfig, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
+        
+        guard let url = config.URLString else {
+            return
+        }
+
+        AF.download(url, method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads, to: config.destination).downloadProgress(closure: { (progr) in
+            
+            progress?(progr)
+            
         }).responseData { (responseData) in
             
             config.fileURL = responseData.fileURL
@@ -141,24 +147,25 @@ public class MeshManager{
             case .success:
                 config.mssage = "下载完成"
                 config.code = RequestCode.success.rawValue
-                if success != nil {
-                    success!(config)
-                }
+                success?(config)
             case .failure:
                 config.mssage = "下载失败"
                 config.code = RequestCode.errorResult.rawValue
-                if failure != nil {
-                    failure!(config)
-                }
+                failure?(config)
             }
         }
     }
     // MARK: 下载文件续传
-    public func sendDownloadResume(config: MeshConfig!, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
-        AF.download(resumingWith: config.resumeData!, to: config.destination).downloadProgress(closure: { (progr) in
-            if progress != nil{
-                progress!(progr)
-            }
+    public func sendDownloadResume(config: MeshConfig, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
+        
+        guard let resumeData = config.resumeData else {
+            return
+        }
+
+        AF.download(resumingWith: resumeData, to: config.destination).downloadProgress(closure: { (progr) in
+            
+            progress?(progr)
+            
         }).responseData { (responseData) in
             
             config.fileURL = responseData.fileURL
@@ -168,15 +175,11 @@ public class MeshManager{
             case .success:
                 config.mssage = "下载完成"
                 config.code = RequestCode.success.rawValue
-                if success != nil {
-                    success!(config)
-                }
+                success?(config)
             case .failure:
                 config.mssage = "下载失败"
                 config.code = RequestCode.errorResult.rawValue
-                if failure != nil {
-                    failure!(config)
-                }
+                failure?(config)
             }
             
         }
@@ -185,11 +188,12 @@ public class MeshManager{
     // MARK: 统一上传方法
     public func uploadWithConfig(configBlock: RequestConfig?, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
         
-        let config = MeshConfig.init()
-        if configBlock != nil {
-            configBlock!(config)
+        guard let block = configBlock else {
+            return
         }
         
+        let config = MeshConfig.init()
+        block(config)
         self.changeConfig(config)
         
         switch config.uploadType {
@@ -200,26 +204,37 @@ public class MeshManager{
         }
     }
     // MARK: 简单上传文件方法
-    public func sendUpload(config: MeshConfig!, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
+    public func sendUpload(config: MeshConfig, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
         
+        guard let url = config.URLString else {
+            return
+        }
+
         let uploadRequest : UploadRequest
         
         switch config.uploadType {
         case .file:
-            uploadRequest = AF.upload(config.fileURL!, to: config.URLString!, method: config.requestMethod, headers: config.addHeads)
+            guard let fileURL = config.fileURL else {
+                return
+            }
+            uploadRequest = AF.upload(fileURL, to: url, method: config.requestMethod, headers: config.addHeads)
             
         case .stream:
-            uploadRequest = AF.upload(config.stream!, to: config.URLString!, method: config.requestMethod, headers: config.addHeads)
+            guard let stream = config.stream else {
+                return
+            }
+            uploadRequest = AF.upload(stream, to: url, method: config.requestMethod, headers: config.addHeads)
             
         default:
-            uploadRequest = AF.upload(config.fileData!, to: config.URLString!, method: config.requestMethod, headers: config.addHeads)
+            guard let fileData = config.fileData else {
+                return
+            }
+            uploadRequest = AF.upload(fileData, to: url, method: config.requestMethod, headers: config.addHeads)
             
         }
         
         uploadRequest.uploadProgress { (progr) in
-            if progress != nil{
-                progress!(progr)
-            }
+            progress?(progr)
         }
         
         uploadRequest.responseJSON { (response) in
@@ -227,57 +242,57 @@ public class MeshManager{
             case .success:
                 config.code = RequestCode.success.rawValue
                 config.mssage = "上传成功"
-                if success != nil {
-                    success!(config)
-                }
+                success?(config)
             case .failure:
                 config.code = RequestCode.errorResult.rawValue
                 config.mssage = "上传失败"
-                if failure != nil {
-                    failure!(config)
-                }
+                failure?(config)
             }
         }
         
     }
     // MARK: 表单上传
-    public func sendUploadMultipart(config: MeshConfig!, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
+    public func sendUploadMultipart(config: MeshConfig, progress: ProgressListener?, success: RequestSuccess?, failure: RequestFailure?) {
+        
+        guard let url = config.URLString, let uploadDatas = config.uploadDatas  else {
+            return
+        }
+        
         AF.upload(multipartFormData: { (multi) in
-            for  updataConfig in config.uploadDatas!{
-                if updataConfig.fileData != nil {
+
+            uploadDatas.forEach { (updataConfig) in
+                if let fileData = updataConfig.fileData{
                     ///Data数据表单,图片等类型
-                    if updataConfig.fileName != nil && updataConfig.mimeType != nil {
-                        multi.append(updataConfig.fileData!, withName: updataConfig.name!, fileName: updataConfig.fileName!, mimeType: updataConfig.mimeType!)
+                    if let fileName = updataConfig.fileName,
+                        let mimeType =  updataConfig.mimeType{
+                        multi.append(fileData, withName: updataConfig.name ?? "", fileName: fileName, mimeType: mimeType)
                     }else{
-                        multi.append(updataConfig.fileData!, withName: updataConfig.name!)
+                        multi.append(fileData, withName: updataConfig.name ?? "")
                     }
-                }else if updataConfig.fileURL != nil{
+                }else if let fileURL = updataConfig.fileURL{
                     ///文件类型表单,从 URL 路径获取文件上传
-                    if updataConfig.fileName != nil && updataConfig.mimeType != nil {
-                        multi.append(updataConfig.fileURL!, withName: updataConfig.name!, fileName: updataConfig.fileName!, mimeType: updataConfig.mimeType!)
+                    if let fileName = updataConfig.fileName,
+                        let mimeType =  updataConfig.mimeType{
+                        multi.append(fileURL, withName: updataConfig.name ?? "", fileName: fileName, mimeType: mimeType)
                     }else{
-                        multi.append(updataConfig.fileURL!, withName: updataConfig.name!)
+                        multi.append(fileURL, withName: updataConfig.name ?? "")
                     }
                 }
             }
             
-        }, to: config.URLString!, method: config.requestMethod, headers: config.addHeads).response { (response) in
+        }, to: url, method: config.requestMethod, headers: config.addHeads).response { (response) in
             
             switch response.result{
             case .success( _):
                 config.code = RequestCode.success.rawValue
                 config.mssage = "上传成功"
-                if success != nil {
-                    success!(config)
-                }
-                debugPrint("****:\(response) ****")
+                success?(config)
+//                debugPrint("****:\(response) ****")
             case .failure(let error):
                 config.code = RequestCode.errorResult.rawValue
                 config.mssage = "上传失败"
-                if failure != nil {
-                    failure!(config)
-                }
-                debugPrint(error)
+                failure?(config)
+//                debugPrint(error)
             }
 
         }
@@ -286,9 +301,10 @@ public class MeshManager{
     /// 取消特定请求
     /// - Parameter url: 请求的地址,内部判断是否包含,请添加详细的 path
     public func cancelRequest(_ url :String){
+        
         Session.default.session.getAllTasks { (tasks) in
             tasks.forEach { (task) in
-                if (task.currentRequest?.url?.absoluteString.contains(url))!{
+                if let _ : Bool = task.currentRequest?.url?.absoluteString.contains(url){
                     task.cancel()
                 }
             }
@@ -297,6 +313,7 @@ public class MeshManager{
     
     /// 清空所有请求
     public func cancelAllRequest(){
+        
         Session.default.session.getAllTasks { (tasks) in
             tasks.forEach { (task) in
                 task.cancel()
@@ -305,7 +322,7 @@ public class MeshManager{
     }
     
     ///私有方法
-    private func changeConfig(_ config: MeshConfig!){
+    private func changeConfig(_ config: MeshConfig){
         ///设置默认参数 header
         var param = self.defaultParameters ?? [:]
         param.merge(config.parameters ?? [:]) { (_, new) in new}
@@ -318,38 +335,32 @@ public class MeshManager{
             config.addHeads?.update($0)
         }
     }
-    // MARK: 网络监视
-    var isStartNetworkMonitoring = false
-    let networkManager = NetworkReachabilityManager(host: "www.baidu.com")!
     
-    func startNetworkMonitoring(listener: NetworkStatusListener? = nil) {
-
-        networkManager.startListening { (status) in
-            self.isStartNetworkMonitoring = true
-            var netStatus = NetworkStatus.noReachable
-            switch status{
-            case .notReachable:
-                netStatus = .noReachable
-            case .unknown:
-                netStatus = .unKnown
-            case .reachable(.ethernetOrWiFi):
-                netStatus = .onWiFi
-            case .reachable(.cellular):
-                netStatus = .onCellular
-            }
-            if listener != nil {
-                listener!(netStatus)
-            }
-        }
-    }
     // MARK:- 打印输出
     private func meshLog(_ config: MeshConfig, response: AFDataResponse<Any>?) {
         #if DEBUG
         
         if self.canLogging{
-            print("\n\n<><><><><>-「Alamofire Log」-<><><><><>\n\n>>>>>>>>>>>>>>>接口API:>>>>>>>>>>>>>>>\n\n\(String(describing: config.URLString))\n\n>>>>>>>>>>>>>>>参数parameters:>>>>>>>>>>>>>>>\n\n\(String(describing: config.parameters))\n\n>>>>>>>>>>>>>>>头headers:>>>>>>>>>>>>>>>\n\n\(String(describing: config.addHeads))\n\n>>>>>>>>>>>>>>>报文response:>>>>>>>>>>>>>>>\n\n\(String(describing: response))\n\n<><><><><>-「Alamofire END」-<><><><><>\n\n")
+            print("\n\n<><><><><>-「Alamofire Log」-<><><><><>\n\n>>>>>>>>>>>>>>>接口API:>>>>>>>>>>>>>>>\n\n\(String(describing: config.URLString))\n\n>>>>>>>>>>>>>>>参数parameters:>>>>>>>>>>>>>>>\n\n\(String(describing: config.parameters))\n\n>>>>>>>>>>>>>>>头headers:>>>>>>>>>>>>>>>\n\n\(String(describing: config.addHeads))\n\n>>>>>>>>>>>>>>>报文response:>>>>>>>>>>>>>>>\n\n\(replaceUnicode(unicodeStr:"\(String(describing: response))"))\n\n<><><><><>-「Alamofire END」-<><><><><>\n\n")
         }
         
         #endif
     }
+    
+    private func replaceUnicode(unicodeStr: String) -> String {
+        let tempStr1 = unicodeStr.replacingOccurrences(of: "\\u", with: "\\U")
+        let tempStr2 = tempStr1.replacingOccurrences(of: "\"", with: "\\\"")
+        let tempStr3 = "\"".appending(tempStr2).appending("\"")
+        guard let tempData = tempStr3.data(using: String.Encoding.utf8) else {
+            return "unicode转码失败"
+        }
+        var returnStr:String = ""
+        do {
+            returnStr = try PropertyListSerialization.propertyList(from: tempData, options: [.mutableContainers], format: nil) as! String
+        } catch {
+            debugPrint(error)
+        }
+        return returnStr.replacingOccurrences(of: "\\r\\n", with: "\n")
+    }
+
 }

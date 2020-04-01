@@ -40,21 +40,15 @@ public class MeshRequest <T: Codable> {
             
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
-            guard let model = try? decoder.decode(T.self, from: config.responseData!) else {
-                if callBack != nil {
-                    callBack!(nil)
-                }
+            guard let data = config.responseData, let model = try? decoder.decode(T.self, from: data) else {
+                callBack?(nil)
                 return
             }
             
-            if callBack != nil {
-                callBack!(model)
-            }
+            callBack?(model)
             
         }) { (config) in
-            if callBack != nil {
-                callBack!(nil)
-            }
+            callBack?(nil)
         }
         
     }

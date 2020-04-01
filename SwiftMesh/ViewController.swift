@@ -39,11 +39,11 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
 
         MeshRequest<[BaseModel]>.get("https://jsonplaceholder.typicode.com/posts") { (model) in
-            print(model!)
+            print("\(String(describing: model))")
         }
         
         MeshRequest<TestModel>.get("https://api.apiopen.top/getJoke?page=1&count=2&type=video") { (model) in
-            print(model!)
+            print("\(String(describing: model))")
         }
 
         
