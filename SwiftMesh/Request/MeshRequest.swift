@@ -19,7 +19,7 @@ public class MeshRequest <T: Codable> {
     ///   - parameters: 请求参数
     ///   - callBack: 返回闭包
     public class func get(_ url: String, parameters: [String: Any] = [:], callBack: requestCallBack?) {
-        self.request(url, parameters: parameters, callBack: callBack)
+        request(url, parameters: parameters, callBack: callBack)
     }
     /// post请求
     /// - Parameters:
@@ -27,7 +27,7 @@ public class MeshRequest <T: Codable> {
     ///   - parameters: 请求参数
     ///   - callBack: 返回闭包
     public class func post(_ url: String, parameters: [String: Any] = [:], callBack: requestCallBack?) {
-        self.request(url, requestMethod: .post, parameters: parameters, callBack: callBack)
+        request(url, requestMethod: .post, parameters: parameters, callBack: callBack)
     }
     
     class private func request(_ url: String, requestMethod : HTTPMethod = .get , parameters: [String: Any] = [:], callBack: requestCallBack?) {

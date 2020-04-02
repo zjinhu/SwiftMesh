@@ -63,7 +63,7 @@ public class MeshConfig {
     ///   - mimeType: 数据类型
     public func addformData(name: String, fileName: String? = nil, fileData: Data? = nil, fileURL: URL? = nil, mimeType: String? = nil) {
         let config = MeshMultipartConfig.formData(name: name, fileName: fileName, fileData: fileData, fileURL: fileURL, mimeType: mimeType)
-        self.uploadDatas?.append(config)
+        uploadDatas?.append(config)
     }
 }
 

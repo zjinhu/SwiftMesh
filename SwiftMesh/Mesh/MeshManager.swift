@@ -32,12 +32,12 @@ public class MeshManager{
     private let networkManager = NetworkReachabilityManager()
     // MARK: 设置全局 headers
     public func setGlobalHeaders(_ headers: HTTPHeaders?) {
-        self.globalHeaders = headers
+        globalHeaders = headers
     }
     
     // MARK: 设置默认参数
     public func setDefaultParameters(_ parameters: [String: Any]?) {
-        self.defaultParameters = parameters
+        defaultParameters = parameters
     }
     
     // MARK: 是否联网
@@ -67,7 +67,7 @@ public class MeshManager{
         let config = MeshConfig.init()
         block(config)
         
-        self.sendRequest(config: config, success: success, failure: failure)
+        sendRequest(config: config, success: success, failure: failure)
     }
     
     // MARK: 发起请求(需要配置) 支持GET POST PUT DELETE
@@ -77,9 +77,9 @@ public class MeshManager{
             return
         }
         ///设置默认参数 header
-        self.changeConfig(config)
+        changeConfig(config)
         ///先判断网络状态
-        if self.isReachable {
+        if isReachable {
             AF.request(url, method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads).responseJSON { (response) in
                 
                 guard let json = response.data else {
@@ -117,13 +117,13 @@ public class MeshManager{
         let config = MeshConfig.init()
         block(config)
         
-        self.changeConfig(config)
+        changeConfig(config)
         
         switch config.downloadType {
         case .resume:
-            self.sendDownloadResume(config: config, progress: progress, success: success, failure: failure)
+            sendDownloadResume(config: config, progress: progress, success: success, failure: failure)
         default:
-            self.sendDownload(config: config, progress: progress, success: success, failure: failure)
+            sendDownload(config: config, progress: progress, success: success, failure: failure)
         }
         
     }
@@ -194,13 +194,13 @@ public class MeshManager{
         
         let config = MeshConfig.init()
         block(config)
-        self.changeConfig(config)
+        changeConfig(config)
         
         switch config.uploadType {
         case .multipart:
-            self.sendUploadMultipart(config: config, progress: progress, success: success, failure: failure)
+            sendUploadMultipart(config: config, progress: progress, success: success, failure: failure)
         default:
-            self.sendUpload(config: config, progress: progress, success: success, failure: failure)
+            sendUpload(config: config, progress: progress, success: success, failure: failure)
         }
     }
     // MARK: 简单上传文件方法
@@ -288,7 +288,7 @@ public class MeshManager{
                 config.mssage = "上传成功"
                 success?(config)
 //                debugPrint("****:\(response) ****")
-            case .failure(let error):
+            case .failure( _):
                 config.code = RequestCode.errorResult.rawValue
                 config.mssage = "上传失败"
                 failure?(config)
@@ -324,11 +324,11 @@ public class MeshManager{
     ///私有方法
     private func changeConfig(_ config: MeshConfig){
         ///设置默认参数 header
-        var param = self.defaultParameters ?? [:]
+        var param = defaultParameters ?? [:]
         param.merge(config.parameters ?? [:]) { (_, new) in new}
         config.parameters = param
 
-        guard let headers = self.globalHeaders else {
+        guard let headers = globalHeaders else {
             return
         }
         headers.forEach {
@@ -340,7 +340,7 @@ public class MeshManager{
     private func meshLog(_ config: MeshConfig, response: AFDataResponse<Any>?) {
         #if DEBUG
         
-        if self.canLogging{
+        if canLogging{
             print("\n\n<><><><><>-「Alamofire Log」-<><><><><>\n\n>>>>>>>>>>>>>>>接口API:>>>>>>>>>>>>>>>\n\n\(String(describing: config.URLString))\n\n>>>>>>>>>>>>>>>参数parameters:>>>>>>>>>>>>>>>\n\n\(String(describing: config.parameters))\n\n>>>>>>>>>>>>>>>头headers:>>>>>>>>>>>>>>>\n\n\(String(describing: config.addHeads))\n\n>>>>>>>>>>>>>>>报文response:>>>>>>>>>>>>>>>\n\n\(replaceUnicode(unicodeStr:"\(String(describing: response))"))\n\n<><><><><>-「Alamofire END」-<><><><><>\n\n")
         }
         
