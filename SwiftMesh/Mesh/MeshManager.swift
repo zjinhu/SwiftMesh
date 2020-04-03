@@ -19,7 +19,6 @@ public class MeshManager{
     //单例
     public static let shared = MeshManager()
     
-    public typealias NetworkStatusListener = (_ status: NetworkStatus) -> Void
     public typealias RequestConfig = (_ config: MeshConfig) -> Void
     public typealias RequestSuccess = (_ config: MeshConfig) -> Void
     public typealias RequestFailure = (_ config: MeshConfig) -> Void
@@ -81,6 +80,8 @@ public class MeshManager{
         ///先判断网络状态
         if isReachable {
             AF.request(url, method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads).responseJSON { (response) in
+                
+                config.response = response
                 
                 guard let json = response.data else {
                     config.code = RequestCode.errorResponse.rawValue
@@ -341,26 +342,9 @@ public class MeshManager{
         #if DEBUG
         
         if canLogging{
-            print("\n\n<><><><><>-「Alamofire Log」-<><><><><>\n\n>>>>>>>>>>>>>>>接口API:>>>>>>>>>>>>>>>\n\n\(String(describing: config.URLString))\n\n>>>>>>>>>>>>>>>参数parameters:>>>>>>>>>>>>>>>\n\n\(String(describing: config.parameters))\n\n>>>>>>>>>>>>>>>头headers:>>>>>>>>>>>>>>>\n\n\(String(describing: config.addHeads))\n\n>>>>>>>>>>>>>>>报文response:>>>>>>>>>>>>>>>\n\n\(replaceUnicode(unicodeStr:"\(String(describing: response))"))\n\n<><><><><>-「Alamofire END」-<><><><><>\n\n")
+            print("\n\n<><><><><>-「Alamofire Log」-<><><><><>\n\n>>>>>>>>>>>>>>>接口API:>>>>>>>>>>>>>>>\n\n\(String(describing: config.URLString))\n\n>>>>>>>>>>>>>>>参数parameters:>>>>>>>>>>>>>>>\n\n\(String(describing: config.parameters))\n\n>>>>>>>>>>>>>>>头headers:>>>>>>>>>>>>>>>\n\n\(String(describing: config.addHeads))\n\n>>>>>>>>>>>>>>>报文response:>>>>>>>>>>>>>>>\n\n\(String(describing: response))\n\n<><><><><>-「Alamofire END」-<><><><><>\n\n")
         }
         
         #endif
     }
-    
-    private func replaceUnicode(unicodeStr: String) -> String {
-        let tempStr1 = unicodeStr.replacingOccurrences(of: "\\u", with: "\\U")
-        let tempStr2 = tempStr1.replacingOccurrences(of: "\"", with: "\\\"")
-        let tempStr3 = "\"".appending(tempStr2).appending("\"")
-        guard let tempData = tempStr3.data(using: String.Encoding.utf8) else {
-            return "unicode转码失败"
-        }
-        var returnStr:String = ""
-        do {
-            returnStr = try PropertyListSerialization.propertyList(from: tempData, options: [.mutableContainers], format: nil) as! String
-        } catch {
-            debugPrint(error)
-        }
-        return returnStr.replacingOccurrences(of: "\\r\\n", with: "\n")
-    }
-
 }

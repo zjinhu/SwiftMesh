@@ -25,6 +25,7 @@ public enum RequestCode : Int {
 
 /// 网络请求配置
 public class MeshConfig {
+    //MARK: 请求相关配置
     /// 超时配置
     public var timeout : TimeInterval = 15.0
     /// 添加请求头
@@ -33,22 +34,27 @@ public class MeshConfig {
     public var requestMethod : HTTPMethod = .get
     /// 请求编码
     public var requestEncoding: ParameterEncoding = URLEncoding.default  //PropertyListEncoding.xml//JSONEncoding.default
+    //MARK: 请求地址以及参数
     /// 请求地址
     public var URLString : String?
     ///参数  表单上传也可以用
     public var parameters : [String: Any]?
-    ///下载用 设置文件下载地址覆盖方式等等
-    public var destination : DownloadRequest.Destination?
+    //MARK: 请求完成返回数据
     //服务端返回参数 定义错误码 错误信息 或者 正确信息
     public var code : Int?
     public var mssage : String?
     ///请求成功返回的数据 用 codable 解析
     public var responseData : Data?
-    ///下载完
+    /// AF请求下来的完整response，可自行处理
+    public var response: AFDataResponse<Any>?
+    //MARK: 下载
+    ///下载用 设置文件下载地址覆盖方式等等
+    public var destination : DownloadRequest.Destination?
+    
     public var downloadType : DownloadType = .download
     public var fileURL: URL?   
     public var resumeData : Data?
-    ///上传
+    //MARK: 上传
     public var uploadType : UploadType = .file
     public var fileData: Data?
     public var stream: InputStream?
