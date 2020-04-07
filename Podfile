@@ -9,4 +9,5 @@ target 'SwiftMesh' do
 #网络请求以及封装
 #   pod 'Alamofire'
    pod 'Alamofire'
+   pod 'CocoaDebug', :configurations => ['Debug']
 end
