@@ -1,7 +1,6 @@
 # SwiftMesh
 基于Alamofire和Codable的二次封装，更加方便的使用。
 ## 介绍
-
 ### MeshManager
 单例。
 其中包括：
