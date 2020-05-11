@@ -18,21 +18,24 @@ public class MeshRequest <T: Codable> {
     ///   - url: 请求地址
     ///   - parameters: 请求参数
     ///   - callBack: 返回闭包
-    public class func get(_ url: String, parameters: [String: Any] = [:], callBack: requestCallBack?) {
-        request(url, parameters: parameters, callBack: callBack)
+    @discardableResult
+    public class func get(_ url: String, parameters: [String: Any] = [:], callBack: requestCallBack?) -> DataRequest? {
+        return request(url, parameters: parameters, callBack: callBack)
     }
+    
     /// post请求
     /// - Parameters:
     ///   - url: 请求地址
     ///   - parameters: 请求参数
     ///   - callBack: 返回闭包
-    public class func post(_ url: String, parameters: [String: Any] = [:], callBack: requestCallBack?) {
-        request(url, requestMethod: .post, parameters: parameters, callBack: callBack)
+    @discardableResult
+    public class func post(_ url: String, parameters: [String: Any] = [:], callBack: requestCallBack?) -> DataRequest? {
+        return request(url, requestMethod: .post, parameters: parameters, callBack: callBack)
     }
     
-    class private func request(_ url: String, requestMethod : HTTPMethod = .get , parameters: [String: Any] = [:], callBack: requestCallBack?) {
+    class private func request(_ url: String, requestMethod : HTTPMethod = .get , parameters: [String: Any] = [:], callBack: requestCallBack?) -> DataRequest? {
         
-        MeshManager.shared.requestWithConfig(configBlock: { (config) in
+        return MeshManager.shared.requestWithConfig(configBlock: { (config) in
             config.requestMethod = requestMethod
             config.URLString = url
             config.parameters = parameters
@@ -52,6 +55,4 @@ public class MeshRequest <T: Codable> {
         }
         
     }
-    
-    
 }

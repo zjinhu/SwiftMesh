@@ -42,11 +42,10 @@ class ViewController: UIViewController {
             print("\(String(describing: model))")
         }
         
-        MeshRequest<TestModel>.get("https://api.apiopen.top/getJoke?page=1&count=2&type=video") { (model) in
-            print("\(String(describing: model))")
+       let a = MeshRequest<TestModel>.get("https://api.apiopen.top/getJoke?page=1&count=2&type=video") { (model) in
+            print("22222\(String(describing: model))")
         }
-
-        
+        a?.cancel()
     }
 
 
