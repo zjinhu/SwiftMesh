@@ -1,6 +1,6 @@
 PODS:
   - Alamofire (5.1.0)
-  - CocoaDebug (1.2.4)
+  - CocoaDebug (1.2.6)
 
 DEPENDENCIES:
   - Alamofire
@@ -13,7 +13,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Alamofire: 9d5c5f602928e512395b30950c5984eca840093c
-  CocoaDebug: 70131dc9f62f3d156dfa1a5cd5ace8cb870f70bb
+  CocoaDebug: 51998f568ab5f15b4321fce3a4eed32faded975b
 
 PODFILE CHECKSUM: 511c21c1ab7fe3234e3eb710b02a57b00c85bcb1
 
