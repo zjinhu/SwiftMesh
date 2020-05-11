@@ -1,10 +1,7 @@
 # SwiftMesh
 基于Alamofire和Codable的二次封装，更加方便的使用。
 ## 介绍
-### MeshCertificate
-针对于Alamofire的证书验证做了一层封装
-`trustServerCertificate`信任服务端证书
-`cheakMeshCertificate`验证 Https 证书，主要是本地证书和服务端证书对比
+
 ### MeshManager
 单例。
 其中包括：
