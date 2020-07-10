@@ -23,6 +23,13 @@ struct Item: Codable {
     let video: String
 }
 
+struct ResultModel: Codable {
+    let notice: String
+    let type: String
+    let week: String
+    let ymd: String
+}
+
 class ViewController: UIViewController {
 
     
@@ -38,14 +45,14 @@ class ViewController: UIViewController {
         MeshManager.shared.canLogging = true
         // Do any additional setup after loading the view.
 
-        MeshRequest<[BaseModel]>.get("https://jsonplaceholder.typicode.com/posts") { (model) in
+        MeshRequest.get("https://jsonplaceholder.typicode.com/posts", modelType: [BaseModel].self) { (model) in
             print("\(String(describing: model))")
         }
         
-       let a = MeshRequest<TestModel>.get("https://api.apiopen.top/getJoke?page=1&count=2&type=video") { (model) in
+        let a = MeshRequest.get("http://t.weather.sojson.com/api/weather/city/101030100", modelType: ResultModel.self, modelKeyPath: "data.yesterday") { (model) in
             print("22222\(String(describing: model))")
         }
-        a?.cancel()
+//        a?.cancel()
     }
 
 
