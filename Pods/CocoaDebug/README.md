@@ -12,7 +12,7 @@
 
 ## Screenshot
 
-<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/01.png" width="200">
+<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/001.png" width="200">
 <img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/02.png" width="200">
 <img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/03.png" width="200">
 <img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/04.png" width="200">
@@ -23,31 +23,29 @@
 
 ## Introduction
 
-- [x] Shake to hide or show the black bubble. (support both device and simulator)
-
-- [x] Long press the black bubble to show `UIDebuggingInformationOverlay`. (Apple's Private API, support iOS 10/11/12)
-
-- [x] Application memory usage and *FPS*.
-
-- [x] List all `print()` and `NSLog()` messages which have been written by developer in Xcode.
-
-- [x] List of all the network requests sent by the application.
-
-- [x] List crash errors.
+- [x] Shake to hide or show the black bubble. (Support iPhone device and simulator)
 
 - [x] Share network details via email or copy to clipboard when you are in the *Network Details* page.
 
-- [x] Copy logs. (long press the text, then select all or select copy)
+- [x] Copy logs. (Long press the text, then select all or select copy)
 
 - [x] Search logs by keyword.
+
+- [x] List crash errors.
+
+- [x] List all `print()` and `NSLog()` messages which have been written by developer in Xcode.
+
+- [x] List of all the network requests sent by the application. (Support `JSON` and Google's `Protocol buffers`)
 
 - [x] List application and device informations, including: *version*, *build*, *bundle name*, *bundle id*, *screen resolution*, *device*, *iOS version*
 
 - [x] List all sandbox folders and files, supporting to preview and edit.
 
-- [x] List HTML logs, including `console.log()`,`console.debug()`,`console.warn()`,`console.error()`,`console. info()`. (support both `WKWebView` and `UIWebView`).
+- [x] List HTML logs, including `console.log()`,`console.debug()`,`console.warn()`,`console.error()`,`console. info()`. (support `WKWebView` ~~and `UIWebView`~~). ***UIWebView Deprecated***
 
-- [x] Support `JSON` and Google's `Protocol buffers`
+- [x] ~~Application memory usage and *FPS*.~~ ***Deprecated***
+
+- [x] ~~Long press the black bubble to show `UIDebuggingInformationOverlay`. (Apple's Private API, support iOS 10/11/12)~~ ***Private API Deprecated***
 
 ## Installation
 
@@ -70,49 +68,31 @@ github "CocoaDebug/CocoaDebug"
 
 ## Usage
 
-### Swift
+  Launch application and debug with `CocoaDebug `.
+  
+  **NOTE: If `CocoaDebug` auto launch failed, Please enable `CocoaDebug` manually by `CocoaDebug.enable()` or `[CocoaDebug enable]`.**
+
+### Swift *(Enable CocoaDebug manually)*
 	
-	//AppDelegate.swift
-	 
     #if DEBUG
         import CocoaDebug
     #endif
 	
     #if DEBUG
-        //If Use Google's Protocol buffers
-        CocoaDebug.protobufTransferMap = [
-                                         "your_api_keywords_1": ["your_request_protobuf_className_1", "your_response_protobuf_className_1"],
-                                         "your_api_keywords_2": ["your_request_protobuf_className_2", "your_response_protobuf_className_2"],
-                                         "your_api_keywords_3": ["your_request_protobuf_className_3", "your_response_protobuf_className_3"]
-                                         ]
         CocoaDebug.enable()
     #endif
 
-    public func print<T>(file: String = #file, function: String = #function, line: Int = #line, _ message: T, color: UIColor = .white) {
-        #if DEBUG
-            swiftLog(file, function, line, message, color, false)
-        #endif
-    }
-
-### Objective-C
+### Objective-C *(Enable CocoaDebug manually)*
 	
-	//AppDelegate.m
-	 
     #ifdef DEBUG
         @import CocoaDebug;
     #endif
 	
     #ifdef DEBUG
-        //If Use Google's Protocol buffers
-        CocoaDebug.protobufTransferMap = @{
-                                          @"your_api_keywords_1": @[@"your_request_protobuf_className_1", @"your_response_protobuf_className_1"],
-                                          @"your_api_keywords_2": @[@"your_request_protobuf_className_2", @"your_response_protobuf_className_2"],
-                                          @"your_api_keywords_3": @[@"your_request_protobuf_className_3", @"your_response_protobuf_className_3"]
-                                         };
         [CocoaDebug enable];
     #endif
 
-### More
+### More Advanced Usage
 
     #ifdef DEBUG
         [CocoaDebugTool logWithString:string];

@@ -12,12 +12,12 @@ Install _fastlane_ using
 ```
 [sudo] gem install fastlane -NV
 ```
-or alternatively using `brew cask install fastlane`
+or alternatively using `brew install fastlane`
 
 # Available Actions
-### SwiftBrick
+### release_pod
 ```
-fastlane SwiftBrick
+fastlane release_pod
 ```
 
 
