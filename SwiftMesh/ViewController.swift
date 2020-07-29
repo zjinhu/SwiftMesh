@@ -24,10 +24,10 @@ struct Item: Codable {
 }
 
 struct ResultModel: Codable {
-    let notice: String
-    let type: String
-    let week: String
-    let ymd: String
+    let city: String
+    let citykey: String
+    let parent: String
+    let updateTime: String
 }
 
 class ViewController: UIViewController {
@@ -45,11 +45,11 @@ class ViewController: UIViewController {
         MeshManager.shared.canLogging = true
         // Do any additional setup after loading the view.
 
-        MeshRequest.get("https://jsonplaceholder.typicode.com/posts", modelType: [BaseModel].self) { (model) in
-            print("\(String(describing: model))")
-        }
+//        MeshRequest.get("https://jsonplaceholder.typicode.com/posts", modelType: [BaseModel].self) { (model) in
+//            print("\(String(describing: model))")
+//        }
         
-        let a = MeshRequest.get("http://t.weather.sojson.com/api/weather/city/101030100", modelType: ResultModel.self, modelKeyPath: "data.yesterday") { (model) in
+        let a = MeshRequest.get("http://t.weather.itboy.net/api/weather/city/101030100", modelType: ResultModel.self, modelKeyPath: "cityInfo") { (model) in
             print("22222\(String(describing: model))")
         }
 //        a?.cancel()
