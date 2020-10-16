@@ -14,12 +14,12 @@ protocol BubbleDelegate: class {
 }
 
 //https://httpcodes.co/status/
-private let _successStatusCodes = ["200","201","202","203","204","205","206","207","208","226"]
-private let _informationalStatusCodes = ["100","101","102","103","122"]
-private let _redirectionStatusCodes = ["300","301","302","303","304","305","306","307","308"]
+private var _successStatusCodes = ["200","201","202","203","204","205","206","207","208","226"]
+private var _informationalStatusCodes = ["100","101","102","103","122"]
+private var _redirectionStatusCodes = ["300","301","302","303","304","305","306","307","308"]
 
-private let _width: CGFloat = 60
-private let _height: CGFloat = 60
+private var _width: CGFloat = 60
+private var _height: CGFloat = 60
 
 class Bubble: UIView {
     
@@ -27,18 +27,29 @@ class Bubble: UIView {
     
     weak var delegate: BubbleDelegate?
     
-    public let width: CGFloat = _width
-    public let height: CGFloat = _height
+    public var width: CGFloat = _width
+    public var height: CGFloat = _height
     
-    private lazy var numberLabel: UILabel? = {
-        return UILabel(frame: CGRect(x:0, y:0, width:_width, height:_height))
+    private var memoryLabel: _DebugConsoleLabel? = {
+        return _DebugConsoleLabel(frame: CGRect(x:0, y:10, width:_width, height:16))
     }()
     
+    private var fpsLabel: _DebugConsoleLabel? = {
+        return _DebugConsoleLabel(frame: CGRect(x:0, y:34, width:_width, height:16))
+    }()
+    
+//    private var cpuLabel: _DebugConsoleLabel? = {
+//        return _DebugConsoleLabel(frame: CGRect(x:0, y:42, width:_width, height:16))
+//    }()
+    
+    
+    private var numberLabel: UILabel? = {
+        return UILabel.init()
+    }()
     private var networkNumber: Int = 0
     
     
     static var originalPosition: CGPoint {
-        
         if CocoaDebugSettings.shared.bubbleFrameX != 0 && CocoaDebugSettings.shared.bubbleFrameY != 0 {
             return CGPoint(x: CGFloat(CocoaDebugSettings.shared.bubbleFrameX), y: CGFloat(CocoaDebugSettings.shared.bubbleFrameY))
         }
@@ -50,7 +61,6 @@ class Bubble: UIView {
     
     //MARK: - tool
     fileprivate func initLabelEvent(_ content: String, _ foo: Bool) {
-        
         if content == "🚀" || content == "❌"
         {
             //step 0
@@ -62,7 +72,7 @@ class Bubble: UIView {
             if foo == true {
                 label.frame = CGRect(x: self.frame.size.width/2 - WH/2, y: self.frame.size.height/2 - WH/2, width: WH, height: WH)
                 self.addSubview(label)
-            }else{
+            } else {
                 label.frame = CGRect(x: self.center.x - WH/2, y: self.center.y - WH/2, width: WH, height: WH)
                 self.superview?.addSubview(label)
             }
@@ -105,7 +115,7 @@ class Bubble: UIView {
             if foo == true {
                 label.frame = CGRect(x: self.frame.size.width/2 - WH/2, y: self.frame.size.height/2 - WH/2, width: WH, height: WH)
                 self.addSubview(label)
-            }else{
+            } else {
                 label.frame = CGRect(x: self.center.x - WH/2, y: self.center.y - WH/2, width: WH, height: WH)
                 self.superview?.addSubview(label)
             }
@@ -121,14 +131,15 @@ class Bubble: UIView {
     
     
     fileprivate func initLayer() {
+//        self.layer.shadowColor = UIColor.black.cgColor
+//        self.layer.shadowRadius = 1
+//        self.layer.shadowOpacity = 0.8
+//        self.layer.shadowOffset = CGSize.zero
+//        self.layer.masksToBounds = true
         self.backgroundColor = .black
-        self.layer.shadowColor = UIColor.black.cgColor
-        self.layer.shadowRadius = 5
-        self.layer.shadowOpacity = 0.8
         self.layer.cornerRadius = 10
-        self.layer.shadowOffset = CGSize.zero
-        self.layer.masksToBounds = true
         self.sizeToFit()
+        
         
         let gradientLayer = CAGradientLayer()
         gradientLayer.frame = bounds
@@ -138,19 +149,36 @@ class Bubble: UIView {
         
         
         if let numberLabel = numberLabel {
+            numberLabel.layer.cornerRadius = 10;
+            numberLabel.layer.masksToBounds = true
+            numberLabel.backgroundColor = .red
             numberLabel.text = String(networkNumber)
             numberLabel.textColor = .white
             numberLabel.textAlignment = .center
             numberLabel.adjustsFontSizeToFitWidth = true
+            numberLabel.isHidden = true
+            self.addSubview(numberLabel)
+
             if #available(iOS 8.2, *) {
-                numberLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+                numberLabel.font = UIFont.systemFont(ofSize: 11, weight: .bold)
             } else {
                 // Fallback on earlier versions
-                numberLabel.font = UIFont.boldSystemFont(ofSize: 20)
+                numberLabel.font = UIFont.boldSystemFont(ofSize: 11)
             }
-            self.addSubview(numberLabel)
+            
+            if CocoaDebugSettings.shared.bubbleFrameX > Float(UIScreen.main.bounds.size.width / 2) {
+                numberLabel.frame = CGRect(x:-10, y:-10, width:20, height:20)
+            } else {
+                numberLabel.frame = CGRect(x:_width - 10, y:-10, width:20, height:20)
+            }
         }
         
+        
+        if let memoryLabel = memoryLabel, let fpsLabel = fpsLabel/*, let cpuLabel = cpuLabel*/ {
+            self.addSubview(memoryLabel)
+            self.addSubview(fpsLabel)
+//            self.addSubview(cpuLabel)
+        }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(Bubble.tap))
         self.addGestureRecognizer(tapGesture)
@@ -186,6 +214,24 @@ class Bubble: UIView {
         //notification
         NotificationCenter.default.addObserver(self, selector: #selector(reloadHttp_notification(_:)), name: NSNotification.Name(rawValue: "reloadHttp_CocoaDebug"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteAllLogs_notification), name: NSNotification.Name(rawValue: "deleteAllLogs_CocoaDebug"), object: nil)
+        
+        //Defaults
+        memoryLabel?.attributedText = memoryLabel?.memoryAttributedString(with: 0)
+//        cpuLabel?.attributedText = cpuLabel?.cpuAttributedString(with: 0)
+        fpsLabel?.attributedText = fpsLabel?.fpsAttributedString(with: 60)
+
+        //Memory
+        _DebugMemoryMonitor.sharedInstance()?.valueBlock = { [weak self] value in
+            self?.memoryLabel?.update(with: .memory, value: value)
+        }
+        //CPU
+//        _DebugCpuMonitor.sharedInstance()?.valueBlock = { [weak self] value in
+//            self?.cpuLabel?.update(with: .CPU, value: value)
+//        }
+        //FPS
+        WindowHelper.shared.fpsCallback = { [weak self] value in
+            self?.fpsLabel?.update(with: .FPS, value: Float(value))
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -213,24 +259,40 @@ class Bubble: UIView {
                 self?.initLabelEvent("❌", true)
                 self?.initLabelEvent("❌", false)
             }
-            else{
+            else {
                 guard let statusCode = statusCode else {return}
                 self?.initLabelEvent(statusCode, true)
                 self?.initLabelEvent(statusCode, false)
             }
             
+            //
             self?.networkNumber = (self?.networkNumber ?? 0) + 1
             if let networkNumber = self?.networkNumber {
                 self?.numberLabel?.text = String(networkNumber)
             }
+            
+            if self?.networkNumber == 0 {
+                self?.numberLabel?.isHidden = true
+            } else {
+                self?.numberLabel?.isHidden = false
+            }
         }
     }
     
+    
     @objc func deleteAllLogs_notification() {
         dispatch_main_async_safe { [weak self] in
+            
             self?.networkNumber = 0
+            
             if let networkNumber = self?.networkNumber {
                 self?.numberLabel?.text = String(networkNumber)
+            }
+            
+            if self?.networkNumber == 0 {
+                self?.numberLabel?.isHidden = true
+            } else {
+                self?.numberLabel?.isHidden = false
             }
         }
     }
@@ -279,6 +341,9 @@ class Bubble: UIView {
             
             if location.x > UIScreen.main.bounds.size.width / 2 {
                 finalX = Double(UIScreen.main.bounds.size.width) - Double(self.width/8*4.25)
+                numberLabel?.frame = CGRect(x:-10, y:-10, width:20, height:20)
+            } else {
+                numberLabel?.frame = CGRect(x:_width - 10, y:-10, width:20, height:20)
             }
             
             self.changeSideDisplay()
@@ -300,13 +365,15 @@ class Bubble: UIView {
                 finalY = Double(self.height/8*4.25) + Double(frameInset.top)
             }
             
+            //liman
+            CocoaDebugSettings.shared.bubbleFrameX = Float(finalX)
+            CocoaDebugSettings.shared.bubbleFrameY = Float(finalY)
+            
+            //
             UIView.animate(withDuration: durationAnimation * 5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 6, options: .allowUserInteraction, animations: { [weak self] in
                 self?.center = CGPoint(x: finalX, y: finalY)
                 self?.transform = CGAffineTransform.identity
-                }, completion: { _ in
-                    CocoaDebugSettings.shared.bubbleFrameX = Float(finalX)
-                    CocoaDebugSettings.shared.bubbleFrameY = Float(finalY)
-            })
+            }, completion:nil)
         }
     }
 }

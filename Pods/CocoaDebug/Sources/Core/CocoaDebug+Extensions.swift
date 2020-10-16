@@ -33,7 +33,7 @@ extension String {
             let arr = str.components(separatedBy: "=")
             if arr.count == 2 {
                 dictionary.updateValue(arr[1], forKey: arr[0])
-            }else{
+            } else {
                 return nil
             }
         }
@@ -180,7 +180,7 @@ extension String {
         let hex = trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int = UInt32()
         Scanner(string: hex).scanHexInt32(&int)
-        let a, r, g, b: UInt32
+        var a, r, g, b: UInt32
         switch hex.count {
         case 3: // RGB (12-bit)
             (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
@@ -211,7 +211,7 @@ extension NSObject {
     func dispatch_main_async_safe(callback: @escaping ()->Void ) {
         if Thread.isMainThread {
             callback()
-        }else{
+        } else {
             DispatchQueue.main.async( execute: {
                 callback()
             })
@@ -304,44 +304,37 @@ extension UIWindow {
 extension CocoaDebug {
     
     ///init
-    static func initializationMethod(serverURL: String? = nil, ignoredURLs: [String]? = nil, onlyURLs: [String]? = nil, tabBarControllers: [UIViewController]? = nil, emailToRecipients: [String]? = nil, emailCcRecipients: [String]? = nil, mainColor: String? = nil, protobufTransferMap: [String: [String]]? = nil)
+    static func initializationMethod(serverURL: String? = nil, ignoredURLs: [String]? = nil, onlyURLs: [String]? = nil, additionalViewController: UIViewController? = nil, emailToRecipients: [String]? = nil, emailCcRecipients: [String]? = nil, mainColor: String? = nil, protobufTransferMap: [String: [String]]? = nil)
     {
         if CocoaDebugSettings.shared.isRunning == true {return}
         
         CocoaDebugSettings.shared.isRunning = true
-        _NetworkHelper.shared()?.isRunningAutoLaunch = true
 
         
-        let disableCrashRecording = UserDefaults.standard.bool(forKey: "disableCrashRecording_CocoaDebug")
+        let enableCrashRecording = UserDefaults.standard.bool(forKey: "enableCrashRecording_CocoaDebug")
         let disableLogMonitoring = UserDefaults.standard.bool(forKey: "disableLogMonitoring_CocoaDebug")
         let disableNetworkMonitoring = UserDefaults.standard.bool(forKey: "disableNetworkMonitoring_CocoaDebug")
-        let enableWebViewMonitoring = UserDefaults.standard.bool(forKey: "enableWebViewMonitoring_CocoaDebug")
-        
-        
+        let enableWKWebViewMonitoring = UserDefaults.standard.bool(forKey: "enableWKWebViewMonitoring_CocoaDebug")
+
         if serverURL == nil {
             CocoaDebugSettings.shared.serverURL = ""
-        }else{
+        } else {
             CocoaDebugSettings.shared.serverURL = serverURL
-        }
-        if tabBarControllers == nil {
-            CocoaDebugSettings.shared.tabBarControllers = []
-        }else{
-            CocoaDebugSettings.shared.tabBarControllers = tabBarControllers
         }
         if onlyURLs == nil {
             CocoaDebugSettings.shared.onlyURLs = []
-        }else{
+        } else {
             CocoaDebugSettings.shared.onlyURLs = onlyURLs
         }
         if ignoredURLs == nil {
             CocoaDebugSettings.shared.ignoredURLs = []
-        }else{
+        } else {
             CocoaDebugSettings.shared.ignoredURLs = ignoredURLs
         }
         if CocoaDebugSettings.shared.firstIn == nil {//first launch
             CocoaDebugSettings.shared.firstIn = ""
             CocoaDebugSettings.shared.showBubbleAndWindow = true
-        }else{//not first launch
+        } else {//not first launch
             CocoaDebugSettings.shared.showBubbleAndWindow = CocoaDebugSettings.shared.showBubbleAndWindow
         }
         
@@ -349,12 +342,13 @@ extension CocoaDebug {
         CocoaDebugSettings.shared.logSearchWordDefault = nil
         CocoaDebugSettings.shared.logSearchWordColor = nil
         CocoaDebugSettings.shared.networkSearchWord = nil
-        CocoaDebugSettings.shared.disableCrashRecording = disableCrashRecording
-        CocoaDebugSettings.shared.enableWebViewMonitoring = enableWebViewMonitoring
+        CocoaDebugSettings.shared.enableCrashRecording = enableCrashRecording
+        CocoaDebugSettings.shared.enableWKWebViewMonitoring = enableWKWebViewMonitoring
         CocoaDebugSettings.shared.logMaxCount = CocoaDebug.logMaxCount
         CocoaDebugSettings.shared.protobufTransferMap = protobufTransferMap
-
-        let _ = _OCLogStoreManager.shared()
+        CocoaDebugSettings.shared.additionalViewController = additionalViewController
+        
+        var _ = _OCLogStoreManager.shared()
         CocoaDebugSettings.shared.responseShake = true
 //        CocoaDebugSettings.shared.responseShakeNetworkDetail = true
         
@@ -372,7 +366,7 @@ extension CocoaDebug {
         if disableLogMonitoring == true {
             _LogHelper.shared.enable = false
             _OCLogHelper.shared()?.enable = false
-        }else{
+        } else {
             _LogHelper.shared.enable = true
             _OCLogHelper.shared()?.enable = true
         }
@@ -380,7 +374,7 @@ extension CocoaDebug {
         //network
         if disableNetworkMonitoring == true {
             _NetworkHelper.shared().disable()
-        }else{
+        } else {
             _NetworkHelper.shared().enable()
         }
     }
@@ -388,7 +382,7 @@ extension CocoaDebug {
     ///deinit
     static func deinitializationMethod() {
         CocoaDebugSettings.shared.isRunning = false
-        _WindowHelper.shared.disable()
+        WindowHelper.shared.disable()
         _NetworkHelper.shared().disable()
         _LogHelper.shared.enable = false
         _OCLogHelper.shared()?.enable = false

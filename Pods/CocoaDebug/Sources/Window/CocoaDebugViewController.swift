@@ -30,11 +30,11 @@ class CocoaDebugViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        _WindowHelper.shared.displayedList = false
+        WindowHelper.shared.displayedList = false
     }
 
     func shouldReceive(point: CGPoint) -> Bool {
-        if _WindowHelper.shared.displayedList {
+        if WindowHelper.shared.displayedList {
             return true
         }
         return self.bubble.frame.contains(point)
@@ -45,10 +45,10 @@ class CocoaDebugViewController: UIViewController {
 extension CocoaDebugViewController: BubbleDelegate {
     
     func didTapBubble() {
-        _WindowHelper.shared.displayedList = true
+        WindowHelper.shared.displayedList = true
         let storyboard = UIStoryboard(name: "Manager", bundle: Bundle(for: CocoaDebug.self))
         guard let vc = storyboard.instantiateInitialViewController() else {return}
-        if #available(iOS 13, *) {vc.modalPresentationStyle = .fullScreen}
+        vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
     }
 }

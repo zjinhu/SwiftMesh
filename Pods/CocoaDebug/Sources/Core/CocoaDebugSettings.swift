@@ -18,7 +18,7 @@ import Foundation
         didSet {            
             if slowAnimations == false {
                 UIApplication.shared.windows.first?.layer.speed = 1;
-            }else{
+            } else {
                 UIApplication.shared.windows.first?.layer.speed = 0.1;
             }
         }
@@ -42,22 +42,22 @@ import Foundation
             UserDefaults.standard.synchronize()
         }
     }
-    @objc public var disableCrashRecording: Bool = false {
+    @objc public var enableCrashRecording: Bool = false {
         didSet {
-            UserDefaults.standard.set(disableCrashRecording, forKey: "disableCrashRecording_CocoaDebug")
+            UserDefaults.standard.set(enableCrashRecording, forKey: "enableCrashRecording_CocoaDebug")
             UserDefaults.standard.synchronize()
             
-            if disableCrashRecording == false {
+            if enableCrashRecording == true {
                 CrashLogger.shared.enable = true
-            }else{
+            } else {
                 CrashLogger.shared.enable = false
                 CrashStoreManager.shared.resetCrashs()
             }
         }
     }
-    @objc public var enableWebViewMonitoring: Bool = false {
+    @objc public var enableWKWebViewMonitoring: Bool = false {
         didSet {
-            UserDefaults.standard.set(enableWebViewMonitoring, forKey: "enableWebViewMonitoring_CocoaDebug")
+            UserDefaults.standard.set(enableWKWebViewMonitoring, forKey: "enableWKWebViewMonitoring_CocoaDebug")
             UserDefaults.standard.synchronize()
         }
     }
@@ -73,6 +73,24 @@ import Foundation
             UserDefaults.standard.synchronize()
         }
     }
+    @objc public var enableMemoryLeaksMonitoring_ViewController: Bool = false {
+        didSet {
+            UserDefaults.standard.set(enableMemoryLeaksMonitoring_ViewController, forKey: "enableMemoryLeaksMonitoring_UIViewController_CocoaDebug")
+            UserDefaults.standard.synchronize()
+        }
+    }
+    @objc public var enableMemoryLeaksMonitoring_View: Bool = false {
+        didSet {
+            UserDefaults.standard.set(enableMemoryLeaksMonitoring_View, forKey: "enableMemoryLeaksMonitoring_UIView_CocoaDebug")
+            UserDefaults.standard.synchronize()
+        }
+    }
+    @objc public var enableMemoryLeaksMonitoring_MemberVariables: Bool = false {
+        didSet {
+            UserDefaults.standard.set(enableMemoryLeaksMonitoring_MemberVariables, forKey: "enableMemoryLeaksMonitoring_MemberVariables_CocoaDebug")
+            UserDefaults.standard.synchronize()
+        }
+    }
     @objc public var visible: Bool = false {
         didSet {
             UserDefaults.standard.set(visible, forKey: "visible_CocoaDebug")
@@ -84,26 +102,26 @@ import Foundation
             UserDefaults.standard.set(showBubbleAndWindow, forKey: "showBubbleAndWindow_CocoaDebug")
             UserDefaults.standard.synchronize()
             
-            let x = _WindowHelper.shared.vc.bubble.frame.origin.x
-            let width = _WindowHelper.shared.vc.bubble.frame.size.width
+            let x = WindowHelper.shared.vc.bubble.frame.origin.x
+            let width = WindowHelper.shared.vc.bubble.frame.size.width
             
             if showBubbleAndWindow == true
             {
                 if x > UIScreen.main.bounds.size.width/2 {
-                    _WindowHelper.shared.vc.bubble.frame.origin.x = UIScreen.main.bounds.size.width - width/8*8.25
-                }else{
-                    _WindowHelper.shared.vc.bubble.frame.origin.x = -width + width/8*8.25
+                    WindowHelper.shared.vc.bubble.frame.origin.x = UIScreen.main.bounds.size.width - width/8*8.25
+                } else {
+                    WindowHelper.shared.vc.bubble.frame.origin.x = -width + width/8*8.25
                 }
-                _WindowHelper.shared.enable()
+                WindowHelper.shared.enable()
             }
             else
             {
                 if x > UIScreen.main.bounds.size.width/2 {
-                    _WindowHelper.shared.vc.bubble.frame.origin.x = UIScreen.main.bounds.size.width
-                }else{
-                    _WindowHelper.shared.vc.bubble.frame.origin.x = -width
+                    WindowHelper.shared.vc.bubble.frame.origin.x = UIScreen.main.bounds.size.width
+                } else {
+                    WindowHelper.shared.vc.bubble.frame.origin.x = -width
                 }
-                _WindowHelper.shared.disable()
+                WindowHelper.shared.disable()
             }
         }
     }
@@ -174,7 +192,7 @@ import Foundation
             _NetworkHelper.shared().mainColor = mainColor.hexColor
         }
     }
-    @objc public var tabBarControllers: [UIViewController]? = nil
+    @objc public var additionalViewController: UIViewController? = nil
     
     //share via email
     @objc public var emailToRecipients: [String]? = nil
@@ -211,8 +229,8 @@ import Foundation
         serverURL = UserDefaults.standard.string(forKey: "serverURL_CocoaDebug")
         visible = UserDefaults.standard.bool(forKey: "visible_CocoaDebug")
         showBubbleAndWindow = UserDefaults.standard.bool(forKey: "showBubbleAndWindow_CocoaDebug")
-        disableCrashRecording = UserDefaults.standard.bool(forKey: "disableCrashRecording_CocoaDebug")
-        enableWebViewMonitoring = UserDefaults.standard.bool(forKey: "enableWebViewMonitoring_CocoaDebug")
+        enableCrashRecording = UserDefaults.standard.bool(forKey: "enableCrashRecording_CocoaDebug")
+        enableWKWebViewMonitoring = UserDefaults.standard.bool(forKey: "enableWKWebViewMonitoring_CocoaDebug")
         disableLogMonitoring = UserDefaults.standard.bool(forKey: "disableLogMonitoring_CocoaDebug")
         disableNetworkMonitoring = UserDefaults.standard.bool(forKey: "disableNetworkMonitoring_CocoaDebug")
         tabBarSelectItem = UserDefaults.standard.integer(forKey: "tabBarSelectItem_CocoaDebug")
@@ -233,5 +251,10 @@ import Foundation
         
         //protobuf
         protobufTransferMap = _NetworkHelper.shared().protobufTransferMap
+        
+        //Memory
+        enableMemoryLeaksMonitoring_ViewController = UserDefaults.standard.bool(forKey: "enableMemoryLeaksMonitoring_UIViewController_CocoaDebug")
+        enableMemoryLeaksMonitoring_View = UserDefaults.standard.bool(forKey: "enableMemoryLeaksMonitoring_UIView_CocoaDebug")
+        enableMemoryLeaksMonitoring_MemberVariables = UserDefaults.standard.bool(forKey: "enableMemoryLeaksMonitoring_MemberVariables_CocoaDebug")
     }
 }

@@ -3,11 +3,11 @@
 //  AirPayCounter
 //
 //  Created by HuiCao on 2019/7/9.
-//  Copyright © 2019 Shopee. All rights reserved.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 #import "_GPBMessage+CocoaDebug.h"
-#import "_NSObject+CocoaDebug.h"
+#import "NSObject+CocoaDebug.h"
 #import <objc/runtime.h>
 #import <objc/message.h>
 #import "_GPBArray.h"

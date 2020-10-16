@@ -8,7 +8,7 @@
 
 #import "_ObjcLog.h"
 #import "_OCLogHelper.h"
-#import "_NSObject+CocoaDebug.h"
+#import "NSObject+CocoaDebug.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 
 @implementation _ObjcLog
@@ -17,17 +17,8 @@
            function:(const char *)function
                line:(NSUInteger)line
               color:(UIColor *)color
-   unicodeToChinese:(BOOL)unicodeToChinese
             message:(id)format, ...
 {
-    
-    //unicode转换为中文
-    if (format && [format isKindOfClass:[NSString class]] && unicodeToChinese) {
-        format = [NSString unicodeToChinese:format];
-    }
-    
-    
-    
     if (format)
     {
         va_list args;

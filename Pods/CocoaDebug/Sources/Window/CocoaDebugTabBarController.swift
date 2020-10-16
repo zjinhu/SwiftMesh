@@ -14,9 +14,7 @@ class CocoaDebugTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let window = UIApplication.shared.delegate?.window {
-            window?.endEditing(true)
-        }
+        UIApplication.shared.keyWindow?.endEditing(true)
         
         setChildControllers()
         
@@ -36,7 +34,7 @@ class CocoaDebugTabBarController: UITabBarController {
     }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        _WindowHelper.shared.displayedList = false
+        WindowHelper.shared.displayedList = false
     }
     
     //MARK: - private
@@ -58,7 +56,7 @@ class CocoaDebugTabBarController: UITabBarController {
         sandbox.tabBarItem.image = UIImage.init(named: "_icon_file_type_sandbox", in: Bundle.init(for: CocoaDebug.self), compatibleWith: nil)
         
         //3.
-        guard let tabBarControllers = CocoaDebugSettings.shared.tabBarControllers else {
+        guard let additionalViewController = CocoaDebugSettings.shared.additionalViewController else {
             self.viewControllers = [network, logs, sandbox, app]
             return
         }
@@ -66,30 +64,27 @@ class CocoaDebugTabBarController: UITabBarController {
         //4.添加额外的控制器
         var temp = [network, logs, sandbox, app]
         
-        for vc in tabBarControllers {
-            
-            let nav = UINavigationController.init(rootViewController: vc)
-            nav.navigationBar.barTintColor = "#1f2124".hexColor
-            
-            //****** 以下代码从NavigationController.swift复制 ******
-            nav.navigationBar.isTranslucent = false
-            
-            nav.navigationBar.tintColor = Color.mainGreen
-            nav.navigationBar.titleTextAttributes = [.font: UIFont.boldSystemFont(ofSize: 20),
-                                                     .foregroundColor: Color.mainGreen]
-            
-            let selector = #selector(CocoaDebugNavigationController.exit)
-            
-            
-            let image = UIImage(named: "_icon_file_type_close", in: Bundle(for: CocoaDebugNavigationController.self), compatibleWith: nil)
-            let leftItem = UIBarButtonItem(image: image,
-                                             style: .done, target: self, action: selector)
-            leftItem.tintColor = Color.mainGreen
-            nav.topViewController?.navigationItem.leftBarButtonItem = leftItem
-            //****** 以上代码从NavigationController.swift复制 ******
-            
-            temp.append(nav)
-        }
+        let nav = UINavigationController.init(rootViewController: additionalViewController)
+        nav.navigationBar.barTintColor = "#1f2124".hexColor
+        
+        //****** 以下代码从NavigationController.swift复制 ******
+        nav.navigationBar.isTranslucent = false
+        
+        nav.navigationBar.tintColor = Color.mainGreen
+        nav.navigationBar.titleTextAttributes = [.font: UIFont.boldSystemFont(ofSize: 20),
+                                                 .foregroundColor: Color.mainGreen]
+        
+        let selector = #selector(CocoaDebugNavigationController.exit)
+        
+        
+        let image = UIImage(named: "_icon_file_type_close", in: Bundle(for: CocoaDebugNavigationController.self), compatibleWith: nil)
+        let leftItem = UIBarButtonItem(image: image,
+                                         style: .done, target: self, action: selector)
+        leftItem.tintColor = Color.mainGreen
+        nav.topViewController?.navigationItem.leftBarButtonItem = leftItem
+        //****** 以上代码从NavigationController.swift复制 ******
+        
+        temp.append(nav)
         
         self.viewControllers = temp
     }
@@ -100,11 +95,11 @@ class CocoaDebugTabBarController: UITabBarController {
     }
     
     //MARK: - show more than 5 tabs by CocoaDebug
-    override var traitCollection: UITraitCollection {
-        let realTraits = super.traitCollection
-        let lieTrait = UITraitCollection.init(horizontalSizeClass: .regular)
-        return UITraitCollection(traitsFrom: [realTraits, lieTrait])
-    }
+//    override var traitCollection: UITraitCollection {
+//        var realTraits = super.traitCollection
+//        var lieTrait = UITraitCollection.init(horizontalSizeClass: .regular)
+//        return UITraitCollection(traitsFrom: [realTraits, lieTrait])
+//    }
 }
 
 //MARK: - UITabBarDelegate

@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "_HttpDatasource.h"
 
 @interface _NetworkHelper : NSObject
 
@@ -34,7 +33,6 @@
 
 
 @property (nonatomic, assign) BOOL isNetworkEnable;
-@property (nonatomic, assign) BOOL isRunningAutoLaunch;
 
 
 /**

@@ -10,7 +10,7 @@ import Foundation
 
 class CrashStoreManager {
     
-    lazy var crashArray: [_CrashModel] = [_CrashModel]()
+    var crashArray: [_CrashModel] = [_CrashModel]()
     
     static let shared = CrashStoreManager()
     private init() {
@@ -38,18 +38,28 @@ class CrashStoreManager {
     }
     
     func resetCrashs() {
-        self.crashArray.removeAll()
-        UserDefaults.standard.removeObject(forKey: "crashArchive_CocoaDebug")
-        UserDefaults.standard.removeObject(forKey: "crashCount_CocoaDebug")
-        UserDefaults.standard.synchronize()
+        if self.crashArray.count > 0 {
+            self.crashArray.removeAll()
+            UserDefaults.standard.removeObject(forKey: "crashArchive_CocoaDebug")
+            UserDefaults.standard.removeObject(forKey: "crashCount_CocoaDebug")
+            UserDefaults.standard.synchronize()
+        }
     }
     
     //MARK: - private
     private func archiveCrashs(_ crashs: [_CrashModel]) {
-        let dataArchive = NSKeyedArchiver.archivedData(withRootObject: crashs)
-        UserDefaults.standard.set(dataArchive, forKey: "crashArchive_CocoaDebug")
-        UserDefaults.standard.set(crashs.count, forKey: "crashCount_CocoaDebug")
-        UserDefaults.standard.synchronize()
+        do {
+            var dataArchive: Data
+            if #available(iOS 11.0, *) {
+                dataArchive = try NSKeyedArchiver.archivedData(withRootObject: crashs, requiringSecureCoding: false)
+            } else {
+                // Fallback on earlier versions
+                dataArchive = NSKeyedArchiver.archivedData(withRootObject: crashs)
+            }
+            UserDefaults.standard.set(dataArchive, forKey: "crashArchive_CocoaDebug")
+            UserDefaults.standard.set(crashs.count, forKey: "crashCount_CocoaDebug")
+            UserDefaults.standard.synchronize()
+        } catch {}
     }
     
     private func getCrashs() -> [_CrashModel] {

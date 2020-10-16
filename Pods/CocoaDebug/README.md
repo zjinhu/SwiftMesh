@@ -12,7 +12,7 @@
 
 ## Screenshot
 
-<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/001.png" width="200">
+<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/01.png" width="200">
 <img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/02.png" width="200">
 <img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/03.png" width="200">
 <img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/04.png" width="200">
@@ -31,6 +31,14 @@
 
 - [x] Search logs by keyword.
 
+- [x] Long press the black bubble to clean all network logs.
+
+- [x] Detect memory leaks.
+
+- [x] Real-time display of memory usage.
+
+- [x] Real-time display of CPU and FPS.
+
 - [x] List crash errors.
 
 - [x] List all `print()` and `NSLog()` messages which have been written by developer in Xcode.
@@ -42,10 +50,6 @@
 - [x] List all sandbox folders and files, supporting to preview and edit.
 
 - [x] List HTML logs, including `console.log()`,`console.debug()`,`console.warn()`,`console.error()`,`console. info()`. (support `WKWebView` ~~and `UIWebView`~~). ***UIWebView Deprecated***
-
-- [x] ~~Application memory usage and *FPS*.~~ ***Deprecated***
-
-- [x] ~~Long press the black bubble to show `UIDebuggingInformationOverlay`. (Apple's Private API, support iOS 10/11/12)~~ ***Private API Deprecated***
 
 ## Installation
 
@@ -64,69 +68,41 @@ end
 github "CocoaDebug/CocoaDebug"
 ```
 
+### *Framework*
+
+Drag [CocoaDebug.framework](https://github.com/CocoaDebug/CocoaDebug/raw/master/CocoaDebug.framework.zip) into project and set `Embed Without Signing` or `Embed & Sign` in Xcode.
+
+<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/002.png" width="600">
+
 > WARNING: Don't submit `.ipa` to AppStore which has been linked with the `CocoaDebug.framework`. This [Integration Guide](https://github.com/CocoaDebug/CocoaDebug/wiki/Integration-Guide) outline a way to use build configurations to isolate linking the framework to `Debug` builds only.
 
 ## Usage
 
-  Launch application and debug with `CocoaDebug `.
-  
-  ***NOTE: If auto launch failed, Please enable manually by `CocoaDebug.enable()` or `[CocoaDebug enable]`.***
+- Don't need to do anything. `CocoaDebug` will start automatically.
 
-### *Swift (Enable CocoaDebug manually)*
-	
-    #if DEBUG
-        import CocoaDebug
-    #endif
-	
-    #if DEBUG
-        CocoaDebug.enable()
-    #endif
-
-### *Objective-C (Enable CocoaDebug manually)*
-	
-    #ifdef DEBUG
-        @import CocoaDebug;
-    #endif
-	
-    #ifdef DEBUG
-        [CocoaDebug enable];
-    #endif
-
-### *More Advanced Usage*
-
-    #ifdef DEBUG
-        [CocoaDebugTool logWithString:string];
-        
-        NSString *prettyJSON = [CocoaDebugTool logWithJsonData:data];
-    
-        NSString *prettyJSON = [CocoaDebugTool logWithProtobufData:data className:@"protobuf_className"];
-    #endif
-
-> Please check `Example_Swift.xcodeproj` and `Example_Objc.xcodeproj` for more advanced usage.
-
-> NOTE: Be careful with `Other Swift Flags` & `Preprocessor Macros` when using Swift & Objective-C in one project. You can refer to [here](https://stackoverflow.com/questions/24111854/in-absence-of-preprocessor-macros-is-there-a-way-to-define-practical-scheme-spe).  
+- Check [Example_Objc](https://github.com/CocoaDebug/CocoaDebug/tree/master/Example_Objc) and [Example_Swift](https://github.com/CocoaDebug/CocoaDebug/tree/master/Example_Swift) for more advanced usage.
 
 ## Parameters
 
 When you initialize CocoaDebug, you can customize the following parameter values before `CocoaDebug.enable()`.
 
-- `serverURL` - If the crawled URLs contain server URL ,set these URLs bold font to be marked. not mark when this value is nil. default value is **nil**.
+- `serverURL` - If the captured URLs contain server URL, CocoaDebug set server URL bold font to be marked. Not mark when this value is nil. Default value is **nil**.
 
-- `ignoredURLs` - Set the URLs which should not crawled, ignoring case, crawl all URLs when the value is nil. default value is **nil**.
+- `ignoredURLs` - Set the URLs which should not been captured, CocoaDebug capture all URLs when the value is nil. Default value is **nil**.
 
-- `onlyURLs` - Set the URLs which are only crawled, ignoring case, crawl all URLs when the value is nil. default value is **nil**.
+- `onlyURLs` - Set the URLs which are only been captured, CocoaDebug capture all URLs when the value is nil. Default value is **nil**.
 
-- `tabBarControllers` - Set controllers to be added as child controllers of UITabBarController. default value is **nil**.
+- `additionalViewController` - Add an additional UIViewController as child controller of CocoaDebug's main UITabBarController. Default value is **nil**.
 
-- `logMaxCount` - The maximum count of logs which CocoaDebug display. default value is **1000**.
+- `logMaxCount` - The maximum count of logs which CocoaDebug display. Default value is **1000**.
 
-- `emailToRecipients` - Set the initial recipients to include in the email’s “To” field when share via email. default value is **nil**.
+- `emailToRecipients` - Set the initial recipients to include in the email’s “To” field when share via email. Default value is **nil**.
 
-- `emailCcRecipients` - Set the initial recipients to include in the email’s “Cc” field when share via email. default value is **nil**.
+- `emailCcRecipients` - Set the initial recipients to include in the email’s “Cc” field when share via email. Default value is **nil**.
 
-- `mainColor` - Set the main color with hexadecimal format. default value is **#42d459**.
+- `mainColor` - Set CocoaDebug's main color with hexadecimal format. Default value is **#42d459**.
 
-- `protobufTransferMap` - Protobuf data transfer to JSON map. default value is **nil**.
+- `protobufTransferMap` - Protobuf data transfer to JSON map. Default value is **nil**.
 
 ## TODO
 

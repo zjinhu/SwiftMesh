@@ -17,7 +17,7 @@ import UIKit
 
 class JsonViewController: UIViewController {
     
-    @IBOutlet weak var textView: UITextView!
+    @IBOutlet weak var textView: CustomTextView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var naviItem: UINavigationItem!
     
@@ -49,7 +49,7 @@ class JsonViewController: UIViewController {
         if let _ = content.stringToDictionary() {
             //JSON格式
             detailModel?.requestSerializer = RequestSerializer.JSON
-        }else{
+        } else {
             //Form格式
             detailModel?.requestSerializer = RequestSerializer.form
             
@@ -121,35 +121,5 @@ class JsonViewController: UIViewController {
                 imageView.image = image
             }
         }
-    }
-    
-    //MARK: - alert
-    func showAlert() {
-        let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .alert)
-        let cancelAction = UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil)
-        let okAction = UIAlertAction.init(title: "Copy All", style: .default) { [weak self] _ in
-            UIPasteboard.general.string = self?.textView.text
-        }
-        
-        alert.addAction(cancelAction)
-        alert.addAction(okAction)
-        if #available(iOS 13, *) {alert.modalPresentationStyle = .fullScreen}
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    
-    
-    
-    //MARK: - override
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(selectAll(_:)) {
-            self.showAlert()
-            return true
-        }
-        return super.canPerformAction(action, withSender: sender)
-    }
-    
-    override func selectAll(_ sender: Any?) {
-        textView.selectAll(sender)
     }
 }

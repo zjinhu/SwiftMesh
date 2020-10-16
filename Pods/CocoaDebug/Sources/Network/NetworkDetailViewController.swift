@@ -19,9 +19,9 @@ class NetworkDetailViewController: UITableViewController, MFMailComposeViewContr
 
     var httpModel: _HttpModel?
     
-    lazy var detailModels: [NetworkDetailModel] = [NetworkDetailModel]()
+    var detailModels: [NetworkDetailModel] = [NetworkDetailModel]()
     
-    lazy var requestDictionary: [String: Any]? = Dictionary()
+    var requestDictionary: [String: Any]? = Dictionary()
     
     var headerCell: NetworkCell?
     
@@ -118,7 +118,7 @@ class NetworkDetailViewController: UITableViewController, MFMailComposeViewContr
             detailModels.append(model_8)
             detailModels.append(model_9)
         }
-        else{
+        else {
             //非图片:
             //1.主要
             let model_1 = NetworkDetailModel.init(title: "URL", content: "https://github.com/CocoaDebug/CocoaDebug", url: httpModel?.url.absoluteString, httpModel: httpModel)
@@ -170,7 +170,7 @@ class NetworkDetailViewController: UITableViewController, MFMailComposeViewContr
         if let _ = requestData.dataToDictionary() {
             //JSON格式
             httpModel?.requestSerializer = RequestSerializer.JSON
-        }else{
+        } else {
             //Form格式
             httpModel?.requestSerializer = RequestSerializer.form
         }
@@ -226,7 +226,7 @@ class NetworkDetailViewController: UITableViewController, MFMailComposeViewContr
             if let startTime = httpModel.startTime {
                 if (startTime as NSString).doubleValue == 0 {
                     time = _OCLoggerFormat.formatDate(Date())
-                }else{
+                } else {
                     time = _OCLoggerFormat.formatDate(NSDate(timeIntervalSince1970: (startTime as NSString).doubleValue) as Date)
                 }
             }
@@ -260,9 +260,8 @@ class NetworkDetailViewController: UITableViewController, MFMailComposeViewContr
 //                    CocoaDebugSettings.shared.responseShakeNetworkDetail = true
                 }
                 alert.addAction(action)
-                if #available(iOS 13, *) {alert.modalPresentationStyle = .fullScreen}
                 self.present(alert, animated: true, completion: nil)
-            }else{
+            } else {
                 //copy to clipboard
 //                CocoaDebugSettings.shared.responseShakeNetworkDetail = true
             }
@@ -366,7 +365,6 @@ class NetworkDetailViewController: UITableViewController, MFMailComposeViewContr
         // create an action
         let firstAction: UIAlertAction = UIAlertAction(title: "share via email", style: .default) { [weak self] action -> Void in
             if let mailComposeViewController = self?.configureMailComposer() {
-                if #available(iOS 13, *) {mailComposeViewController.modalPresentationStyle = .fullScreen}
                 self?.present(mailComposeViewController, animated: true, completion: nil)
             }
         }
@@ -381,12 +379,11 @@ class NetworkDetailViewController: UITableViewController, MFMailComposeViewContr
         }
         
         // add actions
-        actionSheetController.addAction(firstAction)
         actionSheetController.addAction(secondAction)
+        actionSheetController.addAction(firstAction)
         actionSheetController.addAction(cancelAction)
         
         // present an actionSheet...
-        if #available(iOS 13, *) {actionSheetController.modalPresentationStyle = .fullScreen}
         present(actionSheetController, animated: true, completion: nil)
     }
     
@@ -397,48 +394,6 @@ class NetworkDetailViewController: UITableViewController, MFMailComposeViewContr
 //
 //        }
 //    }
-    
-    
-    //MARK: - alert
-    func showAlert() {
-        let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .alert)
-        let cancelAction = UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil)
-        let okAction = UIAlertAction.init(title: "Copy All", style: .default) { [weak self] _ in
-            UIPasteboard.general.string = self?.headerCell?.requestUrlTextView.text
-        }
-        
-        alert.addAction(cancelAction)
-        alert.addAction(okAction)
-        if #available(iOS 13, *) {alert.modalPresentationStyle = .fullScreen}
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    func showCellAlert(contentTextView: UITextView) {
-        let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .alert)
-        let cancelAction = UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil)
-        let okAction = UIAlertAction.init(title: "Copy All", style: .default) { _ in
-            UIPasteboard.general.string = contentTextView.text
-        }
-        
-        alert.addAction(cancelAction)
-        alert.addAction(okAction)
-        if #available(iOS 13, *) {alert.modalPresentationStyle = .fullScreen}
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    
-    //MARK: - override
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(selectAll(_:)) {
-            self.showAlert()
-            return true
-        }
-        return super.canPerformAction(action, withSender: sender)
-    }
-    
-    override func selectAll(_ sender: Any?) {
-        headerCell?.requestUrlTextView.selectAll(sender)
-    }
 }
 
 //MARK: - UITableViewDataSource
@@ -458,10 +413,6 @@ extension NetworkDetailViewController {
             let vc = JsonViewController.instanceFromStoryBoard()
             vc.detailModel = detailModel
             self?.navigationController?.pushViewController(vc, animated: true)
-        }
-        
-        cell.showCellAlert = { [weak self] in
-            self?.showCellAlert(contentTextView: cell.contentTextView)
         }
         
         return cell
@@ -523,7 +474,7 @@ extension NetworkDetailViewController {
                         // Fallback on earlier versions
                         height = content_.height(with: UIFont.boldSystemFont(ofSize: 13), constraintToWidth: (UIScreen.main.bounds.size.width - 92))
                     }
-                }else{
+                } else {
                     //计算NSString高度
                     if #available(iOS 8.2, *) {
                         height = content_.height(with: UIFont.systemFont(ofSize: 13, weight: .regular), constraintToWidth: (UIScreen.main.bounds.size.width - 92))
@@ -552,9 +503,8 @@ extension NetworkDetailViewController {
 //                    CocoaDebugSettings.shared.responseShakeNetworkDetail = true
                 })
                 alert.addAction(action)
-                if #available(iOS 13, *) {alert.modalPresentationStyle = .fullScreen}
                 self.present(alert, animated: true, completion: nil)
-            }else{
+            } else {
 //                CocoaDebugSettings.shared.responseShakeNetworkDetail = true
             }
         }
