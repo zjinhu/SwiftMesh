@@ -1,24 +1,16 @@
 PODS:
-  - Alamofire (5.2.2)
-  - CocoaDebug (1.4.8):
-    - FBRetainCycleDetector
-  - FBRetainCycleDetector (0.1.4)
+  - Alamofire (5.3.0)
 
 DEPENDENCIES:
   - Alamofire
-  - CocoaDebug
 
 SPEC REPOS:
-  trunk:
+  https://github.com/CocoaPods/Specs.git:
     - Alamofire
-    - CocoaDebug
-    - FBRetainCycleDetector
 
 SPEC CHECKSUMS:
-  Alamofire: 814429acc853c6c54ff123fc3d2ef66803823ce0
-  CocoaDebug: 438fed049090d61c777d464eb2771ca87e1430ed
-  FBRetainCycleDetector: 46f8179bbb1c587deee3ea838a1a3ee02acf5015
+  Alamofire: 2c792affbdc2f18016e08fdbcacd60aebe1ba593
 
-PODFILE CHECKSUM: 511c21c1ab7fe3234e3eb710b02a57b00c85bcb1
+PODFILE CHECKSUM: f7017f8552f55f2e532e3b9a53c43e8d7fec17de
 
 COCOAPODS: 1.10.0.rc.1
