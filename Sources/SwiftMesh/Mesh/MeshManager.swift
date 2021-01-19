@@ -130,6 +130,10 @@ extension MeshManager{
         
         return AF.request(url, method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads).responseJSON { (response) in
             
+            guard let dict = response.value else { return }
+
+            config.responseResult = dict
+            
             config.response = response
             
             guard let json = response.data else {

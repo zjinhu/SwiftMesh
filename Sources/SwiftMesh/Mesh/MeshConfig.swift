@@ -43,6 +43,8 @@ public class MeshConfig {
     //服务端返回参数 定义错误码 错误信息 或者 正确信息
     public var code : Int?
     public var mssage : String?
+    //服务端返回解析结果,Array或者Dic
+    public var responseResult : Any?
     ///请求成功返回的数据 用 codable 解析
     public var responseData : Data?
     /// AF请求下来的完整response，可自行处理

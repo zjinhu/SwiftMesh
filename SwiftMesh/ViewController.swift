@@ -35,8 +35,8 @@ class ViewController: UIViewController {
     
     class func setHeader() {
 //        MeshManager.shared.canLogging = true
-        MeshManager.shared.setGlobalHeaders(["aaa":"bbb"])
-        MeshManager.shared.setDefaultParameters(["String" : "Any","a":"1","b":"2"])
+//        MeshManager.shared.setGlobalHeaders(["aaa":"bbb"])
+//        MeshManager.shared.setDefaultParameters(["String" : "Any","a":"1","b":"2"])
     }
     
     
@@ -49,10 +49,22 @@ class ViewController: UIViewController {
 //            print("\(String(describing: model))")
 //        }
         
-        let a = MeshRequest.get("http://t.weather.itboy.net/api/weather/city/101030100", modelType: ResultModel.self, modelKeyPath: "cityInfo") { (model) in
-            print("22222\(String(describing: model))")
-        }
+//        let a = MeshRequest.get("http://t.weather.itboy.net/api/weather/city/101030100", modelType: ResultModel.self, modelKeyPath: "cityInfo") { (model) in
+//            print("22222\(String(describing: model))")
+//        }
 //        a?.cancel()
+        
+        MeshManager.shared.requestWithConfig { (config) in
+            config.URLString = "https://timor.tech/api/holiday/year/2021/"
+            config.requestMethod = .get
+        } success: { (config) in
+
+            let dic : [String: Any] = config.responseResult as! [String : Any]
+            print("\(dic["holiday"])")
+            
+        } failure: { (_) in
+            print("error getHoliday")
+        }
     }
 
 
