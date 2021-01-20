@@ -129,23 +129,18 @@ extension MeshManager{
         changeConfig(config)
         
         return AF.request(url, method: config.requestMethod, parameters: config.parameters, encoding: config.requestEncoding, headers: config.addHeads).responseJSON { (response) in
-            
-            guard let dict = response.value else { return }
-
-            config.responseResult = dict
-            
+//            guard let dict = response.value else { return }
+//            config.responseResult = dict
             config.response = response
+            ///打印输出
+            self.meshLog(config, response: response)
             
-            guard let json = response.data else {
+            guard let _ = response.data else {
                 config.code = RequestCode.errorResponse.rawValue
                 failure?(config)
                 return
             }
-            ///打印输出
-            self.meshLog(config, response: response)
-            ///配置信息赋值用于解析
-            config.responseData = json
-            
+
             switch response.result {
             case .success:
                 //可添加统一解析

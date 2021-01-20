@@ -74,7 +74,7 @@ public class MeshRequest{
                 
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
-                guard let data = config.responseData, let model = try? decoder.decode(modelType.self, from: data, keyPath: keypath) else {
+                guard let data = config.response?.data, let model = try? decoder.decode(modelType.self, from: data, keyPath: keypath) else {
                     callBack?(nil)
                     return
                 }
@@ -84,7 +84,7 @@ public class MeshRequest{
             }else{
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
-                guard let data = config.responseData, let model = try? decoder.decode(modelType.self, from: data) else {
+                guard let data = config.response?.data, let model = try? decoder.decode(modelType.self, from: data) else {
                     callBack?(nil)
                     return
                 }
