@@ -4,14 +4,37 @@
 ### MeshManager
 单例。
 其中包括：
-* 获取网络状态    —isReachableWiFi、isReachableWWAN
+* 获取网络状态    —isReachableWiFi、isReachableCellular
+
 * 是否联网      —isReachable
+
 * 设置默认参数     —setDefaultParameters
+
 * 默认header     —setGlobalHeaders
+
 * 是否打印日志     —canLogging
+
 * 取消/清空请求     -cancelRequest/cancelAllRequest
+
 * 上传/下载/普通请求   - - 所有请求都通过配置文件方式传递参数以及请求结果，通过闭包设置配置文件的属性即可，详情参看配置文件注释，用法参照`MeshRequest`。
+
+  
+
+  请求用例
+
+  ```swift
+      MeshManager.shared.requestWithConfig { (config) in
+        config.URLString = "https://timor.tech/api/holiday/year/2021/"
+        config.requestMethod = .get
+      } success: { (config) in
+        let dic : [String: Any] = config.response?.value as! [String : Any]
+        print("\(dic["holiday"])")
+      } failure: { (_) in
+        print("error getHoliday")
+      }
+  ```
 #### MeshConfig
+
 网络请求的配置文件，用于设置请求超时时间、请求方式，参数，header，API地址，上传用的表单等等，以及请求完成回调回来的response都在里边。
 详情请看注释！
 ### MeshRequest
@@ -33,3 +56,8 @@
 
 ### 手动导入
 拖入代码即可
+
+### SwiftPM
+
+https://github.com/jackiehu/SwiftMesh
+
