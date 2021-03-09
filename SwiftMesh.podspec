@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SwiftMesh'
-  s.version          = '1.6.1'
+  s.version          = '1.6.5'
   s.summary          = '网络请求组件.'
  
   s.description      = <<-DESC
