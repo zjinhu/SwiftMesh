@@ -29,7 +29,12 @@ public class MeshManager{
     private var globalHeaders: HTTPHeaders?
     private var defaultParameters: [String: Any]?
     private let networkManager = NetworkReachabilityManager()
-    
+    ///调用此方法可以防止网络请求被抓包,请在适当的位置调用,比如 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool 
+    public func disableHttpsProxy(){
+        let sessionConfig = URLSessionConfiguration.af.default
+        let proxyDict = [AnyHashable : Any]()
+        sessionConfig.connectionProxyDictionary = proxyDict // 主要是这一行
+    }
     // MARK: 设置全局 headers
     /// 设置全局 headers
     /// - Parameter headers:全局 headers

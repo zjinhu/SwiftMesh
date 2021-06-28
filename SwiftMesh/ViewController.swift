@@ -44,27 +44,28 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         MeshManager.shared.canLogging = true
         // Do any additional setup after loading the view.
-
+        MeshManager.shared.disableHttpsProxy()
+        
         MeshRequest.get("https://jsonplaceholder.typicode.com/posts", modelType: [BaseModel].self) { (model) in
             print("\(String(describing: model))")
         }
         
-        let a = MeshRequest.get("http://t.weather.itboy.net/api/weather/city/101030100", modelType: ResultModel.self, modelKeyPath: "cityInfo") { (model) in
-            print("22222\(String(describing: model))")
-        }
+//        let a = MeshRequest.get("http://t.weather.itboy.net/api/weather/city/101030100", modelType: ResultModel.self, modelKeyPath: "cityInfo") { (model) in
+//            print("22222\(String(describing: model))")
+//        }
 //        a?.cancel()
         
-        MeshManager.shared.requestWithConfig { (config) in
-            config.URLString = "https://timor.tech/api/holiday/year/2021/"
-            config.requestMethod = .get
-        } success: { (config) in
-
-            let dic : [String: Any] = config.response?.value as! [String : Any]
-            print("\(dic["holiday"])")
-            
-        } failure: { (_) in
-            print("error getHoliday")
-        }
+//        MeshManager.shared.requestWithConfig { (config) in
+//            config.URLString = "https://timor.tech/api/holiday/year/2021/"
+//            config.requestMethod = .get
+//        } success: { (config) in
+//
+//            let dic : [String: Any] = config.response?.value as! [String : Any]
+//            print("\(dic["holiday"])")
+//
+//        } failure: { (_) in
+//            print("error getHoliday")
+//        }
     }
 
 
