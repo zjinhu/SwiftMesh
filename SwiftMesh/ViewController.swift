@@ -30,13 +30,6 @@ struct ResultModel: Codable {
     let updateTime: String
 }
 
-struct CodeModel: Codable {
-    let bbbb: MeshCodable
-    let iiii: MeshCodable
-    let dddd: MeshCodable
-    let ssss: MeshCodable
-}
-
 class ViewController: UIViewController {
 
     
@@ -45,22 +38,6 @@ class ViewController: UIViewController {
 //        MeshManager.shared.setGlobalHeaders(["aaa":"bbb"])
 //        MeshManager.shared.setDefaultParameters(["String" : "Any","a":"1","b":"2"])
     }
-    
-    let json = #"""
-         {
-             "bbbb": true,
-             "iiii": 1,
-             "dddd": -3.14159265358979323846,
-             "ssss": "string",
-             "array": [1, 2.1, "3", true],
-             "snake_case": "convertFromSnakeCase",
-             "date": "date",
-             "nested": "{\"alpha\": \"alpha\", \"b\": 1, \"c\": 2}",
-             "data": "",
-             "url": null,
-             "dict": {"hello": 2}
-         }
-    """#.data(using: .utf8)!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,14 +65,7 @@ class ViewController: UIViewController {
         } failure: { (_) in
             print("error getHoliday")
         }
-        
-        
-        let decoder = JSONDecoder()
-        let product = try? decoder.decode(CodeModel.self, from: json)
 
-        
-        get(dd: product!.dddd.doubleValue, ss: product!.ssss.stringValue)
-        print("\(String(describing: product))")
     }
 
     func get(dd: Double, ss: String){

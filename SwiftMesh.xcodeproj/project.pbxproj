@@ -14,7 +14,6 @@
 		8147205F23B494A600F95566 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8147205D23B494A600F95566 /* Main.storyboard */; };
 		8147206123B494A700F95566 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8147206023B494A700F95566 /* Assets.xcassets */; };
 		8147206423B494A700F95566 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8147206223B494A700F95566 /* LaunchScreen.storyboard */; };
-		81A14E7226D8C7A900604B41 /* MeshCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A14E7126D8C7A900604B41 /* MeshCodable.swift */; };
 		81BDE3382546BBEB00F8130D /* MeshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BDE3342546BBEB00F8130D /* MeshManager.swift */; };
 		81BDE3392546BBEB00F8130D /* MeshConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BDE3352546BBEB00F8130D /* MeshConfig.swift */; };
 		81BDE33A2546BBEB00F8130D /* MeshRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BDE3372546BBEB00F8130D /* MeshRequest.swift */; };
@@ -29,7 +28,6 @@
 		8147206023B494A700F95566 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8147206323B494A700F95566 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8147206523B494A700F95566 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		81A14E7126D8C7A900604B41 /* MeshCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshCodable.swift; sourceTree = "<group>"; };
 		81BDE3342546BBEB00F8130D /* MeshManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshManager.swift; sourceTree = "<group>"; };
 		81BDE3352546BBEB00F8130D /* MeshConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshConfig.swift; sourceTree = "<group>"; };
 		81BDE3372546BBEB00F8130D /* MeshRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshRequest.swift; sourceTree = "<group>"; };
@@ -100,18 +98,9 @@
 			path = SwiftMesh;
 			sourceTree = "<group>";
 		};
-		81A14E7026D8C77700604B41 /* Codable */ = {
-			isa = PBXGroup;
-			children = (
-				81A14E7126D8C7A900604B41 /* MeshCodable.swift */,
-			);
-			path = Codable;
-			sourceTree = "<group>";
-		};
 		81BDE3322546BBEB00F8130D /* SwiftMesh */ = {
 			isa = PBXGroup;
 			children = (
-				81A14E7026D8C77700604B41 /* Codable */,
 				81BDE3332546BBEB00F8130D /* Mesh */,
 				81BDE3362546BBEB00F8130D /* Request */,
 			);
@@ -256,7 +245,6 @@
 				81BDE33A2546BBEB00F8130D /* MeshRequest.swift in Sources */,
 				8147205C23B494A600F95566 /* ViewController.swift in Sources */,
 				8147205823B494A600F95566 /* AppDelegate.swift in Sources */,
-				81A14E7226D8C7A900604B41 /* MeshCodable.swift in Sources */,
 				8147205A23B494A600F95566 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
