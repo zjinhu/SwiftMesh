@@ -143,7 +143,8 @@ extension MeshManager{
                           parameters: config.parameters,
                           encoding: config.requestEncoding,
                           headers: config.addHeads,
-                          requestModifier: { request in request.timeoutInterval = config.timeout}).responseJSON { (response) in
+                          requestModifier: { request in request.timeoutInterval = config.timeout}
+        ).responseJSON { (response) in
             //            guard let dict = response.value else { return }
             //            config.responseResult = dict
             config.response = response
@@ -268,7 +269,8 @@ extension MeshManager{
         }
         
         return AF.download(resumingWith: resumeData,
-                           to: config.destination).downloadProgress(closure: { (progr) in
+                           to: config.destination
+        ).downloadProgress(closure: { (progr) in
             
             progress?(progr)
             
@@ -439,7 +441,8 @@ extension MeshManager{
                          to: url,
                          method: config.requestMethod,
                          headers: config.addHeads,
-                         requestModifier: { request in request.timeoutInterval = config.timeout}).response { (response) in
+                         requestModifier: { request in request.timeoutInterval = config.timeout}
+        ).response { (response) in
             
             switch response.result{
             case .success( _):
