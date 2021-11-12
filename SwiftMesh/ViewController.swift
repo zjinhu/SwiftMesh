@@ -60,7 +60,7 @@ class ViewController: UIViewController {
         } success: { (config) in
 
             let dic : [String: Any] = config.response?.value as! [String : Any]
-            print("\(dic["holiday"])")
+            print("\(String(describing: dic["holiday"]))")
 
         } failure: { (_) in
             print("error getHoliday")

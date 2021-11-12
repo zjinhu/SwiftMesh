@@ -1,6 +1,0 @@
-framework module Pods_SwiftMesh {
-  umbrella header "Pods-SwiftMesh-umbrella.h"
-
-  export *
-  module * { export * }
-}
