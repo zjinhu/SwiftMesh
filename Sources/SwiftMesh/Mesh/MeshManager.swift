@@ -18,6 +18,8 @@ public enum NetworkStatus {
 public class MeshManager{
     //单例
     public static let shared = MeshManager()
+    ///保证单例调用
+    private init(){ }
     
     public typealias RequestConfig = (_ config: MeshConfig) -> Void
     public typealias RequestSuccess = (_ config: MeshConfig) -> Void
