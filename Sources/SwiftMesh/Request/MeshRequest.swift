@@ -23,11 +23,11 @@ public class MeshRequest{
     ///   - callBack: 返回model实例
     /// - Returns: 请求
     @discardableResult
-    public class func get<T: Codable>(_ url: String,
-                                      parameters: [String: Any] = [:],
-                                      modelType: T.Type,
-                                      modelKeyPath: String? = nil,
-                                      callBack: requestCallBack<T>?) -> DataRequest? {
+    public static func get<T: Codable>(_ url: String,
+                                       parameters: [String: Any] = [:],
+                                       modelType: T.Type,
+                                       modelKeyPath: String? = nil,
+                                       callBack: requestCallBack<T>?) -> DataRequest? {
         return request(url,
                        parameters: parameters,
                        modelType: modelType,
@@ -44,11 +44,11 @@ public class MeshRequest{
     ///   - callBack: 返回model实例
     /// - Returns: 请求
     @discardableResult
-    public class func post<T: Codable>(_ url: String,
-                                       parameters: [String: Any] = [:],
-                                       modelType: T.Type,
-                                       modelKeyPath: String? = nil,
-                                       callBack: requestCallBack<T>?) -> DataRequest? {
+    public static func post<T: Codable>(_ url: String,
+                                        parameters: [String: Any] = [:],
+                                        modelType: T.Type,
+                                        modelKeyPath: String? = nil,
+                                        callBack: requestCallBack<T>?) -> DataRequest? {
         return request(url,
                        requestMethod: .post,
                        parameters: parameters,
@@ -57,19 +57,26 @@ public class MeshRequest{
                        callBack: callBack)
     }
     
-    class private func request<T: Codable>(_ url: String,
-                                           requestMethod : HTTPMethod = .get,
-                                           parameters: [String: Any] = [:],
+    static private func request<T: Codable>(_ url: String,
+                                            requestMethod : HTTPMethod = .get,
+                                            parameters: [String: Any] = [:],
+                                            modelType: T.Type,
+                                            modelKeyPath: String? = nil,
+                                            callBack: requestCallBack<T>?) -> DataRequest? {
+        return request(configBlock: { config in
+            config.requestMethod = requestMethod
+            config.URLString = url
+            config.parameters = parameters
+        }, modelType: modelType, modelKeyPath: modelKeyPath, callBack: callBack)
+    }
+    
+    @discardableResult
+    static public func request<T: Codable>(configBlock: RequestConfig?,
                                            modelType: T.Type,
                                            modelKeyPath: String? = nil,
                                            callBack: requestCallBack<T>?) -> DataRequest? {
         
-        return MeshManager.shared.requestWithConfig(configBlock: { (config) in
-            config.requestMethod = requestMethod
-            config.URLString = url
-            config.parameters = parameters
-        }, success: { (config) in
-            
+        return Mesh.requestWithConfig(configBlock: configBlock) { config in
             if let keypath = modelKeyPath, keypath.count > 0 {
                 
                 let decoder = JSONDecoder()
@@ -91,11 +98,9 @@ public class MeshRequest{
                 
                 callBack?(model)
             }
-            
-        }) { (config) in
+        } failure: { config in
             callBack?(nil)
         }
-        
     }
 }
 
@@ -138,13 +143,13 @@ private final class KeyPathWrapper<T: Decodable>: Decodable {
     
     init(from decoder: Decoder) throws {
         guard let keyPath = decoder.userInfo[keyPathUserInfoKey] as? [String],
-            !keyPath.isEmpty
-            else { throw KeyPathError.internal }
+              !keyPath.isEmpty
+        else { throw KeyPathError.internal }
         
         func getKey(from keyPath: [String]) throws -> Key {
             guard let first = keyPath.first,
-                let key = Key(stringValue: first)
-                else { throw KeyPathError.internal }
+                  let key = Key(stringValue: first)
+            else { throw KeyPathError.internal }
             return key
         }
         
@@ -165,63 +170,3 @@ private final class KeyPathWrapper<T: Decodable>: Decodable {
     
     let object: T
 }
-/// Codable 默认值
-@propertyWrapper
-struct Default<T: DefaultValue> {
-    var wrappedValue: T.defalut
-}
-
-extension Default: Codable {
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        wrappedValue = (try? container.decode(T.defalut.self)) ?? T.defaultValue
-    }
-
-}
-extension KeyedDecodingContainer {
-    func decode<T>(
-        _ type: Default<T>.Type,
-        forKey key: Key
-    ) throws -> Default<T> where T: DefaultValue {
-        try decodeIfPresent(type, forKey: key) ?? Default(wrappedValue: T.defaultValue)
-    }
-}
-
-extension KeyedEncodingContainer{
-    func encode<T>(
-        _ type: Default<T>.Type,
-        forKey key: Key
-    ) throws -> Default<T> where T: DefaultValue {
-        
-        try encode(type, forKey: key)
-    }
-}
-
-protocol DefaultValue {
-    associatedtype defalut: Codable
-    static var defaultValue: defalut { get }
-}
-
-// MARK:基础数据类型 遵守DefaultValue
-extension Bool: DefaultValue {
-    static let defaultValue = false
-}
-extension String: DefaultValue {
-    static let defaultValue = ""
-}
-extension Double: DefaultValue {
-    static let defaultValue = -1
-}
-extension Int: DefaultValue {
-    static let defaultValue = -1
-}
-extension Float: DefaultValue {
-    static let defaultValue = -1
-}
-
-//MARK:Test
-//class Member:Codable {
-//    @Default<Bool.defalut> var isOk:Bool
-//    @Default<String.defalut> var name:String
-//    var age:Int!
-//}

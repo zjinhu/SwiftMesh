@@ -43,7 +43,7 @@ public class MeshConfig {
     //服务端返回参数 定义错误码 错误信息 或者 正确信息
     public var code : Int?
     public var mssage : String?
-
+    
     /// AF请求下来的完整response，可自行处理
     public var response: AFDataResponse<Any>?
     //MARK: 下载

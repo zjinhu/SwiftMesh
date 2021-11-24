@@ -15,24 +15,20 @@ public enum NetworkStatus {
     case onCellular
 }
 
-public class MeshManager{
-    //单例
-    public static let shared = MeshManager()
-    ///保证单例调用
-    private init(){ }
+public typealias RequestConfig = (_ config: MeshConfig) -> Void
+public typealias RequestSuccess = (_ config: MeshConfig) -> Void
+public typealias RequestFailure = (_ config: MeshConfig) -> Void
+public typealias ProgressListener = (_ progress: Progress) -> Void
+
+public class Mesh{
     
-    public typealias RequestConfig = (_ config: MeshConfig) -> Void
-    public typealias RequestSuccess = (_ config: MeshConfig) -> Void
-    public typealias RequestFailure = (_ config: MeshConfig) -> Void
-    public typealias ProgressListener = (_ progress: Progress) -> Void
+    public static var canLogging = false
     
-    public var canLogging = false
-    
-    private var globalHeaders: HTTPHeaders?
-    private var defaultParameters: [String: Any]?
-    private let networkManager = NetworkReachabilityManager()
+    private static var globalHeaders: HTTPHeaders?
+    private static var defaultParameters: [String: Any]?
+    private static let networkManager = NetworkReachabilityManager()
     ///调用此方法可以防止网络请求被抓包,请在适当的位置调用,比如 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
-    public func disableHttpsProxy(){
+    public static func disableHttpsProxy(){
         let sessionConfig = URLSessionConfiguration.af.default
         let proxyDict = [AnyHashable : Any]()
         sessionConfig.connectionProxyDictionary = proxyDict // 主要是这一行
@@ -40,69 +36,75 @@ public class MeshManager{
     // MARK: 设置全局 headers
     /// 设置全局 headers
     /// - Parameter headers:全局 headers
-    public func setGlobalHeaders(_ headers: HTTPHeaders?) {
+    public static func setGlobalHeaders(_ headers: HTTPHeaders?) {
         globalHeaders = headers
     }
     
     // MARK: 设置默认参数
     /// 设置默认参数
     /// - Parameter parameters: 默认参数
-    public func setDefaultParameters(_ parameters: [String: Any]?) {
+    public static func setDefaultParameters(_ parameters: [String: Any]?) {
         defaultParameters = parameters
     }
     
     // MARK: 是否联网
     /// 是否联网
-    public var isReachable: Bool {
+    public static var isReachable: Bool {
         get {
             return networkManager?.isReachable ?? false
         }
     }
     // MARK: 是否WiFi
     /// 是否WiFi
-    public var isReachableWiFi: Bool {
+    public static var isReachableWiFi: Bool {
         get {
             return networkManager?.isReachableOnEthernetOrWiFi ?? false
         }
     }
     // MARK: 是否WWAN
     /// 是否运营商网络
-    public var isReachableCellular: Bool {
+    public static var isReachableCellular: Bool {
         get {
             return networkManager?.isReachableOnCellular ?? false
         }
     }
     
     ///私有方法
-    private func changeConfig(_ config: MeshConfig){
-        ///设置默认参数 header
+    private static func changeConfig(_ config: MeshConfig){
+        ///设置默认参数
         var param = defaultParameters ?? [:]
         param.merge(config.parameters ?? [:]) { (_, new) in new}
         config.parameters = param
-        
+        ///设置默认header
         guard let headers = globalHeaders else {
             return
         }
+        
+        if let _ = config.addHeads{
+            
+        }else{
+            config.addHeads = []
+        }
+        
         headers.forEach {
             config.addHeads?.update($0)
+            
         }
     }
     
     // MARK:- 打印输出
-    private func meshLog(_ config: MeshConfig,
-                         response: AFDataResponse<Any>?) {
+    private static func meshLog(_ config: MeshConfig,
+                                response: AFDataResponse<Any>?) {
 #if DEBUG
-        
         if canLogging{
             print("\n\n<><><><><>-「Alamofire Log」-<><><><><>\n\n>>>>>>>>>>>>>>>接口API:>>>>>>>>>>>>>>>\n\n\(String(describing: config.URLString))\n\n>>>>>>>>>>>>>>>参数parameters:>>>>>>>>>>>>>>>\n\n\(String(describing: config.parameters))\n\n>>>>>>>>>>>>>>>头headers:>>>>>>>>>>>>>>>\n\n\(String(describing: config.addHeads))\n\n>>>>>>>>>>>>>>>报文response:>>>>>>>>>>>>>>>\n\n\(String(describing: response))\n\n<><><><><>-「Alamofire END」-<><><><><>\n\n")
         }
-        
 #endif
     }
 }
 
 // MARK: 统一发起请求 支持 GET POST PUT DELETE
-extension MeshManager{
+extension Mesh{
     
     ///适配器闭包发起请求(回调适配器) 支持 GET POST PUT DELETE
     /// - Parameters:
@@ -111,9 +113,9 @@ extension MeshManager{
     ///   - failure: 失败回调
     /// - Returns: 返回请求 DataRequest
     @discardableResult
-    public func requestWithConfig(configBlock: RequestConfig?,
-                                  success: RequestSuccess?,
-                                  failure: RequestFailure?) -> DataRequest? {
+    public static func requestWithConfig(configBlock: RequestConfig?,
+                                         success: RequestSuccess?,
+                                         failure: RequestFailure?) -> DataRequest? {
         guard let block = configBlock else {
             return nil
         }
@@ -130,9 +132,9 @@ extension MeshManager{
     ///   - failure: 失败回调
     /// - Returns: 返回请求 DataRequest
     @discardableResult
-    public func sendRequest(config: MeshConfig,
-                            success: RequestSuccess?,
-                            failure: RequestFailure?)  -> DataRequest? {
+    public static func sendRequest(config: MeshConfig,
+                                   success: RequestSuccess?,
+                                   failure: RequestFailure?)  -> DataRequest? {
         
         guard let url = config.URLString else {
             return nil
@@ -151,7 +153,7 @@ extension MeshManager{
             //            config.responseResult = dict
             config.response = response
             ///打印输出
-            self.meshLog(config, response: response)
+            meshLog(config, response: response)
             
             guard let _ = response.data else {
                 config.code = RequestCode.errorResponse.rawValue
@@ -175,7 +177,7 @@ extension MeshManager{
 }
 
 // MARK: 下载请求
-extension MeshManager{
+extension Mesh{
     
     /// 适配器闭包发起下载请求
     /// - Parameters:
@@ -185,10 +187,10 @@ extension MeshManager{
     ///   - failure: 失败回调
     /// - Returns: 返回请求 DownloadRequest
     @discardableResult
-    public func downLoadWithConfig(configBlock: RequestConfig?,
-                                   progress: ProgressListener?,
-                                   success: RequestSuccess?,
-                                   failure: RequestFailure?) -> DownloadRequest? {
+    public static func downLoadWithConfig(configBlock: RequestConfig?,
+                                          progress: ProgressListener?,
+                                          success: RequestSuccess?,
+                                          failure: RequestFailure?) -> DownloadRequest? {
         
         guard let block = configBlock else {
             return nil
@@ -215,10 +217,10 @@ extension MeshManager{
     ///   - failure: 失败回调
     /// - Returns: 返回请求 DownloadRequest
     @discardableResult
-    public func sendDownload(config: MeshConfig,
-                             progress: ProgressListener?,
-                             success: RequestSuccess?,
-                             failure: RequestFailure?) -> DownloadRequest? {
+    public static func sendDownload(config: MeshConfig,
+                                    progress: ProgressListener?,
+                                    success: RequestSuccess?,
+                                    failure: RequestFailure?) -> DownloadRequest? {
         
         guard let url = config.URLString else {
             return nil
@@ -261,10 +263,10 @@ extension MeshManager{
     ///   - failure: 失败回调
     /// - Returns: 返回请求 DownloadRequest
     @discardableResult
-    public func sendDownloadResume(config: MeshConfig,
-                                   progress: ProgressListener?,
-                                   success: RequestSuccess?,
-                                   failure: RequestFailure?) -> DownloadRequest? {
+    public static func sendDownloadResume(config: MeshConfig,
+                                          progress: ProgressListener?,
+                                          success: RequestSuccess?,
+                                          failure: RequestFailure?) -> DownloadRequest? {
         
         guard let resumeData = config.resumeData else {
             return nil
@@ -298,7 +300,7 @@ extension MeshManager{
 }
 
 // MARK: 上传请求
-extension MeshManager{
+extension Mesh{
     
     /// 适配器闭包发起上传请求--支持表单通过适配器方法创建表单
     /// - Parameters:
@@ -308,10 +310,10 @@ extension MeshManager{
     ///   - failure: 失败回调
     /// - Returns: 返回请求 UploadRequest
     @discardableResult
-    public func uploadWithConfig(configBlock: RequestConfig?,
-                                 progress: ProgressListener?,
-                                 success: RequestSuccess?,
-                                 failure: RequestFailure?) -> UploadRequest? {
+    public static func uploadWithConfig(configBlock: RequestConfig?,
+                                        progress: ProgressListener?,
+                                        success: RequestSuccess?,
+                                        failure: RequestFailure?) -> UploadRequest? {
         
         guard let block = configBlock else {
             return nil
@@ -337,10 +339,10 @@ extension MeshManager{
     ///   - failure: 失败回调
     /// - Returns: 返回请求 UploadRequest
     @discardableResult
-    public func sendUpload(config: MeshConfig,
-                           progress: ProgressListener?,
-                           success: RequestSuccess?,
-                           failure: RequestFailure?) -> UploadRequest? {
+    public static func sendUpload(config: MeshConfig,
+                                  progress: ProgressListener?,
+                                  success: RequestSuccess?,
+                                  failure: RequestFailure?) -> UploadRequest? {
         
         guard let url = config.URLString else {
             return nil
@@ -408,10 +410,10 @@ extension MeshManager{
     ///   - failure: 失败回调
     /// - Returns: 返回请求 UploadRequest
     @discardableResult
-    public func sendUploadMultipart(config: MeshConfig,
-                                    progress: ProgressListener?,
-                                    success: RequestSuccess?,
-                                    failure: RequestFailure?) -> UploadRequest? {
+    public static func sendUploadMultipart(config: MeshConfig,
+                                           progress: ProgressListener?,
+                                           success: RequestSuccess?,
+                                           failure: RequestFailure?) -> UploadRequest? {
         
         guard let url = config.URLString, let uploadDatas = config.uploadDatas  else {
             return nil
@@ -464,10 +466,10 @@ extension MeshManager{
 }
 
 // MARK: 取消请求
-extension MeshManager{
+extension Mesh{
     /// 取消特定请求
     /// - Parameter url: 请求的地址,内部判断是否包含,请添加详细的 path
-    public func cancelRequest(_ url :String){
+    public static func cancelRequest(_ url :String){
         
         Session.default.session.getAllTasks { (tasks) in
             tasks.forEach { (task) in
@@ -479,7 +481,7 @@ extension MeshManager{
     }
     
     /// 清空所有请求
-    public func cancelAllRequest(){
+    public static func cancelAllRequest(){
         
         Session.default.session.getAllTasks { (tasks) in
             tasks.forEach { (task) in

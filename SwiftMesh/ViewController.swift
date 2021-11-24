@@ -33,17 +33,17 @@ struct ResultModel: Codable {
 class ViewController: UIViewController {
 
     
-    class func setHeader() {
-//        MeshManager.shared.canLogging = true
-//        MeshManager.shared.setGlobalHeaders(["aaa":"bbb"])
-//        MeshManager.shared.setDefaultParameters(["String" : "Any","a":"1","b":"2"])
+    func setHeader() {
+        Mesh.canLogging = true
+        Mesh.setGlobalHeaders(["aaa":"bbb"])
+        Mesh.setDefaultParameters(["String" : "Any","a":"1","b":"2"])
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        MeshManager.shared.canLogging = true
+        setHeader()
         // Do any additional setup after loading the view.
-        MeshManager.shared.disableHttpsProxy()
+        Mesh.disableHttpsProxy()
 
         MeshRequest.get("https://jsonplaceholder.typicode.com/posts", modelType: [BaseModel].self) { (model) in
             print("\(String(describing: model))")
@@ -54,7 +54,7 @@ class ViewController: UIViewController {
         }
         a?.cancel()
         
-        MeshManager.shared.requestWithConfig { (config) in
+        Mesh.requestWithConfig { (config) in
             config.URLString = "https://timor.tech/api/holiday/year/2021/"
             config.requestMethod = .get
         } success: { (config) in
