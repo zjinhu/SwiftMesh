@@ -141,12 +141,13 @@ extension Mesh{
         }
         ///设置默认参数 header
         changeConfig(config)
-        
+
         return AF.request(url,
                           method: config.requestMethod,
                           parameters: config.parameters,
                           encoding: config.requestEncoding,
                           headers: config.addHeads,
+                          interceptor: config.retry,
                           requestModifier: { request in request.timeoutInterval = config.timeout}
         ).responseJSON { (response) in
             //            guard let dict = response.value else { return }
@@ -231,6 +232,7 @@ extension Mesh{
                            parameters: config.parameters,
                            encoding: config.requestEncoding,
                            headers: config.addHeads,
+                           interceptor: config.retry,
                            requestModifier: { request in request.timeoutInterval = config.timeout},
                            to: config.destination
         ).downloadProgress(closure: { (progr) in
@@ -273,6 +275,7 @@ extension Mesh{
         }
         
         return AF.download(resumingWith: resumeData,
+                           interceptor: config.retry,
                            to: config.destination
         ).downloadProgress(closure: { (progr) in
             
@@ -359,6 +362,7 @@ extension Mesh{
                                       to: url,
                                       method: config.requestMethod,
                                       headers: config.addHeads,
+                                      interceptor: config.retry,
                                       requestModifier: { request in request.timeoutInterval = config.timeout})
             
         case .stream:
@@ -369,6 +373,7 @@ extension Mesh{
                                       to: url,
                                       method: config.requestMethod,
                                       headers: config.addHeads,
+                                      interceptor: config.retry,
                                       requestModifier: { request in request.timeoutInterval = config.timeout})
             
         default:
@@ -379,6 +384,7 @@ extension Mesh{
                                       to: url,
                                       method: config.requestMethod,
                                       headers: config.addHeads,
+                                      interceptor: config.retry,
                                       requestModifier: { request in request.timeoutInterval = config.timeout})
             
         }
@@ -445,6 +451,7 @@ extension Mesh{
                          to: url,
                          method: config.requestMethod,
                          headers: config.addHeads,
+                         interceptor: config.retry,
                          requestModifier: { request in request.timeoutInterval = config.timeout}
         ).response { (response) in
             

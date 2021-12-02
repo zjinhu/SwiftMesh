@@ -28,6 +28,9 @@ public class MeshConfig {
     //MARK: 请求相关配置
     /// 超时配置
     public var timeout : TimeInterval = 15.0
+    ///请求失败重试
+    public var retry: RetryPolicy?
+
     /// 添加请求头
     public var addHeads : HTTPHeaders?
     /// 请求方式
