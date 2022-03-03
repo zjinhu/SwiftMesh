@@ -94,7 +94,7 @@ public class Mesh{
     
     // MARK:- 打印输出
     private static func meshLog(_ config: MeshConfig,
-                                response: AFDataResponse<Any>?) {
+                                response: AFDataResponse<Data?>?) {
 #if DEBUG
         if canLogging{
             print("\n\n<><><><><>-「Alamofire Log」-<><><><><>\n\n>>>>>>>>>>>>>>>接口API:>>>>>>>>>>>>>>>\n\n\(String(describing: config.URLString))\n\n>>>>>>>>>>>>>>>参数parameters:>>>>>>>>>>>>>>>\n\n\(String(describing: config.parameters))\n\n>>>>>>>>>>>>>>>头headers:>>>>>>>>>>>>>>>\n\n\(String(describing: config.addHeads))\n\n>>>>>>>>>>>>>>>报文response:>>>>>>>>>>>>>>>\n\n\(String(describing: response))\n\n<><><><><>-「Alamofire END」-<><><><><>\n\n")
@@ -149,19 +149,16 @@ extension Mesh{
                           headers: config.addHeads,
                           interceptor: config.retry,
                           requestModifier: { request in request.timeoutInterval = config.timeout}
-        ).responseJSON { (response) in
-            //            guard let dict = response.value else { return }
-            //            config.responseResult = dict
+        ).response { (response) in
             config.response = response
-            ///打印输出
+////            ///打印输出
             meshLog(config, response: response)
-            
+////
             guard let _ = response.data else {
                 config.code = RequestCode.errorResponse.rawValue
                 failure?(config)
                 return
             }
-            
             switch response.result {
             case .success:
                 //可添加统一解析
@@ -393,7 +390,7 @@ extension Mesh{
             progress?(progr)
         }
         
-        uploadRequest.responseJSON { (response) in
+        uploadRequest.responseData { (response) in
             switch response.result {
             case .success:
                 config.code = RequestCode.success.rawValue

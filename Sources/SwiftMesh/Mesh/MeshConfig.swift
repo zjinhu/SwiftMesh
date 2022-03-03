@@ -48,7 +48,7 @@ public class MeshConfig {
     public var mssage : String?
     
     /// AF请求下来的完整response，可自行处理
-    public var response: AFDataResponse<Any>?
+    public var response: AFDataResponse<Data?>?
     //MARK: 下载
     ///下载用 设置文件下载地址覆盖方式等等
     public var destination : DownloadRequest.Destination?

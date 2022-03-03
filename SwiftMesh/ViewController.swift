@@ -55,12 +55,16 @@ class ViewController: UIViewController {
         a?.cancel()
         
         Mesh.requestWithConfig { (config) in
-            config.URLString = "https://timor.tech/api/holiday/year/2021/"
+            config.URLString = "https://timor.tech/api/holiday/year/2022/"
             config.requestMethod = .get
         } success: { (config) in
 
-            let dic : [String: Any] = config.response?.value as! [String : Any]
-            print("\(String(describing: dic["holiday"]))")
+            guard let data = config.response?.data else {
+                return
+            }
+            
+            let dic = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String : Any]
+            print("\(String(describing: dic?["holiday"]))")
 
         } failure: { (_) in
             print("error getHoliday")
