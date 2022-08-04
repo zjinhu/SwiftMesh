@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   s.frameworks   =  "Foundation" #支持的框架
   s.dependency 'Alamofire'
  # s.subspec 'Mesh' do |ss|
-      ss.source_files = 'Sources/SwiftMesh/Mesh/**/*' 
+      s.source_files = 'Sources/SwiftMesh/Mesh/**/*' 
  #   end
 
  # s.subspec 'Request' do |ss| 
