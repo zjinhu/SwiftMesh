@@ -80,13 +80,18 @@ SwiftMesh是基于Alamofire和Codable的二次封装，使用更加方便。
   请求用例
 
   ```swift
-      MeshManager.shared.requestWithConfig { (config) in
+      Mesh.requestWithConfig { (config) in
         config.URLString = "https://timor.tech/api/holiday/year/2021/"
         config.requestMethod = .get
-      } success: { (config) in
-        let dic : [String: Any] = config.response?.value as! [String : Any]
-        print("\(dic["holiday"])")
-      } failure: { (_) in
+      }.success: { responseData in
+            
+            guard let data = responseData else {
+                return
+            }
+            
+            let dic = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String : Any]
+            print("\(String(describing: dic?["message"]))")
+      }.failure: { ERROR in
         print("error getHoliday")
       }
   ```
@@ -112,26 +117,28 @@ public class MeshConfig {
     ///参数  表单上传也可以用
     public var parameters : [String: Any]?
     //MARK: 请求完成返回数据
-    //服务端返回参数 定义错误码 错误信息 或者 正确信息
-    public var code : Int?
-    public var mssage : String?
-
-    /// AF请求下来的完整response，可自行处理
-    public var response: AFDataResponse<Any>?
-    //MARK: 下载
     ///下载用 设置文件下载地址覆盖方式等等
     public var destination : DownloadRequest.Destination?
-    
     public var downloadType : DownloadType = .download
-    public var fileURL: URL?   
+    ///已经下载的部分,下载续传用,从请求结果中获取
     public var resumeData : Data?
+    
+    //MARK: 上传
+    public var uploadType : UploadType = .file
+    ///上传文件地址
+    public var fileURL: URL?
+    ///上传文件地址
+    public var fileData: Data?
+    ///上传文件InputStream
+    public var stream: InputStream?
+    public var uploadDatas : [MeshMultipartConfig]?
 ```
 
 ### MeshRequest：解析请求
 对Post、Get网络请求的Codable封装，通过设置泛型model回调生成好的Model，方便使用。用例：
 ```swift
- MeshRequest<TestModel>.get(“https://api.apiopen.top/getJoke?page=1&count=2&type=video”) { (model) in
-            print(model!)
+MeshRequest.get("http://t.weather.itboy.net/api/weather/city/101030100", modelType: ResultModel.self, modelKeyPath: "cityInfo") { (model) in
+            print("22222\(String(describing: model))")
         }
 ```
 
