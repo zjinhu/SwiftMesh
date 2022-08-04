@@ -15,10 +15,7 @@ public enum NetworkStatus {
     case onCellular
 }
 
-public typealias RequestConfig = (_ config: MeshConfig) -> Void
-public typealias RequestSuccess = (_ config: MeshConfig) -> Void
-public typealias RequestFailure = (_ config: MeshConfig) -> Void
-public typealias ProgressListener = (_ progress: Progress) -> Void
+public typealias ConfigClosure = (_ config: MeshConfig) -> Void
 
 public class Mesh{
     
@@ -109,67 +106,44 @@ extension Mesh{
     ///适配器闭包发起请求(回调适配器) 支持 GET POST PUT DELETE
     /// - Parameters:
     ///   - configBlock: 请求适配器
-    ///   - success: 成功回调
-    ///   - failure: 失败回调
-    /// - Returns: 返回请求 DataRequest
+    /// - Returns: 返回请求 MeshResult
     @discardableResult
-    public static func requestWithConfig(configBlock: RequestConfig?,
-                                         success: RequestSuccess?,
-                                         failure: RequestFailure?) -> DataRequest? {
-        guard let block = configBlock else {
-            return nil
-        }
-        let config = MeshConfig.init()
-        block(config)
+    public static func requestWithConfig(_ configClosure: ConfigClosure) -> MeshResult {
         
-        return sendRequest(config: config, success: success, failure: failure)
+        let config = MeshConfig()
+        configClosure(config)
+        
+        return sendRequest(config)
     }
     
     /// 适配器发起请求 支持 GET POST PUT DELETE
     /// - Parameters:
     ///   - config: 实例好的适配器
-    ///   - success: 成功回调
-    ///   - failure: 失败回调
-    /// - Returns: 返回请求 DataRequest
+    /// - Returns: 返回请求 MeshResult
     @discardableResult
-    public static func sendRequest(config: MeshConfig,
-                                   success: RequestSuccess?,
-                                   failure: RequestFailure?)  -> DataRequest? {
+    public static func sendRequest(_ config: MeshConfig)  -> MeshResult {
         
         guard let url = config.URLString else {
-            return nil
+            fatalError("URLString 为空")
         }
+        let result = MeshResult()
+        
         ///设置默认参数 header
         changeConfig(config)
-
-        return AF.request(url,
-                          method: config.requestMethod,
-                          parameters: config.parameters,
-                          encoding: config.requestEncoding,
-                          headers: config.addHeads,
-                          interceptor: config.retry,
-                          requestModifier: { request in request.timeoutInterval = config.timeout}
-        ).response { (response) in
-            config.response = response
-////            ///打印输出
-            meshLog(config, response: response)
-////
-            guard let _ = response.data else {
-                config.code = RequestCode.errorResponse.rawValue
-                failure?(config)
-                return
-            }
-            switch response.result {
-            case .success:
-                //可添加统一解析
-                config.code = RequestCode.success.rawValue
-                success?(config)
-            case .failure:
-                config.code = RequestCode.errorResult.rawValue
-                failure?(config)
-            }
-        }
         
+        result.request = AF.request(url,
+                                    method: config.requestMethod,
+                                    parameters: config.parameters,
+                                    encoding: config.requestEncoding,
+                                    headers: config.addHeads,
+                                    interceptor: config.retry,
+                                    requestModifier: { request in request.timeoutInterval = config.timeout}
+        ).response { (response) in
+            ///打印输出
+            meshLog(config, response: response)
+            result.handleResponse(response: response)
+        }
+        return result
     }
     
 }
@@ -180,29 +154,20 @@ extension Mesh{
     /// 适配器闭包发起下载请求
     /// - Parameters:
     ///   - configBlock: 适配器闭包
-    ///   - progress: 下载进度
-    ///   - success: 成功回调
-    ///   - failure: 失败回调
-    /// - Returns: 返回请求 DownloadRequest
+    /// - Returns: 返回请求 MeshResult
     @discardableResult
-    public static func downLoadWithConfig(configBlock: RequestConfig?,
-                                          progress: ProgressListener?,
-                                          success: RequestSuccess?,
-                                          failure: RequestFailure?) -> DownloadRequest? {
+    public static func downLoadWithConfig(_ configClosure: ConfigClosure) -> MeshResult {
         
-        guard let block = configBlock else {
-            return nil
-        }
-        let config = MeshConfig.init()
-        block(config)
+        let config = MeshConfig()
+        configClosure(config)
         
         changeConfig(config)
         
         switch config.downloadType {
         case .resume:
-            return sendDownloadResume(config: config, progress: progress, success: success, failure: failure)
+            return sendDownloadResume(config)
         default:
-            return sendDownload(config: config, progress: progress, success: success, failure: failure)
+            return sendDownload(config)
         }
         
     }
@@ -210,92 +175,57 @@ extension Mesh{
     /// 通过实例适配器发起下载请求
     /// - Parameters:
     ///   - config: 实例适配器
-    ///   - progress: 下载进度
-    ///   - success: 成功回调
-    ///   - failure: 失败回调
-    /// - Returns: 返回请求 DownloadRequest
+    /// - Returns: 返回请求 MeshResult
     @discardableResult
-    public static func sendDownload(config: MeshConfig,
-                                    progress: ProgressListener?,
-                                    success: RequestSuccess?,
-                                    failure: RequestFailure?) -> DownloadRequest? {
+    public static func sendDownload(_ config: MeshConfig) -> MeshResult {
         
         guard let url = config.URLString else {
-            return nil
+            fatalError("URLString 为空")
         }
+        let result = MeshResult()
         
-        return AF.download(url,
-                           method: config.requestMethod,
-                           parameters: config.parameters,
-                           encoding: config.requestEncoding,
-                           headers: config.addHeads,
-                           interceptor: config.retry,
-                           requestModifier: { request in request.timeoutInterval = config.timeout},
-                           to: config.destination
-        ).downloadProgress(closure: { (progr) in
+        result.request = AF.download(url,
+                                     method: config.requestMethod,
+                                     parameters: config.parameters,
+                                     encoding: config.requestEncoding,
+                                     headers: config.addHeads,
+                                     interceptor: config.retry,
+                                     requestModifier: { request in request.timeoutInterval = config.timeout},
+                                     to: config.destination
+        ).downloadProgress(closure: { (progress) in
             
-            progress?(progr)
+            result.handleProgress(progress: progress)
             
         }).responseData { (responseData) in
-            
-            config.fileURL = responseData.fileURL
-            config.resumeData = responseData.resumeData
-            
-            switch responseData.result {
-            case .success:
-                config.mssage = "下载完成"
-                config.code = RequestCode.success.rawValue
-                success?(config)
-            case .failure:
-                config.mssage = "下载失败"
-                config.code = RequestCode.errorResult.rawValue
-                failure?(config)
-            }
+            result.handleDownloadResponse(response: responseData)
         }
+        return result
     }
     
     /// 通过实例适配器发起继续下载请求
     /// - Parameters:
     ///   - config: 实例适配器
-    ///   - progress: 下载进度
-    ///   - success: 成功回调
-    ///   - failure: 失败回调
-    /// - Returns: 返回请求 DownloadRequest
+    /// - Returns: 返回请求 MeshResult
     @discardableResult
-    public static func sendDownloadResume(config: MeshConfig,
-                                          progress: ProgressListener?,
-                                          success: RequestSuccess?,
-                                          failure: RequestFailure?) -> DownloadRequest? {
+    public static func sendDownloadResume(_ config: MeshConfig) -> MeshResult {
         
         guard let resumeData = config.resumeData else {
-            return nil
+            fatalError("resumeData 为空")
         }
-        
-        return AF.download(resumingWith: resumeData,
-                           interceptor: config.retry,
-                           to: config.destination
-        ).downloadProgress(closure: { (progr) in
+        let result = MeshResult()
+        result.request = AF.download(resumingWith: resumeData,
+                                     interceptor: config.retry,
+                                     to: config.destination
+        ).downloadProgress(closure: { (progress) in
             
-            progress?(progr)
+            result.handleProgress(progress: progress)
             
         }).responseData { (responseData) in
             
-            config.fileURL = responseData.fileURL
-            config.resumeData = responseData.resumeData
-            
-            switch responseData.result {
-            case .success:
-                config.mssage = "下载完成"
-                config.code = RequestCode.success.rawValue
-                success?(config)
-            case .failure:
-                config.mssage = "下载失败"
-                config.code = RequestCode.errorResult.rawValue
-                failure?(config)
-            }
+            result.handleDownloadResponse(response: responseData)
             
         }
-        
+        return result
     }
 }
 
@@ -310,24 +240,17 @@ extension Mesh{
     ///   - failure: 失败回调
     /// - Returns: 返回请求 UploadRequest
     @discardableResult
-    public static func uploadWithConfig(configBlock: RequestConfig?,
-                                        progress: ProgressListener?,
-                                        success: RequestSuccess?,
-                                        failure: RequestFailure?) -> UploadRequest? {
+    public static func uploadWithConfig(_ configClosure: ConfigClosure) -> MeshResult {
         
-        guard let block = configBlock else {
-            return nil
-        }
-        
-        let config = MeshConfig.init()
-        block(config)
+        let config = MeshConfig()
+        configClosure(config)
         changeConfig(config)
         
         switch config.uploadType {
         case .multipart:
-            return sendUploadMultipart(config: config, progress: progress, success: success, failure: failure)
+            return sendUploadMultipart(config)
         default:
-            return sendUpload(config: config, progress: progress, success: success, failure: failure)
+            return sendUpload(config)
         }
     }
     
@@ -339,21 +262,19 @@ extension Mesh{
     ///   - failure: 失败回调
     /// - Returns: 返回请求 UploadRequest
     @discardableResult
-    public static func sendUpload(config: MeshConfig,
-                                  progress: ProgressListener?,
-                                  success: RequestSuccess?,
-                                  failure: RequestFailure?) -> UploadRequest? {
+    public static func sendUpload(_ config: MeshConfig) -> MeshResult {
         
         guard let url = config.URLString else {
-            return nil
+            fatalError("URLString 为空")
         }
+        let result = MeshResult()
         
         let uploadRequest : UploadRequest
         
         switch config.uploadType {
         case .file:
             guard let fileURL = config.fileURL else {
-                return nil
+                fatalError("fileURL 为空")
             }
             uploadRequest = AF.upload(fileURL,
                                       to: url,
@@ -364,7 +285,7 @@ extension Mesh{
             
         case .stream:
             guard let stream = config.stream else {
-                return nil
+                fatalError("stream 为空")
             }
             uploadRequest = AF.upload(stream,
                                       to: url,
@@ -375,7 +296,7 @@ extension Mesh{
             
         default:
             guard let fileData = config.fileData else {
-                return nil
+                fatalError("fileData 为空")
             }
             uploadRequest = AF.upload(fileData,
                                       to: url,
@@ -386,23 +307,15 @@ extension Mesh{
             
         }
         
-        uploadRequest.uploadProgress { (progr) in
-            progress?(progr)
+        uploadRequest.uploadProgress { (progress) in
+            result.handleProgress(progress: progress)
         }
         
+        result.request = uploadRequest
         uploadRequest.responseData { (response) in
-            switch response.result {
-            case .success:
-                config.code = RequestCode.success.rawValue
-                config.mssage = "上传成功"
-                success?(config)
-            case .failure:
-                config.code = RequestCode.errorResult.rawValue
-                config.mssage = "上传失败"
-                failure?(config)
-            }
+            result.handleUploadResponse(response: response)
         }
-        return uploadRequest
+        return result
     }
     
     /// 适配器发起上传请求--表单 根据适配器中相应方法创建表单
@@ -413,16 +326,15 @@ extension Mesh{
     ///   - failure: 失败回调
     /// - Returns: 返回请求 UploadRequest
     @discardableResult
-    public static func sendUploadMultipart(config: MeshConfig,
-                                           progress: ProgressListener?,
-                                           success: RequestSuccess?,
-                                           failure: RequestFailure?) -> UploadRequest? {
+    public static func sendUploadMultipart(_ config: MeshConfig) -> MeshResult {
         
         guard let url = config.URLString, let uploadDatas = config.uploadDatas  else {
-            return nil
+            fatalError("URLString / uploadDatas 为空")
         }
         
-        return AF.upload(multipartFormData: { (multi) in
+        let result = MeshResult()
+        
+        result.request = AF.upload(multipartFormData: { (multi) in
             
             uploadDatas.forEach { (updataConfig) in
                 if let fileData = updataConfig.fileData{
@@ -445,27 +357,19 @@ extension Mesh{
             }
             
         },
-                         to: url,
-                         method: config.requestMethod,
-                         headers: config.addHeads,
-                         interceptor: config.retry,
-                         requestModifier: { request in request.timeoutInterval = config.timeout}
+                                   to: url,
+                                   method: config.requestMethod,
+                                   headers: config.addHeads,
+                                   interceptor: config.retry,
+                                   requestModifier: { request in request.timeoutInterval = config.timeout}
         ).response { (response) in
             
-            switch response.result{
-            case .success( _):
-                config.code = RequestCode.success.rawValue
-                config.mssage = "上传成功"
-                success?(config)
-                //                debugPrint("****:\(response) ****")
-            case .failure( _):
-                config.code = RequestCode.errorResult.rawValue
-                config.mssage = "上传失败"
-                failure?(config)
-                //                debugPrint(error)
-            }
+            result.handleResponse(response: response)
             
-        }
+        }.uploadProgress(closure: { progress in
+            result.handleProgress(progress: progress)
+        })
+        return result
     }
 }
 

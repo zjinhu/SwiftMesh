@@ -27,7 +27,7 @@ public class MeshRequest{
                                        parameters: [String: Any] = [:],
                                        modelType: T.Type,
                                        modelKeyPath: String? = nil,
-                                       callBack: requestCallBack<T>?) -> DataRequest? {
+                                       callBack: requestCallBack<T>?) -> MeshResult {
         return request(url,
                        parameters: parameters,
                        modelType: modelType,
@@ -48,7 +48,7 @@ public class MeshRequest{
                                         parameters: [String: Any] = [:],
                                         modelType: T.Type,
                                         modelKeyPath: String? = nil,
-                                        callBack: requestCallBack<T>?) -> DataRequest? {
+                                        callBack: requestCallBack<T>?) -> MeshResult {
         return request(url,
                        requestMethod: .post,
                        parameters: parameters,
@@ -62,7 +62,7 @@ public class MeshRequest{
                                             parameters: [String: Any] = [:],
                                             modelType: T.Type,
                                             modelKeyPath: String? = nil,
-                                            callBack: requestCallBack<T>?) -> DataRequest? {
+                                            callBack: requestCallBack<T>?) -> MeshResult {
         return request(configBlock: { config in
             config.requestMethod = requestMethod
             config.URLString = url
@@ -71,17 +71,16 @@ public class MeshRequest{
     }
     
     @discardableResult
-    static public func request<T: Codable>(configBlock: RequestConfig?,
+    static public func request<T: Codable>(configBlock: ConfigClosure,
                                            modelType: T.Type,
                                            modelKeyPath: String? = nil,
-                                           callBack: requestCallBack<T>?) -> DataRequest? {
-        
-        return Mesh.requestWithConfig(configBlock: configBlock) { config in
+                                           callBack: requestCallBack<T>?) -> MeshResult {
+        return Mesh.requestWithConfig(configBlock).success { responseData in
             if let keypath = modelKeyPath, keypath.count > 0 {
                 
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
-                guard let data = config.response?.data, let model = try? decoder.decode(modelType.self, from: data, keyPath: keypath) else {
+                guard let data = responseData, let model = try? decoder.decode(modelType.self, from: data, keyPath: keypath) else {
                     callBack?(nil)
                     return
                 }
@@ -91,16 +90,17 @@ public class MeshRequest{
             }else{
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
-                guard let data = config.response?.data, let model = try? decoder.decode(modelType.self, from: data) else {
+                guard let data = responseData, let model = try? decoder.decode(modelType.self, from: data) else {
                     callBack?(nil)
                     return
                 }
                 
                 callBack?(model)
             }
-        } failure: { config in
+        }.failed { error in
             callBack?(nil)
         }
+        
     }
 }
 

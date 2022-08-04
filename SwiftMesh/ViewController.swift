@@ -43,31 +43,30 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         setHeader()
         // Do any additional setup after loading the view.
-        Mesh.disableHttpsProxy()
+//        Mesh.disableHttpsProxy()
 
-        MeshRequest.get("https://jsonplaceholder.typicode.com/posts", modelType: [BaseModel].self) { (model) in
-            print("\(String(describing: model))")
-        }
+//        MeshRequest.get("https://jsonplaceholder.typicode.com/posts", modelType: [BaseModel].self) { (model) in
+//            print("\(String(describing: model))")
+//        }
         
         let a = MeshRequest.get("http://t.weather.itboy.net/api/weather/city/101030100", modelType: ResultModel.self, modelKeyPath: "cityInfo") { (model) in
             print("22222\(String(describing: model))")
         }
-        a?.cancel()
+//        a.cancel()
         
-        Mesh.requestWithConfig { (config) in
-            config.URLString = "https://timor.tech/api/holiday/year/2022/"
+        Mesh.requestWithConfig { config in
+            config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
             config.requestMethod = .get
-        } success: { (config) in
-
-            guard let data = config.response?.data else {
+        }.success { responseData in
+            
+            guard let data = responseData else {
                 return
             }
             
             let dic = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String : Any]
-            print("\(String(describing: dic?["holiday"]))")
-
-        } failure: { (_) in
-            print("error getHoliday")
+            print("\(String(describing: dic?["message"]))")
+        }.failed { error in
+            print("\(error)")
         }
 
     }

@@ -16,13 +16,6 @@ public enum UploadType : Int {
     case file , data , stream , multipart
 }
 
-public enum RequestCode : Int {
-    case success = 0 //请求成功的状态吗
-    case errorResult = -1 //接口请求失败,有错误返回
-    case errorResponse = -2 //请求返回的数据为空
-    case errorRequest = -3 //请求失败,无网络
-}
-
 /// 网络请求配置
 public class MeshConfig {
     //MARK: 请求相关配置
@@ -42,24 +35,20 @@ public class MeshConfig {
     public var URLString : String?
     ///参数  表单上传也可以用
     public var parameters : [String: Any]?
-    //MARK: 请求完成返回数据
-    //服务端返回参数 定义错误码 错误信息 或者 正确信息
-    public var code : Int?
-    public var mssage : String?
-    
-    /// AF请求下来的完整response，可自行处理
-    public var response: AFDataResponse<Data?>?
-    //MARK: 下载
+ 
     ///下载用 设置文件下载地址覆盖方式等等
     public var destination : DownloadRequest.Destination?
-    
     public var downloadType : DownloadType = .download
-    public var fileURL: URL?   
+    ///已经下载的部分,下载续传用,从请求结果中获取
     public var resumeData : Data?
     
     //MARK: 上传
     public var uploadType : UploadType = .file
+    ///上传文件地址
+    public var fileURL: URL?
+    ///上传文件地址
     public var fileData: Data?
+    ///上传文件InputStream
     public var stream: InputStream?
     public var uploadDatas : [MeshMultipartConfig]?
     

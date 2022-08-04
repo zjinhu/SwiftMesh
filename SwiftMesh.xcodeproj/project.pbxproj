@@ -3,11 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		36A774E8E2C8ABD51A690057 /* Pods_SwiftMesh.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFA73B1068104A2AA2E394FD /* Pods_SwiftMesh.framework */; };
+		606D76B0289A7A10009E104B /* MeshResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606D76AF289A7A10009E104B /* MeshResult.swift */; };
 		8147205823B494A600F95566 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8147205723B494A600F95566 /* AppDelegate.swift */; };
 		8147205A23B494A600F95566 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8147205923B494A600F95566 /* SceneDelegate.swift */; };
 		8147205C23B494A600F95566 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8147205B23B494A600F95566 /* ViewController.swift */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		606D76AF289A7A10009E104B /* MeshResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshResult.swift; sourceTree = "<group>"; };
 		6A9847B627EB234C0B535BD5 /* Pods-SwiftMesh.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftMesh.debug.xcconfig"; path = "Target Support Files/Pods-SwiftMesh/Pods-SwiftMesh.debug.xcconfig"; sourceTree = "<group>"; };
 		8147205423B494A600F95566 /* SwiftMesh.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftMesh.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8147205723B494A600F95566 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -85,7 +87,6 @@
 			isa = PBXGroup;
 			children = (
 				81BDE3332546BBEB00F8130D /* Mesh */,
-				81BDE3362546BBEB00F8130D /* Request */,
 			);
 			name = SwiftMesh;
 			path = Sources/SwiftMesh;
@@ -95,17 +96,11 @@
 			isa = PBXGroup;
 			children = (
 				81BDE3342546BBEB00F8130D /* Mesh.swift */,
+				606D76AF289A7A10009E104B /* MeshResult.swift */,
 				81BDE3352546BBEB00F8130D /* MeshConfig.swift */,
-			);
-			path = Mesh;
-			sourceTree = "<group>";
-		};
-		81BDE3362546BBEB00F8130D /* Request */ = {
-			isa = PBXGroup;
-			children = (
 				81BDE3372546BBEB00F8130D /* MeshRequest.swift */,
 			);
-			path = Request;
+			path = Mesh;
 			sourceTree = "<group>";
 		};
 		8505674B05F2059C6BAE22D5 /* Pods */ = {
@@ -114,7 +109,6 @@
 				6A9847B627EB234C0B535BD5 /* Pods-SwiftMesh.debug.xcconfig */,
 				B4EBC6154FD83E28406F9A74 /* Pods-SwiftMesh.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -137,7 +131,7 @@
 				8147205023B494A600F95566 /* Sources */,
 				8147205123B494A600F95566 /* Frameworks */,
 				8147205223B494A600F95566 /* Resources */,
-				1180489A0A5E4A80AE8EBABF /* [CP] Embed Pods Frameworks */,
+				7DE740EFA52B1FBAF8E0EDB0 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -195,7 +189,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1180489A0A5E4A80AE8EBABF /* [CP] Embed Pods Frameworks */ = {
+		7DE740EFA52B1FBAF8E0EDB0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -246,6 +240,7 @@
 				81BDE33A2546BBEB00F8130D /* MeshRequest.swift in Sources */,
 				8147205C23B494A600F95566 /* ViewController.swift in Sources */,
 				8147205823B494A600F95566 /* AppDelegate.swift in Sources */,
+				606D76B0289A7A10009E104B /* MeshResult.swift in Sources */,
 				8147205A23B494A600F95566 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
