@@ -14,10 +14,12 @@ struct SwiftUIView: View {
     var body: some View {
         
         VStack{
+            
             Text("Hello, World!")
             
             Text(request.cityResult?.message ?? "")
-        }.onAppear{
+        }
+        .onAppear{
             request.getAppliances()
         }
     }
