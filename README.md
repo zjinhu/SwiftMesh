@@ -3,38 +3,74 @@
 [![Version](https://img.shields.io/cocoapods/v/SwiftMesh.svg?style=flat)](http://cocoapods.org/pods/SwiftMesh)
 [![SPM](https://img.shields.io/badge/SPM-supported-DE5C43.svg?style=flat)](https://swift.org/package-manager/)
 ![Xcode 11.0+](https://img.shields.io/badge/Xcode-11.0%2B-blue.svg)
-![iOS 11.0+](https://img.shields.io/badge/iOS-11.0%2B-blue.svg)
+![iOS 13.0+](https://img.shields.io/badge/iOS-13.0%2B-blue.svg)
 ![Swift 5.0+](https://img.shields.io/badge/Swift-5.0%2B-orange.svg)
 
 
 
-SwiftMesh是基于Alamofire和Codable的二次封装，使用更加方便。
+SwiftMesh是基于Alamofire和Codable的二次封装,使用Combine和Swift Concurrency,支持SwiftUI以及UIKit,去掉了闭包回调,更加简洁快速,使用更加方便。
 
-涉及到的设计模式有：适配器，单例，抽象等等
+待完成：
+
+1. 上传
+2. 下载
+
+涉及到的设计模式有：适配器，单例等等
+
+## 用法
+
+#### Swift+UIKit：
+
+```
+import UIKit
+import Combine
+class ViewController: UIViewController {
+    var request = RequestModel()
+    private var cancellables: Set<AnyCancellable> = []
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+ 
+        request.getAppliances()
+        
+        request.$cityResult
+            .receive(on: RunLoop.main)
+            .sink { (model) in
+                print("hello \(String(describing: model))")
+         }.store(in: &cancellables)
+    }
+ 
+}
+
+```
+
+#### SwiftUI：
+
+```
+struct SwiftUIView: View {
+    @StateObject var request = RequestModel()
+    
+    var body: some View {
+        
+        VStack{
+            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+            
+            Text(request.cityResult?.message ?? "")
+        }.onAppear{
+            request.getAppliances()
+        }
+    }
+    
+}
+```
 
 
 
 ## 介绍
-### MeshManager：单例
-* 获取网络状态    —isReachableWiFi、isReachableCellular
 
-  ```swift
-      /// MARK: 是否WiFi
-      /// 是否WiFi
-      public var isReachableWiFi: Bool 
-     
-     // MARK: 是否WWAN
-      /// 是否运营商网络
-      public var isReachableCellular: Bool 
-  ```
 
-* 是否联网      —isReachable
-
-  ```swift
-      // MARK: 是否联网
-      /// 是否联网
-      public var isReachable: Bool 
-  ```
+### Mesh：单例
 
 * 设置默认参数     —setDefaultParameters
 
@@ -56,46 +92,7 @@ SwiftMesh是基于Alamofire和Codable的二次封装，使用更加方便。
       }
   ```
 
-* 是否打印日志     —canLogging
-
-  ```swift
-  public var canLogging = false
-  ```
-
-* 取消/清空请求     -cancelRequest/cancelAllRequest
-
-  ```swift
-      /// 取消特定请求
-      /// - Parameter url: 请求的地址,内部判断是否包含,请添加详细的 path
-      public func cancelRequest(_ url :String)
-      
-          /// 清空所有请求
-      public func cancelAllRequest()
-  ```
-
-* 上传/下载/普通请求   - - 所有请求都通过配置文件方式传递参数以及请求结果，通过闭包设置配置文件的属性即可，详情参看配置文件注释，用法参照`MeshRequest`。
-
-  
-
-  请求用例
-
-  ```swift
-      Mesh.requestWithConfig { (config) in
-        config.URLString = "https://timor.tech/api/holiday/year/2021/"
-        config.requestMethod = .get
-      }.success: { responseData in
-            
-            guard let data = responseData else {
-                return
-            }
-            
-            let dic = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String : Any]
-            print("\(String(describing: dic?["message"]))")
-      }.failure: { ERROR in
-        print("error getHoliday")
-      }
-  ```
-### MeshConfig：适配器
+### Config：适配器
 
 网络请求的配置文件，用于设置请求超时时间、请求方式，参数，header，API地址，上传用的表单等等，以及请求完成回调回来的response都在里边。
 
@@ -116,30 +113,34 @@ public class MeshConfig {
     public var URLString : String?
     ///参数  表单上传也可以用
     public var parameters : [String: Any]?
-    //MARK: 请求完成返回数据
-    ///下载用 设置文件下载地址覆盖方式等等
-    public var destination : DownloadRequest.Destination?
-    public var downloadType : DownloadType = .download
-    ///已经下载的部分,下载续传用,从请求结果中获取
-    public var resumeData : Data?
     
-    //MARK: 上传
-    public var uploadType : UploadType = .file
-    ///上传文件地址
-    public var fileURL: URL?
-    ///上传文件地址
-    public var fileData: Data?
-    ///上传文件InputStream
-    public var stream: InputStream?
-    public var uploadDatas : [MeshMultipartConfig]?
 ```
 
-### MeshRequest：解析请求
-对Post、Get网络请求的Codable封装，通过设置泛型model回调生成好的Model，方便使用。用例：
+### Request：解析请求
+请结合自己的使用情况自行创建。使用ObservableObject,方便SwiftUI和UIKit混合开发使用,结合Combine。用例参考Request类：
 ```swift
-MeshRequest.get("http://t.weather.itboy.net/api/weather/city/101030100", modelType: ResultModel.self, modelKeyPath: "cityInfo") { (model) in
-            print("22222\(String(describing: model))")
+class RequestModel: ObservableObject {
+    @MainActor @Published var cityResult: CityResult?
+ 
+    func getAppliances() {
+        Task{
+            do {
+     
+                let data = try await Mesh.shared.request(of: CityResult.self, configClosure: { config in
+                    config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
+                })
+                
+                await MainActor.run {
+                    self.cityResult = data
+                }
+                
+            } catch let error {
+                print(error.localizedDescription)
+            }
         }
+
+    }
+}
 ```
 
 

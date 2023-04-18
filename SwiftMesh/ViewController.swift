@@ -7,72 +7,23 @@
 //
 
 import UIKit
-struct BaseModel: Codable {
-    let body: String
-    let title: String
-    let userId: Int
-}
-
-struct TestModel: Codable {
-    let code: Int 
-    let message: String
-    let result: [Item]
-}
-struct Item: Codable {
-    let text: String
-    let video: String
-}
-
-struct ResultModel: Codable {
-    let city: String
-    let citykey: String
-    let parent: String
-    let updateTime: String
-}
-
+import Combine
 class ViewController: UIViewController {
-
+    var request = RequestModel()
+    private var cancellables: Set<AnyCancellable> = []
     
-    func setHeader() {
-        Mesh.canLogging = true
-        Mesh.setGlobalHeaders(["aaa":"bbb"])
-        Mesh.setDefaultParameters(["String" : "Any","a":"1","b":"2"])
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setHeader()
-        // Do any additional setup after loading the view.
-//        Mesh.disableHttpsProxy()
-
-//        MeshRequest.get("https://jsonplaceholder.typicode.com/posts", modelType: [BaseModel].self) { (model) in
-//            print("\(String(describing: model))")
-//        }
+ 
+        request.getAppliances()
         
-        let a = MeshRequest.get("http://t.weather.itboy.net/api/weather/city/101030100", modelType: ResultModel.self, modelKeyPath: "cityInfo") { (model) in
-            print("22222\(String(describing: model))")
-        }
-//        a.cancel()
-        
-        Mesh.requestWithConfig { config in
-            config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
-            config.requestMethod = .get
-        }.success { responseData in
-            
-            guard let data = responseData else {
-                return
-            }
-            
-            let dic = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String : Any]
-            print("\(String(describing: dic?["message"]))")
-        }.failed { error in
-            print("\(error)")
-        }
-
+        request.$cityResult
+            .receive(on: RunLoop.main)
+            .sink { (model) in
+                print("hello \(String(describing: model))")
+         }.store(in: &cancellables)
     }
-
-    func get(dd: Double, ss: String){
-        print("\(dd),\(ss)")
-    }
+ 
 }
 
