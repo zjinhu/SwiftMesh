@@ -14,6 +14,7 @@ SwiftMesh是基于Alamofire和Codable的二次封装,使用Combine和Swift Concu
 
 1. 上传
 2. 下载
+3. 表单上传
 
 涉及到的设计模式有：适配器，单例等等
 

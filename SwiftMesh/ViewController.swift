@@ -21,7 +21,7 @@ class ViewController: UIViewController {
         request.$cityResult
             .receive(on: RunLoop.main)
             .sink { (model) in
-                print("hello \(String(describing: model))")
+                print("请求数据Model \(String(describing: model))")
          }.store(in: &cancellables)
     }
  
