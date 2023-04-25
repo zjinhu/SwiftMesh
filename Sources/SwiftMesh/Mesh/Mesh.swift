@@ -234,3 +234,160 @@ private final class KeyPathWrapper<T: Decodable>: Decodable {
 }
 
 
+public enum LoggerLevel {
+ 
+    case off
+ 
+    case debug
+ 
+    case info
+ 
+    case error
+ 
+}
+
+public class MeshLog {
+    
+    public static let shared = MeshLog()
+    
+    public var level: LoggerLevel
+    
+    private init() {
+        level = .info
+        startLogging()
+    }
+    
+    deinit {
+        stopLogging()
+    }
+ 
+    private func startLogging() {
+        stopLogging()
+        
+        let notificationCenter = NotificationCenter.default
+        
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(requestDidStart(notification:)),
+            name: Request.didResumeNotification,
+            object: nil
+        )
+        
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(requestDidFinish(notification:)),
+            name: Request.didFinishNotification,
+            object: nil
+        )
+    }
+     
+    private func stopLogging() {
+        NotificationCenter.default.removeObserver(self)
+    }
+ 
+    @objc private func requestDidStart(notification: Notification) {
+
+            guard let dataRequest = notification.request as? DataRequest,
+                let task = dataRequest.task,
+                let request = task.originalRequest,
+                let httpMethod = request.httpMethod,
+                let requestURL = request.url
+                else {
+                    return
+            }
+ 
+            switch self.level {
+            case .debug:
+                let cURL = dataRequest.cURLDescription()
+                
+                self.logDivider()
+                
+                print("\(httpMethod) '\(requestURL.absoluteString)':")
+                
+                print("cURL:\n\(cURL)")
+            case .info:
+                self.logDivider()
+                
+                print("\(httpMethod) '\(requestURL.absoluteString)'")
+            default:
+                break
+            }
+        
+    }
+    
+    @objc private func requestDidFinish(notification: Notification) {
+
+            guard let dataRequest = notification.request as? DataRequest,
+                let task = dataRequest.task,
+                let metrics = dataRequest.metrics,
+                let request = task.originalRequest,
+                let httpMethod = request.httpMethod,
+                let requestURL = request.url
+                else {
+                    return
+            }
+ 
+            let elapsedTime = metrics.taskInterval.duration
+            
+            if let error = task.error {
+                switch self.level {
+                case .debug, .info, .error:
+                    self.logDivider()
+                    
+                    print("[Error] \(httpMethod) '\(requestURL.absoluteString)' [\(String(format: "%.04f", elapsedTime)) s]:")
+                    print(error)
+                default:
+                    break
+                }
+            } else {
+                guard let response = task.response as? HTTPURLResponse else {
+                    return
+                }
+                
+                switch self.level {
+                case .debug:
+                    self.logDivider()
+                    
+                    print("\(String(response.statusCode)) '\(requestURL.absoluteString)' [\(String(format: "%.04f", elapsedTime)) s]:")
+                    
+                    self.logHeaders(headers: response.allHeaderFields)
+                    
+                    guard let data = dataRequest.data else { break }
+                    
+                    print("Body:")
+                    
+                    do {
+                        let jsonObject = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
+                        let prettyData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
+                        
+                        if let prettyString = String(data: prettyData, encoding: .utf8) {
+                            print(prettyString)
+                        }
+                    } catch {
+                        if let string = NSString(data: data, encoding: String.Encoding.utf8.rawValue) {
+                            print(string)
+                        }
+                    }
+                case .info:
+                    self.logDivider()
+                    
+                    print("\(String(response.statusCode)) '\(requestURL.absoluteString)' [\(String(format: "%.04f", elapsedTime)) s]")
+                default:
+                    break
+                }
+            }
+
+    }
+    
+    private func logDivider() {
+        print("--------------------")
+    }
+    
+    private func logHeaders(headers: [AnyHashable : Any]) {
+        print("Headers: [")
+        for (key, value) in headers {
+            print("  \(key): \(value)")
+        }
+        print("]")
+    }
+}

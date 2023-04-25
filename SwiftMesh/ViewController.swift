@@ -15,7 +15,8 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
- 
+        MeshLog.shared.level = .debug
+        
         request.getAppliances()
         
         request.$cityResult
