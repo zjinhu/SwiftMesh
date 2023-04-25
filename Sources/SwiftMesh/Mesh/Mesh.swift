@@ -25,11 +25,31 @@ public class Config {
 
 public typealias ConfigClosure = (_ config: Config) -> Void
 
-public actor Mesh: GlobalActor {
+public class Mesh {
+    
     public static let shared = Mesh()
-    private init() {}
+    
+    public enum LogLevel {
+        case off
+        case debug
+        case info
+        case error
+    }
+    
+    public var log: LogLevel
+    
+    private init() {
+        log = .off
+        startLogging()
+    }
+    
+    deinit {
+        stopLogging()
+    }
+    
     private var globalHeaders: HTTPHeaders?
     private var defaultParameters: [String: Any]?
+
     // MARK: 设置全局 headers
     /// 设置全局 headers
     /// - Parameter headers:全局 headers
@@ -160,6 +180,105 @@ extension Mesh{
     }
 }
 
+extension Mesh {
+
+    private func startLogging() {
+        stopLogging()
+
+        NotificationCenter.default.addObserver(forName: Request.didFinishNotification, object: nil, queue: .main) { notification in
+            guard let dataRequest = notification.request as? DataRequest,
+                let task = dataRequest.task,
+                let metrics = dataRequest.metrics,
+                let request = task.originalRequest,
+                let httpMethod = request.httpMethod,
+                let requestURL = request.url
+                else { return }
+ 
+            let elapsedTime = metrics.taskInterval.duration
+            
+            if let error = task.error {
+                switch self.log {
+                case .debug, .info, .error:
+                    self.logDivider("Alamofire Error")
+                    
+                    print("[Error] \(httpMethod) '\(requestURL.absoluteString)' [\(String(format: "%.04f", elapsedTime)) s]:")
+                    print(error)
+                    
+                    self.logDivider("Alamofire END")
+                default:
+                    break
+                }
+            } else {
+                guard let response = task.response as? HTTPURLResponse else { return }
+                let cURL = dataRequest.cURLDescription()
+                
+                switch self.log {
+                case .debug:
+   
+                    self.logDivider("Alamofire Log")
+                    
+                    print("\(httpMethod) '\(requestURL.absoluteString)'")
+                    
+                    print("\n\n\(cURL)")
+                    
+                    self.logDivider("状态")
+                    
+                    print("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]:")
+                    
+                    self.logDivider("Header")
+                    
+                    self.logHeaders(headers: response.allHeaderFields)
+                    
+                    guard let data = dataRequest.data else { break }
+                    
+                    self.logDivider("报文")
+                    
+                    do {
+                        let jsonObject = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
+                        let prettyData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
+                        
+                        if let prettyString = String(data: prettyData, encoding: .utf8) {
+                            print(prettyString)
+                        }
+                    } catch {
+                        if let string = NSString(data: data, encoding: String.Encoding.utf8.rawValue) {
+                            print(string)
+                        }
+                    }
+                    self.logDivider("Alamofire END")
+                case .info:
+                    self.logDivider("Alamofire Log")
+                    
+                    print("\(cURL)")
+                    self.logDivider("状态")
+                    
+                    print("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]")
+                    
+                    self.logDivider("Alamofire END")
+                default:
+                    break
+                }
+            }
+        }
+    }
+     
+    private func stopLogging() {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    private func logDivider(_ text: String) {
+        print("\n\n<><><><><>-「\(text)」-<><><><><>\n\n")
+    }
+    
+    private func logHeaders(headers: [AnyHashable : Any]) {
+        print("[")
+        for (key, value) in headers {
+            print("  \(key): \(value)")
+        }
+        print("]")
+    }
+}
+
 public extension JSONDecoder {
     
     static let `default`: JSONDecoder = {
@@ -231,163 +350,4 @@ private final class KeyPathWrapper<T: Decodable>: Decodable {
     }
     
     let object: T
-}
-
-
-public enum LoggerLevel {
- 
-    case off
- 
-    case debug
- 
-    case info
- 
-    case error
- 
-}
-
-public class MeshLog {
-    
-    public static let shared = MeshLog()
-    
-    public var level: LoggerLevel
-    
-    private init() {
-        level = .info
-        startLogging()
-    }
-    
-    deinit {
-        stopLogging()
-    }
- 
-    private func startLogging() {
-        stopLogging()
-        
-        let notificationCenter = NotificationCenter.default
-        
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(requestDidStart(notification:)),
-            name: Request.didResumeNotification,
-            object: nil
-        )
-        
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(requestDidFinish(notification:)),
-            name: Request.didFinishNotification,
-            object: nil
-        )
-    }
-     
-    private func stopLogging() {
-        NotificationCenter.default.removeObserver(self)
-    }
- 
-    @objc private func requestDidStart(notification: Notification) {
-
-            guard let dataRequest = notification.request as? DataRequest,
-                let task = dataRequest.task,
-                let request = task.originalRequest,
-                let httpMethod = request.httpMethod,
-                let requestURL = request.url
-                else {
-                    return
-            }
- 
-            switch self.level {
-            case .debug:
-                let cURL = dataRequest.cURLDescription()
-                
-                self.logDivider()
-                
-                print("\(httpMethod) '\(requestURL.absoluteString)':")
-                
-                print("cURL:\n\(cURL)")
-            case .info:
-                self.logDivider()
-                
-                print("\(httpMethod) '\(requestURL.absoluteString)'")
-            default:
-                break
-            }
-        
-    }
-    
-    @objc private func requestDidFinish(notification: Notification) {
-
-            guard let dataRequest = notification.request as? DataRequest,
-                let task = dataRequest.task,
-                let metrics = dataRequest.metrics,
-                let request = task.originalRequest,
-                let httpMethod = request.httpMethod,
-                let requestURL = request.url
-                else {
-                    return
-            }
- 
-            let elapsedTime = metrics.taskInterval.duration
-            
-            if let error = task.error {
-                switch self.level {
-                case .debug, .info, .error:
-                    self.logDivider()
-                    
-                    print("[Error] \(httpMethod) '\(requestURL.absoluteString)' [\(String(format: "%.04f", elapsedTime)) s]:")
-                    print(error)
-                default:
-                    break
-                }
-            } else {
-                guard let response = task.response as? HTTPURLResponse else {
-                    return
-                }
-                
-                switch self.level {
-                case .debug:
-                    self.logDivider()
-                    
-                    print("\(String(response.statusCode)) '\(requestURL.absoluteString)' [\(String(format: "%.04f", elapsedTime)) s]:")
-                    
-                    self.logHeaders(headers: response.allHeaderFields)
-                    
-                    guard let data = dataRequest.data else { break }
-                    
-                    print("Body:")
-                    
-                    do {
-                        let jsonObject = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
-                        let prettyData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
-                        
-                        if let prettyString = String(data: prettyData, encoding: .utf8) {
-                            print(prettyString)
-                        }
-                    } catch {
-                        if let string = NSString(data: data, encoding: String.Encoding.utf8.rawValue) {
-                            print(string)
-                        }
-                    }
-                case .info:
-                    self.logDivider()
-                    
-                    print("\(String(response.statusCode)) '\(requestURL.absoluteString)' [\(String(format: "%.04f", elapsedTime)) s]")
-                default:
-                    break
-                }
-            }
-
-    }
-    
-    private func logDivider() {
-        print("--------------------")
-    }
-    
-    private func logHeaders(headers: [AnyHashable : Any]) {
-        print("Headers: [")
-        for (key, value) in headers {
-            print("  \(key): \(value)")
-        }
-        print("]")
-    }
 }
