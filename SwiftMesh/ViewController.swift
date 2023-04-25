@@ -23,6 +23,12 @@ class ViewController: UIViewController {
             .sink { (model) in
                 print("请求数据Model \(String(describing: model))")
          }.store(in: &cancellables)
+        
+        request.$yesterday
+            .receive(on: RunLoop.main)
+            .sink { (model) in
+                print("请求数据Model \(String(describing: model))")
+         }.store(in: &cancellables)
     }
  
 }

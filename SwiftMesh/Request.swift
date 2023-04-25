@@ -10,8 +10,8 @@ import Foundation
 struct CityResult: Codable {
     let message: String?
     let status: Int?
-//    let date: String
-//    let time: String
+    //    let date: String
+    //    let time: String
     let cityInfo: CityInfo?
 }
 
@@ -30,24 +30,32 @@ struct Forecast: Codable {
 }
 
 class RequestModel: ObservableObject {
+    @MainActor @Published var yesterday: Forecast?
+
     @MainActor @Published var cityResult: CityResult?
- 
+    
     func getAppliances() {
         Task{
             do {
-     
-                let data = try await Mesh.shared.request(of: CityResult.self, configClosure: { config in
+                //全部解析
+                //                let data = try await Mesh.shared.request(of: CityResult.self, configClosure: { config in
+                //                    config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
+                //                })
+                //只解析需要的部分
+                let data = try await Mesh.shared.request(of: Forecast.self,
+                                                         modelKeyPath: "data.yesterday",
+                                                         configClosure: { config in
                     config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
                 })
                 
                 await MainActor.run {
-                    self.cityResult = data
+                    self.yesterday = data
                 }
                 
             } catch let error {
                 print(error.localizedDescription)
             }
         }
-
+        
     }
 }

@@ -18,6 +18,8 @@ struct SwiftUIView: View {
             Text("Hello, World!")
             
             Text(request.cityResult?.message ?? "")
+            Text(request.yesterday?.notice ?? "")
+            
         }
         .onAppear{
             request.getAppliances()

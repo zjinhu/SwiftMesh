@@ -49,12 +49,16 @@ extension Mesh{
     /// 设置默认参数
     /// - type : Model数据模型
     /// - configClosure: 配置config,请求类型
-    public func request<T: Decodable>(of type: T.Type, configClosure: ConfigClosure) async throws -> T  {
+    public func request<T: Decodable>(of type: T.Type,
+                                      modelKeyPath: String? = nil,
+                                      configClosure: ConfigClosure) async throws -> T  {
         
         let config = Config()
         configClosure(config)
         
-        return try await requestWithConfig(of : T.self, config: config)
+        return try await requestWithConfig(of : T.self,
+                                           modelKeyPath: modelKeyPath,
+                                           config: config)
     }
     
     private func requestWithConfig<T: Decodable>(of type: T.Type,
@@ -66,23 +70,45 @@ extension Mesh{
         }
         
         mergeConfig(config)
+
+        let request = AF.request(url,
+                                 method: config.requestMethod,
+                                 parameters: config.parameters,
+                                 encoding: config.requestEncoding,
+                                 headers: config.addHeads,
+                                 requestModifier: { $0.timeoutInterval = config.timeout }
+        )
         
-        let requestTask = AF.request(url,
-                                  method: config.requestMethod,
-                                  parameters: config.parameters,
-                                  encoding: config.requestEncoding,
-                                  headers: config.addHeads,
-                                  requestModifier: { $0.timeoutInterval = config.timeout }
-        ).serializingDecodable(T.self, decoder: JSONDecoder.default)
-        
-        let result = await requestTask.response.result
-        
-        return try await withCheckedThrowingContinuation { continuation in
-            switch result{
-            case .success(let model):
-                continuation.resume(returning: model)
-            case .failure(let error):
-                continuation.resume(throwing: self.handleError(error: error))
+        if let path = modelKeyPath{
+            let requestTask = request.serializingData()
+            
+            let result = await requestTask.response.result
+            
+            return try await withCheckedThrowingContinuation { continuation in
+                switch result{
+                case .success(let data):
+                    if let model = try? JSONDecoder.default.decode(T.self, from: data, keyPath: path){
+                        continuation.resume(returning: model)
+                    }else{
+                        continuation.resume(throwing: NSError(domain: "json解析失败,检查keyPath",
+                                                              code: 0))
+                    }
+                case .failure(let error):
+                    continuation.resume(throwing: self.handleError(error: error))
+                }
+            }
+        }else{
+            let requestTask = request.serializingDecodable(T.self, decoder: JSONDecoder.default)
+            
+            let result = await requestTask.response.result
+            
+            return try await withCheckedThrowingContinuation { continuation in
+                switch result{
+                case .success(let model):
+                    continuation.resume(returning: model)
+                case .failure(let error):
+                    continuation.resume(throwing: self.handleError(error: error))
+                }
             }
         }
     }
@@ -206,3 +232,5 @@ private final class KeyPathWrapper<T: Decodable>: Decodable {
     
     let object: T
 }
+
+
