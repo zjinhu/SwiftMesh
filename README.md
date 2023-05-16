@@ -22,13 +22,13 @@ SwiftMesh是基于Alamofire和Codable的二次封装,使用Combine和Swift Concu
 
 #### Swift+UIKit：
 
-```
+```swift
 import UIKit
 import Combine
+import SwiftMesh
 class ViewController: UIViewController {
     var request = RequestModel()
     private var cancellables: Set<AnyCancellable> = []
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,26 +38,33 @@ class ViewController: UIViewController {
         request.$cityResult
             .receive(on: RunLoop.main)
             .sink { (model) in
-                print("hello \(String(describing: model))")
+                print("请求数据Model \(String(describing: model))")
+         }.store(in: &cancellables)
+        
+        request.$yesterday
+            .receive(on: RunLoop.main)
+            .sink { (model) in
+                print("请求数据Model \(String(describing: model))")
          }.store(in: &cancellables)
     }
  
 }
 
+
 ```
 
 #### SwiftUI：
 
-```
+```swift
 struct SwiftUIView: View {
     @StateObject var request = RequestModel()
     
     var body: some View {
         
         VStack{
-            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-            
+            Text("Hello, World!")
             Text(request.cityResult?.message ?? "")
+            Text(request.yesterday?.notice ?? "")
         }.onAppear{
             request.getAppliances()
         }
@@ -121,25 +128,35 @@ public class MeshConfig {
 请结合自己的使用情况自行创建。使用ObservableObject,方便SwiftUI和UIKit混合开发使用,结合Combine。用例参考Request类：
 ```swift
 class RequestModel: ObservableObject {
+    @MainActor @Published var yesterday: Forecast?
+
     @MainActor @Published var cityResult: CityResult?
- 
+    
     func getAppliances() {
         Task{
             do {
-     
-                let data = try await Mesh.shared.request(of: CityResult.self, configClosure: { config in
+                //全部解析
+                //let data = try await Mesh.shared.request(of: CityResult.self, configClosure: { config in
+                //config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
+                // })
+                
+                
+                //只解析需要的部分路径
+                let data = try await Mesh.shared.request(of: Forecast.self,
+                                                         modelKeyPath: "data.yesterday",
+                                                         configClosure: { config in
                     config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
                 })
                 
                 await MainActor.run {
-                    self.cityResult = data
+                    self.yesterday = data
                 }
                 
             } catch let error {
                 print(error.localizedDescription)
             }
         }
-
+        
     }
 }
 ```
