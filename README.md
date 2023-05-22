@@ -8,17 +8,17 @@
 
 
 
-SwiftMesh是基于Alamofire和Codable的二次封装,使用Combine和Swift Concurrency,支持SwiftUI以及UIKit,去掉了闭包回调,更加简洁快速,使用更加方便。
+SwiftMesh is a secondary encapsulation based on Alamofire and Codable, uses Combine and Swift Concurrency, supports SwiftUI and UIKit, removes closure callbacks, is more concise, faster, and more convenient to use.
 
-待完成：
+To be completed:
 
-1. 上传
-2. 下载
-3. 表单上传
+1. Upload
+2. Download
+3. Form upload
 
-涉及到的设计模式有：适配器，单例等等
+The design patterns involved are: adapter, singleton, etc.
 
-## 用法
+## Usage
 
 #### Swift+UIKit：
 
@@ -75,12 +75,12 @@ struct SwiftUIView: View {
 
 
 
-## 介绍
+## Example
 
 
-### Mesh：单例
+### Mesh：singleton
 
-* 设置默认参数     —setDefaultParameters
+* Set default parameters     —setDefaultParameters
 
   ```swift
       // MARK: 设置默认参数
@@ -89,7 +89,7 @@ struct SwiftUIView: View {
       public func setDefaultParameters(_ parameters: [String: Any]?) 
   ```
 
-* 默认header     —setGlobalHeaders
+* Set default header     —setGlobalHeaders
 
   ```swift
       // MARK: 设置全局 headers
@@ -100,117 +100,100 @@ struct SwiftUIView: View {
       }
   ```
 
-### Config：适配器
+### Config：adapter
 
-网络请求的配置文件，用于设置请求超时时间、请求方式，参数，header，API地址，上传用的表单等等，以及请求完成回调回来的response都在里边。
+The configuration file of the network request is used to set the request timeout, request method, parameters, header, API address, upload form, etc., and the response returned after the request is completed.
 
 ```swift
-/// 网络请求配置
+/// Network request configuration
 public class MeshConfig {
-    //MARK: 请求相关配置
-    /// 超时配置
-    public var timeout : TimeInterval = 15.0
-    /// 添加请求头
-    public var addHeads : HTTPHeaders?
-    /// 请求方式
-    public var requestMethod : HTTPMethod = .get
-    /// 请求编码
-    public var requestEncoding: ParameterEncoding = URLEncoding.default  //PropertyListEncoding.xml//JSONEncoding.default
-    //MARK: 请求地址以及参数
-    /// 请求地址
-    public var URLString : String?
-    ///参数  表单上传也可以用
-    public var parameters : [String: Any]?
+     //MARK: request related configuration
+     /// Timeout configuration
+     public var timeout : TimeInterval = 15.0
+     /// Add request header
+     public var addHeads : HTTPHeaders?
+     /// Request method
+     public var requestMethod : HTTPMethod = .get
+     /// request encoding
+     public var requestEncoding: ParameterEncoding = URLEncoding.default //PropertyListEncoding.xml//JSONEncoding.default
+     //MARK: request address and parameters
+     /// request address
+     public var URLString : String?
+     /// parameter form upload can also be used
+     public var parameters : [String: Any]?
     
 ```
 
-### Request：解析请求
-请结合自己的使用情况自行创建。使用ObservableObject,方便SwiftUI和UIKit混合开发使用,结合Combine。用例参考Request类：
+### Request：parse request
+Please create it yourself based on your usage. Use ObservableObject to facilitate the mixed development of SwiftUI and UIKit, combined with Combine. Use case reference Request class:
 ```swift
 class RequestModel: ObservableObject {
-    @MainActor @Published var yesterday: Forecast?
+     @MainActor @Published var yesterday: Forecast?
 
-    @MainActor @Published var cityResult: CityResult?
+     @MainActor @Published var cityResult: CityResult?
     
-    func getAppliances() {
-        Task{
-            do {
-                //全部解析
-                //let data = try await Mesh.shared.request(of: CityResult.self, configClosure: { config in
-                //config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
-                // })
+     func getAppliances() {
+         Task {
+             do {
+                 // parse all
+                 //let data = try await Mesh.shared.request(of: CityResult.self, configClosure: { config in
+                 //config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
+                 // })
                 
                 
-                //只解析需要的部分路径
-                let data = try await Mesh.shared.request(of: Forecast.self,
-                                                         modelKeyPath: "data.yesterday",
-                                                         configClosure: { config in
-                    config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
-                })
+                 // Only parse the required part of the path
+                 let data = try await Mesh.shared.request(of: Forecast.self,
+                                                          modelKeyPath: "data.yesterday",
+                                                          configClosure: { config in
+                     config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
+                 })
                 
-                await MainActor.run {
-                    self.yesterday = data
-                }
+                 await MainActor. run {
+                     self.yesterday = data
+                 }
                 
-            } catch let error {
-                print(error.localizedDescription)
-            }
-        }
+             } catch let error {
+                 print(error. localizedDescription)
+             }
+         }
         
-    }
+     }
 }
 ```
 
 
 
-## 安装
+## Install
 
 ### Cocoapods
 
-1.在 Podfile 中添加 `pod ‘SwiftMesh’`  
+1. Add `pod 'SwiftMesh'` to Podfile
 
-不需要Codable解析的可以直接`pod ‘SwiftMesh/Mesh’`
+2. Execute `pod install or pod update`
 
-2.执行 `pod install 或 pod update`
-
-3.导入 `import SwiftMesh`
+3. Import `import SwiftMesh`
 
 ### Swift Package Manager
 
-从 Xcode 11 开始，集成了 Swift Package Manager，使用起来非常方便。SwiftMesh 也支持通过 Swift Package Manager 集成。
+Starting from Xcode 11, the Swift Package Manager is integrated, which is very convenient to use. SwiftMesh also supports integration via the Swift Package Manager.
 
-在 Xcode 的菜单栏中选择 `File > Swift Packages > Add Pacakage Dependency`，然后在搜索栏输入
+Select `File > Swift Packages > Add Pacakage Dependency` in Xcode's menu bar, and enter in the search bar
 
-`https://github.com/jackiehu/SwiftMesh`，即可完成集成，默认依赖Alamofire。
+`https://github.com/jackiehu/SwiftMesh`, you can complete the integration and rely on Alamofire by default.
 
-### 手动集成
+### Manual integration
 
-SwiftMesh 也支持手动集成，只需把Sources文件夹中的SwiftMesh文件夹拖进需要集成的项目即可
+SwiftMesh also supports manual integration, just drag the SwiftMesh folder in the Sources folder into the project that needs to be integrated
 
 
 
-## 更多砖块工具加速APP开发
+## More tools to speed up APP development
 
 [![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftBrick&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftBrick)
 
 [![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftMediator&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftMediator)
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftShow&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftShow)
-
 [![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftLog&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftLog)
-
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftyForm&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftyForm)
-
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftEmptyData&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftEmptyData)
-
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftPageView&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftPageView)
-
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=JHTabBarController&theme=radical&locale=cn)](https://github.com/jackiehu/JHTabBarController)
 
 [![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftNotification&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftNotification)
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftNetSwitch&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftNetSwitch)
-
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftButton&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftButton)
-
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftDatePicker&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftDatePicker)
