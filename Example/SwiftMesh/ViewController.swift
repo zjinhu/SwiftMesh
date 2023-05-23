@@ -7,7 +7,6 @@
 
 import UIKit
 import Combine
-import SwiftMesh
 import ProgressHUD
 import SnapKit
 import SwiftBrick
