@@ -7,8 +7,10 @@
 //
 
 import SwiftUI
+import SwiftBrick
 
 struct SwiftUIView: View {
+
     @StateObject var request = RequestModel()
     
     var body: some View {
@@ -17,13 +19,13 @@ struct SwiftUIView: View {
             
             Text("Hello, World!")
             
-            Text(request.cityResult?.message ?? "")
             Text(request.yesterday?.notice ?? "")
             
         }
-        .onAppear{
-            request.getAppliances()
+        .task {
+            await request.getResult()
         }
+        
     }
     
 }

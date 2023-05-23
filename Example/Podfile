@@ -1,8 +1,10 @@
 platform :ios, '13.0'
-# Comment the next line if you don't want to use dynamic frameworks
+source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 target 'Example' do
 
   pod 'SwiftMesh', :path => '../'
-
+  pod 'ProgressHUD'
+  pod 'SwiftBrick'
+  pod 'SnapKit'
 end
