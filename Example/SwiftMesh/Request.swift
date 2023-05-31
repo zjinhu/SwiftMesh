@@ -27,6 +27,7 @@ struct Forecast: Codable {
     let ymd: String?
     let week: String?
     let notice: String?
+    @Codables.EmptyInt var date: Int
 }
 
 @MainActor
