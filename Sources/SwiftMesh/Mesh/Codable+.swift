@@ -36,13 +36,17 @@ import Foundation
 }
 
 public protocol DefaultValueProvider {
-    associatedtype Value: Codable
+    associatedtype Value
     static var defaultValue: Value { get }
+}
+
+extension Optional: DefaultValueProvider {
+    public static var defaultValue: Wrapped? { return .none }
 }
 
 public enum Codables {}
 
-extension Codables.Wrapper: Codable {
+extension Codables.Wrapper: Codable where Value: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         wrappedValue = try container.decode(Value.self)
@@ -51,7 +55,7 @@ extension Codables.Wrapper: Codable {
 
 extension KeyedDecodingContainer {
     func decode<T>(_ type: Codables.Wrapper<T>.Type,
-                   forKey key: Key) throws -> Codables.Wrapper<T> {
+                   forKey key: Key) throws -> Codables.Wrapper<T> where T.Value: Codable {
         try decodeIfPresent(type, forKey: key) ?? .init()
     }
 }
@@ -128,4 +132,35 @@ extension Codables {
     public typealias EmptyDictionary<T: Map> = Wrapper<Sources.EmptyMap<T>>
     public typealias Now = Wrapper<Sources.Now>
     
+}
+
+// MARK: - IgnoreEncodable
+
+/// A property wrapper that allows not encoding a value.
+/// - Example:
+/// ```
+/// struct Data {
+///     @CodablesIgnore var data: String // this value won't be encoded
+/// }
+/// ```
+@propertyWrapper
+public struct CodablesIgnore<Value>: Codable where Value: Codable  {
+
+    public var wrappedValue: Value
+    
+    public init(from decoder: Decoder) throws {
+        self.wrappedValue = try decoder.singleValueContainer().decode(Value.self)
+    }
+    
+    public func encode(to encoder: Encoder) throws {}
+}
+
+ 
+extension CodablesIgnore: Equatable where Value: Equatable {}
+extension CodablesIgnore: Hashable where Value: Hashable {}
+
+extension KeyedEncodingContainer {
+
+    mutating func encode<T>(_ value: CodablesIgnore<T>, forKey key: K) throws {}
+
 }

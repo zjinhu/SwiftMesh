@@ -2,26 +2,26 @@ PODS:
   - Alamofire (5.7.1)
   - ProgressHUD (13.6.2)
   - SnapKit (5.6.0)
-  - SwiftBrick (2.4.0):
-    - SwiftBrick/BaseCell (= 2.4.0)
-    - SwiftBrick/BaseVC (= 2.4.0)
-    - SwiftBrick/Extensions (= 2.4.0)
-    - SwiftBrick/SwiftUI (= 2.4.0)
-    - SwiftBrick/Util (= 2.4.0)
-    - SwiftBrick/ViewFactory (= 2.4.0)
-  - SwiftBrick/BaseCell (2.4.0):
+  - SwiftBrick (2.4.2):
+    - SwiftBrick/BaseCell (= 2.4.2)
+    - SwiftBrick/BaseVC (= 2.4.2)
+    - SwiftBrick/Extensions (= 2.4.2)
+    - SwiftBrick/SwiftUI (= 2.4.2)
+    - SwiftBrick/Util (= 2.4.2)
+    - SwiftBrick/ViewFactory (= 2.4.2)
+  - SwiftBrick/BaseCell (2.4.2):
     - SwiftBrick/Extensions
-  - SwiftBrick/BaseVC (2.4.0):
+  - SwiftBrick/BaseVC (2.4.2):
     - SwiftBrick/BaseCell
     - SwiftBrick/Extensions
     - SwiftBrick/Util
-  - SwiftBrick/Extensions (2.4.0):
+  - SwiftBrick/Extensions (2.4.2):
     - SwiftBrick/Util
-  - SwiftBrick/SwiftUI (2.4.0):
+  - SwiftBrick/SwiftUI (2.4.2):
     - SwiftBrick/BaseVC
     - SwiftBrick/Extensions
-  - SwiftBrick/Util (2.4.0)
-  - SwiftBrick/ViewFactory (2.4.0):
+  - SwiftBrick/Util (2.4.2)
+  - SwiftBrick/ViewFactory (2.4.2):
     - SwiftBrick/Extensions
     - SwiftBrick/Util
   - SwiftMesh (2.1.4):
@@ -34,7 +34,7 @@ DEPENDENCIES:
   - SwiftMesh (from `../`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
     - Alamofire
     - ProgressHUD
     - SnapKit
@@ -48,9 +48,9 @@ SPEC CHECKSUMS:
   Alamofire: 0123a34370cb170936ae79a8df46cc62b2edeb88
   ProgressHUD: 355915c8f033e626788fa9b0d99d06e8691595ab
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
-  SwiftBrick: 1e29ce0a853d948cc88d872df943bc2c9784a5c4
+  SwiftBrick: a3f4a134fdc440accd5394d9ee23208f05218f7c
   SwiftMesh: 1b87dcdf96986583a246652015a08f876ade5811
 
-PODFILE CHECKSUM: fa09d1efd4fef85922fc616b09efaf2e45b88ffc
+PODFILE CHECKSUM: 55e92689a626f1c7923e0da57dc53f72cca7ad8f
 
 COCOAPODS: 1.12.1
