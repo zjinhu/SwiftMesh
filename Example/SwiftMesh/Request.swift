@@ -25,9 +25,12 @@ struct CityInfo: Codable {
 
 struct Forecast: Codable {
     let ymd: String?
-    let week: String?
-    let notice: String?
-    @Codables.EmptyInt var date: Int
+    @ConvertToString
+    var aqi: String?
+
+    var notice: String?
+    @Default.EmptyString
+    var date: String
 }
 
 @MainActor
