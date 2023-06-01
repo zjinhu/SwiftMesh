@@ -107,6 +107,64 @@ extension Default {
     }
 }
 
+// MARK: - IgnoreError
+
+/// Decodes a value when possible, otherwise yielding `nil`, for more resilient handling of JSON with unexpected shapes such as missing fields or incorrect types. Normally, this would throw a `DecodingError`, aborting the decoding process even of the parent object.
+/// 尽可能解码一个值，否则产生 `nil`，以便更灵活地处理具有意外形状（例如缺少字段或不正确类型）的 JSON。 通常，这会抛出一个“DecodingError”，甚至中止父对象的解码过程。如果想全局控制请使用https://github.com/Pircate/CleanJSON
+/// - Example:
+/// ```
+/// struct Data {
+///     @IgnoreError var data: String?
+/// }
+/// ```
+@propertyWrapper public struct IgnoreError<Wrapped: Codable> {
+    public let wrappedValue: Wrapped?
+    
+    public init(wrappedValue: Wrapped?) {
+        self.wrappedValue = wrappedValue
+    }
+}
+
+extension IgnoreError: Decodable {
+    public init(from decoder: Decoder) throws {
+        let container = try? decoder.singleValueContainer()
+        wrappedValue = try? container?.decode(Wrapped.self)
+    }
+}
+
+/// We need this protocol to circumvent how the Swift compiler currently handles non-existing fields for property wrappers, always failing when there is no matching key.
+public protocol NullableCodable {
+    associatedtype Wrapped: Decodable, ExpressibleByNilLiteral
+    var wrappedValue: Wrapped { get }
+    init(wrappedValue: Wrapped)
+}
+
+extension IgnoreError: NullableCodable {}
+
+extension KeyedDecodingContainer {
+    /// Necessary for handling non-existing fields, due to how Swift compiler currently synthesises decoders for property wrappers, always failing when there is no matching key.
+    public func decode<T: NullableCodable>(_ type: T.Type, forKey key: Key) throws -> T where T: Decodable {
+        let decoded = try self.decodeIfPresent(T.self, forKey: key) ?? T(wrappedValue: nil)
+        return decoded
+    }
+}
+
+extension IgnoreError: Encodable where Wrapped: Encodable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(wrappedValue)
+    }
+}
+
+extension IgnoreError: Equatable where Wrapped: Equatable {}
+
+extension IgnoreError: Hashable where Wrapped: Hashable {}
+
+#if swift(>=5.5)
+extension IgnoreError: Sendable where Wrapped: Sendable {}
+#endif
+
+
 //  不确定服务器返回什么类型，都转换为 String 然后保证正常解析
 //  当前支持 Double Int String
 //  其他类型会解析成 nil
@@ -208,35 +266,3 @@ extension Default {
         wrappedValue = float
     }
 }
-
-// MARK: - IgnoreEncodable
-
-/// A property wrapper that allows not encoding a value.
-/// 允许不对值进行编码的属性包装器。
-/// - Example:
-/// ```
-/// struct Data {
-///     @Ignore var data: String // this value won't be encoded
-/// }
-/// ```
-//@propertyWrapper
-//public struct Ignore<Value>: Codable where Value: Codable  {
-//
-//    public var wrappedValue: Value
-//    
-//    public init(from decoder: Decoder) throws {
-//        self.wrappedValue = try decoder.singleValueContainer().decode(Value.self)
-//    }
-//
-//    public func encode(to encoder: Encoder) throws {}
-//}
-//
-//
-//extension Ignore: Equatable where Value: Equatable {}
-//extension Ignore: Hashable where Value: Hashable {}
-//
-//extension KeyedEncodingContainer {
-//
-//    mutating func encode<T>(_ value: Ignore<T>, forKey key: K) throws {}
-//
-//}

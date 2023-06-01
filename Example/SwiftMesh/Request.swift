@@ -25,13 +25,17 @@ struct CityInfo: Codable {
 
 struct Forecast: Codable {
     let ymd: String?
-    @ConvertToString
-    var aqi: String?
-
+    
+    @IgnoreError
+    var aqi: String? //本身为Int类型,添加忽略错误,保证其他解析成功
+    
     var notice: String?
-    @Default.EmptyString
-    var date: String
+    
+    @IgnoreError
+    var date: Int?
+ 
 }
+
 
 @MainActor
 class RequestModel: ObservableObject {

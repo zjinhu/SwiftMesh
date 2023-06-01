@@ -295,6 +295,14 @@ public extension JSONDecoder {
         userInfo[keyPathUserInfoKey] = keyPath.components(separatedBy: separator)
         return try decode(KeyPathWrapper<T>.self, from: data).object
     }
+    
+    func decodeArray<T>(_ type: T.Type,
+                        from data: Data,
+                        keyPath: String,
+                        keyPathSeparator separator: String = ".") throws -> T where T: RangeReplaceableCollection, T.Element: Decodable {
+        userInfo[keyPathUserInfoKey] = keyPath.components(separatedBy: separator)
+        return T(try self.decode([KeyPathWrapper<T.Element>].self, from: data).map(\.object))
+    }
 }
 
 private let keyPathUserInfoKey = CodingUserInfoKey(rawValue: "keyPathUserInfoKey")!
