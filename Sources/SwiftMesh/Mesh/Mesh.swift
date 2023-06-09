@@ -12,7 +12,7 @@ public class Config {
     /// 超时配置
     public var timeout : TimeInterval = 15.0
     /// 请求方式
-    public var requestMethod : HTTPMethod = .get
+    public var requestMethod : HTTPMethod = .post
     /// 添加请求头
     public var addHeads : HTTPHeaders?
     /// 请求编码
