@@ -93,8 +93,8 @@ extension Mesh{
             }
         }else{
             let requestTask = uploadRequest.serializingDecodable(T.self,
-                                                           automaticallyCancelling: true,
-                                                           decoder: JSONDecoder.default)
+                                                                 automaticallyCancelling: true,
+                                                                 decoder: JSONDecoder.default)
             
             let result = await requestTask.response.result
             
@@ -167,8 +167,8 @@ extension Mesh{
             }
         }else{
             let requestTask = uploadRequest.serializingDecodable(T.self,
-                                                           automaticallyCancelling: true,
-                                                           decoder: JSONDecoder.default)
+                                                                 automaticallyCancelling: true,
+                                                                 decoder: JSONDecoder.default)
             
             let result = await requestTask.response.result
             

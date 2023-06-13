@@ -57,8 +57,16 @@ public class Config {
     ///   - fileData: 文件 Data
     ///   - fileURL:  文件地址
     ///   - mimeType: 数据类型
-    public func addformData(name: String, fileName: String? = nil, fileData: Data? = nil, fileURL: URL? = nil, mimeType: String? = nil) {
-        let config = MultipleUpload.formData(name: name, fileName: fileName, fileData: fileData, fileURL: fileURL, mimeType: mimeType)
+    public func addformData(name: String,
+                            fileName: String? = nil,
+                            fileData: Data? = nil,
+                            fileURL: URL? = nil,
+                            mimeType: String? = nil) {
+        let config = MultipleUpload.formData(name: name,
+                                             fileName: fileName,
+                                             fileData: fileData,
+                                             fileURL: fileURL,
+                                             mimeType: mimeType)
         uploadDatas?.append(config)
     }
 }
@@ -83,7 +91,11 @@ public class MultipleUpload {
     ///   - fileData: 文件 Data
     ///   - fileURL:  文件地址
     ///   - mimeType: 数据类型
-    public static func formData(name: String, fileName: String? = nil, fileData: Data? = nil, fileURL: URL? = nil, mimeType: String? = nil) -> MultipleUpload {
+    public static func formData(name: String,
+                                fileName: String? = nil,
+                                fileData: Data? = nil,
+                                fileURL: URL? = nil,
+                                mimeType: String? = nil) -> MultipleUpload {
         let config = MultipleUpload()
         config.name = name
         config.fileName = fileName

@@ -22,7 +22,6 @@ extension Mesh{
         }
     }
     
-    
     private func sendDownload(_ config: Config) async throws -> URL{
         guard let url = config.URLString else {
             fatalError("URLString 为空")
