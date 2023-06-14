@@ -33,14 +33,16 @@ struct Forecast: Codable {
     
     @IgnoreError
     var date: Int?
- 
+    
 }
 
 
 @MainActor
 class RequestModel: ObservableObject {
     @Published var yesterday: Forecast?
-//    @Published var cityResult: CityResult?
+    //    @Published var cityResult: CityResult?
+    
+    @Published var downloadUrl: URL?
     
     func getResult() async {
         
@@ -50,15 +52,27 @@ class RequestModel: ObservableObject {
             //   config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
             //})
             //只解析需要的部分
+
             yesterday = try await Mesh.shared.request(of: Forecast.self,
-                                                     modelKeyPath: "data.yesterday",
-                                                     configClosure: { config in
+                                                      modelKeyPath: "data.yesterday") { config in
                 config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
-            })
- 
+            }
+            
         } catch let error {
             print(error.localizedDescription)
         }
-
+        
+    }
+    
+    func download() async{
+        
+        do {
+            downloadUrl = try await Mesh.shared.download{ config in
+                config.URLString = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+            }
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        
     }
 }

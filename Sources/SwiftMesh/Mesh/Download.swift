@@ -9,7 +9,10 @@ import Foundation
 import Alamofire
 extension Mesh{
     
-    public func download(configClosure: ConfigClosure) async throws -> URL{
+    /// 下载文件
+    /// - Parameter configClosure: 根据需要需要设置config的 downloadType destination resumeData参数
+    /// - Returns: 返回下载后文件地址
+    public func download(_ configClosure: (_ config: Config) -> Void) async throws -> URL{
         
         let config = Config()
         configClosure(config)
@@ -21,7 +24,9 @@ extension Mesh{
             return try await sendDownload(config)
         }
     }
-    
+}
+
+extension Mesh{
     private func sendDownload(_ config: Config) async throws -> URL{
         guard let url = config.URLString else {
             fatalError("URLString 为空")
@@ -34,17 +39,10 @@ extension Mesh{
                                   interceptor: config.interceptor,
                                   requestModifier: { request in request.timeoutInterval = config.timeout},
                                   to: config.destination)
-        let downloadTask = request.serializingDownloadedFileURL(automaticallyCancelling: true)
-        let result = await downloadTask.response.result
         
-        return try await withCheckedThrowingContinuation { continuation in
-            switch result{
-            case .success(let url):
-                continuation.resume(returning: url)
-            case .failure(let error):
-                continuation.resume(throwing: self.handleError(error: error))
-            }
-        }
+        handleDownloadProgress(request: request)
+        
+        return try await handleDownload(request: request)
         
     }
     
@@ -57,16 +55,8 @@ extension Mesh{
                                   interceptor: config.interceptor,
                                   to: config.destination)
         
-        let downloadTask = request.serializingDownloadedFileURL(automaticallyCancelling: true)
-        let result = await downloadTask.response.result
+        handleDownloadProgress(request: request)
         
-        return try await withCheckedThrowingContinuation { continuation in
-            switch result{
-            case .success(let url):
-                continuation.resume(returning: url)
-            case .failure(let error):
-                continuation.resume(throwing: self.handleError(error: error))
-            }
-        }
+        return try await handleDownload(request: request)
     }
 }

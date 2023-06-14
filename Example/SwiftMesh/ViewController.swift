@@ -10,6 +10,7 @@ import Combine
 import ProgressHUD
 import SnapKit
 import SwiftBrick
+import SwiftMesh
 class ViewController: UIViewController {
     var request = RequestModel()
     private var cancellables: Set<AnyCancellable> = []
@@ -23,6 +24,21 @@ class ViewController: UIViewController {
             Task{
                 ProgressHUD.show()
                 await self?.request.getResult()
+                ProgressHUD.dismiss()
+            }
+        }
+        return btn
+    }()
+    
+    lazy var downloadButton: UIButton = {
+        let btn = UIButton()
+        btn.backgroundColor = .random
+        btn.setTitle("Download", for: .normal)
+        btn.setTitleColor(.black, for: .normal)
+        btn.addTouchUpInSideBtnAction { [weak self]sender in
+            Task{
+                ProgressHUD.show()
+                await self?.request.download()
                 ProgressHUD.dismiss()
             }
         }
@@ -52,18 +68,31 @@ class ViewController: UIViewController {
             make.top.equalToSuperview().offset(200)
         }
  
-        
-//        request.$cityResult
-//            .sink { (model) in
-//                self.resultLabel.text = String(describing: model)
-//                print("请求数据Model \(String(describing: model))")
-//         }.store(in: &cancellables)
+        view.addSubview(downloadButton)
+        downloadButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(200)
+            make.height.equalTo(40)
+            make.width.equalTo(100)
+        }
+        Mesh.shared.$downloadProgress
+            .sink { (model) in
+                self.resultLabel.text = String(describing: model)
+                print("下载进度: \(String(describing: model))")
+         }.store(in: &cancellables)
         
         request.$yesterday
             .receive(on: RunLoop.main)
             .sink { (model) in
                 self.resultLabel.text = String(describing: model)
                 print("请求数据Model \(String(describing: model))")
+         }.store(in: &cancellables)
+        
+        
+        request.$downloadUrl
+            .receive(on: RunLoop.main)
+            .sink { (model) in
+                print("下载文件地址 \(String(describing: model))")
          }.store(in: &cancellables)
     }
  

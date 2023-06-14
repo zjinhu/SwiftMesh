@@ -36,7 +36,7 @@ public class Config {
     //MARK: 下载
     public var downloadType : DownloadType = .download
     //设置文件下载地址覆盖方式等等
-    public var destination : DownloadRequest.Destination = DownloadRequest.suggestedDownloadDestination(for: .cachesDirectory, in: .userDomainMask)
+    public var destination : DownloadRequest.Destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
     ///已经下载的部分,下载续传用,从请求结果中获取
     public var resumeData : Data?
     
@@ -49,7 +49,8 @@ public class Config {
     public var fileData: Data?
     ///上传文件InputStream
     public var stream: InputStream?
-    public var uploadDatas : [MultipleUpload]?
+    ///表单数据
+    public var uploadDatas : [MultipleUpload] = []
     /// 表单数组快速添加表单
     /// - Parameters:
     ///   - name: 表单 name 必须
@@ -67,23 +68,13 @@ public class Config {
                                              fileData: fileData,
                                              fileURL: fileURL,
                                              mimeType: mimeType)
-        uploadDatas?.append(config)
+        uploadDatas.append(config)
     }
 }
 
 /// 表单上传配置
 public class MultipleUpload {
-    
-    public var name : String?
-    
-    public var fileName : String?
-    
-    public var mimeType : String?
-    
-    public var fileData : Data?
-    
-    public var fileURL: URL?
-    
+
     /// 快速返回表单配置
     /// - Parameters:
     ///   - name: 表单 name 必须
@@ -104,4 +95,10 @@ public class MultipleUpload {
         config.fileURL = fileURL
         return config
     }
+    
+    var name : String?
+    var fileName : String?
+    var mimeType : String?
+    var fileData : Data?
+    var fileURL: URL?
 }
