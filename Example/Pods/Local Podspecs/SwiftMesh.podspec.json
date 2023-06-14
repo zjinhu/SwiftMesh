@@ -1,6 +1,6 @@
 {
   "name": "SwiftMesh",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "summary": "网络请求组件.",
   "description": "工具.",
   "homepage": "https://github.com/jackiehu/",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/jackiehu/SwiftMesh.git",
-    "tag": "2.1.6"
+    "tag": "2.1.7"
   },
   "platforms": {
     "ios": "13.0"
@@ -33,21 +33,6 @@
 
     ]
   },
-  "default_subspecs": "Mesh",
-  "subspecs": [
-    {
-      "name": "Tools",
-      "source_files": "Sources/SwiftMesh/Mesh/Tools/**/*"
-    },
-    {
-      "name": "Mesh",
-      "dependencies": {
-        "SwiftMesh/Tools": [
-
-        ]
-      },
-      "source_files": "Sources/SwiftMesh/Mesh/*"
-    }
-  ],
+  "source_files": "Sources/SwiftMesh/Mesh/**/*",
   "swift_version": "5.5"
 }

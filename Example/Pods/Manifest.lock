@@ -24,13 +24,7 @@ PODS:
   - SwiftBrick/ViewFactory (2.4.2):
     - SwiftBrick/Extensions
     - SwiftBrick/Util
-  - SwiftMesh (2.1.6):
-    - Alamofire
-    - SwiftMesh/Mesh (= 2.1.6)
-  - SwiftMesh/Mesh (2.1.6):
-    - Alamofire
-    - SwiftMesh/Tools
-  - SwiftMesh/Tools (2.1.6):
+  - SwiftMesh (2.1.7):
     - Alamofire
 
 DEPENDENCIES:
@@ -55,7 +49,7 @@ SPEC CHECKSUMS:
   ProgressHUD: 355915c8f033e626788fa9b0d99d06e8691595ab
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   SwiftBrick: a3f4a134fdc440accd5394d9ee23208f05218f7c
-  SwiftMesh: 6df30e56e425d9a06a4245b405b21904c116dc77
+  SwiftMesh: 0b7ab17dba8ceeb76598779d65c74086a588bf7d
 
 PODFILE CHECKSUM: 55e92689a626f1c7923e0da57dc53f72cca7ad8f
 
