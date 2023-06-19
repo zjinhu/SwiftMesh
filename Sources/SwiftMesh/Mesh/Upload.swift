@@ -84,7 +84,10 @@ extension Mesh{
 
         handleUploadProgress(request: uploadRequest)
         
-        return try await handleCodable(of: type, request: uploadRequest, config: config)
+        return try await handleCodable(of: type,
+                                       request: uploadRequest,
+                                       modelKeyPath: modelKeyPath,
+                                       config: config)
         
     }
     
@@ -140,6 +143,9 @@ extension Mesh{
         
         handleUploadProgress(request: uploadRequest)
         
-        return try await handleCodable(of: type, request: uploadRequest, config: config)
+        return try await handleCodable(of: type,
+                                       request: uploadRequest,
+                                       modelKeyPath: modelKeyPath,
+                                       config: config)
     }
 }

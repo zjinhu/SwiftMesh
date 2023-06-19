@@ -45,7 +45,10 @@ extension Mesh{
                                  requestModifier: { $0.timeoutInterval = config.timeout }
         )
         
-        return try await handleCodable(of: type, request: request, config: config)
+        return try await handleCodable(of: type,
+                                       request: request,
+                                       modelKeyPath: modelKeyPath,
+                                       config: config)
     }
     
 }
