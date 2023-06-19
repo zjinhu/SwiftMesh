@@ -27,12 +27,12 @@ extension Mesh {
             if let error = task.error {
                 switch self.log {
                 case .debug, .info, .error:
-                    self.logDivider("Alamofire Error")
+                    self.logDivider("Alamofire Error", level: .error)
                      
-                    self.logMessage("[Error] \(httpMethod) '\(requestURL.absoluteString)' [\(String(format: "%.04f", elapsedTime)) s]:")
-                    self.logMessage("\(error)")
+                    self.logMessage("[Error] \(httpMethod) '\(requestURL.absoluteString)' [\(String(format: "%.04f", elapsedTime)) s]:", level: .error)
+                    self.logMessage("\(error)", level: .error)
                     
-                    self.logDivider("Alamofire END")
+                    self.logDivider("Alamofire END", level: .error)
                 default:
                     break
                 }
@@ -43,46 +43,48 @@ extension Mesh {
                 switch self.log {
                 case .debug:
    
-                    self.logDivider("Alamofire Log")
+                    self.logDivider("Alamofire Log", level: .debug)
                      
-                    self.logMessage("\(httpMethod) '\(requestURL.absoluteString)'")
+                    self.logMessage("\(httpMethod) '\(requestURL.absoluteString)'", level: .debug)
                      
-                    self.logMessage("\(cURL)")
+                    self.logMessage("\(cURL)", level: .debug)
                     
-                    self.logDivider("状态")
+                    self.logDivider("状态", level: .debug)
                      
-                    self.logMessage("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]:")
+                    self.logMessage("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]:", level: .debug)
                     
-                    self.logDivider("Header")
+                    self.logDivider("Header", level: .debug)
                     
-                    self.logHeaders(headers: response.allHeaderFields)
+                    self.logHeaders(headers: response.allHeaderFields, level: .debug)
                     
                     guard let data = dataRequest.data else { break }
                     
-                    self.logDivider("报文")
+                    self.logDivider("报文", level: .debug)
                     
                     do {
                         let jsonObject = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
                         let prettyData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
                         
                         if let prettyString = String(data: prettyData, encoding: .utf8) {
-                            print(prettyString)
+                            self.logMessage("\(prettyString)", level: .debug)
                         }
                     } catch {
                         if let string = NSString(data: data, encoding: String.Encoding.utf8.rawValue) {
-                            print(string)
+                            self.logMessage("\(string)", level: .debug)
                         }
                     }
-                    self.logDivider("Alamofire END")
+                    self.logDivider("Alamofire END", level: .debug)
+                    
                 case .info:
-                    self.logDivider("Alamofire Log")
+                    self.logDivider("Alamofire Log", level: .info)
+                     
+                    self.logMessage("\(cURL)", level: .info)
                     
-                    print("\(cURL)")
-                    self.logDivider("状态")
+                    self.logDivider("状态", level: .info)
  
-                    self.logMessage("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]")
+                    self.logMessage("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]", level: .info)
                     
-                    self.logDivider("Alamofire END")
+                    self.logDivider("Alamofire END", level: .info)
                 default:
                     break
                 }
@@ -94,19 +96,19 @@ extension Mesh {
         NotificationCenter.default.removeObserver(self)
     }
 
-    private func logDivider(_ text: String) {
-        logMessage("<><><><><>-「\(text)」-<><><><><>")
+    private func logDivider(_ text: String, level: OSLogType) {
+        logMessage("<><><><><>-「\(text)」-<><><><><>", level: level)
     }
     
-    private func logHeaders(headers: [AnyHashable : Any]) {
+    private func logHeaders(headers: [AnyHashable : Any], level: OSLogType) {
         for (key, value) in headers {
-            logMessage("\(key): \(value)")
+            logMessage("\(key): \(value)", level: level)
         }
     }
     
-    private func logMessage(_ text: String) {
+    private func logMessage(_ text: String, level: OSLogType) {
         if #available(iOS 14.0, *) {
-            logger.log(text)
+            logger.log(text, level: level)
         } else {
             debugPrint(text)
         }
