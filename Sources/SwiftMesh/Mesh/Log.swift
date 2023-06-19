@@ -7,7 +7,7 @@
 
 import Foundation
 import Alamofire
-
+import os
 extension Mesh {
 
     func startLogging() {
@@ -28,9 +28,9 @@ extension Mesh {
                 switch self.log {
                 case .debug, .info, .error:
                     self.logDivider("Alamofire Error")
-                    
-                    print("[Error] \(httpMethod) '\(requestURL.absoluteString)' [\(String(format: "%.04f", elapsedTime)) s]:")
-                    print(error)
+                     
+                    self.logMessage("[Error] \(httpMethod) '\(requestURL.absoluteString)' [\(String(format: "%.04f", elapsedTime)) s]:")
+                    self.logMessage("\(error)")
                     
                     self.logDivider("Alamofire END")
                 default:
@@ -44,14 +44,14 @@ extension Mesh {
                 case .debug:
    
                     self.logDivider("Alamofire Log")
-                    
-                    print("\(httpMethod) '\(requestURL.absoluteString)'")
-                    
-                    print("\n\n\(cURL)")
+                     
+                    self.logMessage("\(httpMethod) '\(requestURL.absoluteString)'")
+                     
+                    self.logMessage("\(cURL)")
                     
                     self.logDivider("状态")
-                    
-                    print("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]:")
+                     
+                    self.logMessage("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]:")
                     
                     self.logDivider("Header")
                     
@@ -79,8 +79,8 @@ extension Mesh {
                     
                     print("\(cURL)")
                     self.logDivider("状态")
-                    
-                    print("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]")
+ 
+                    self.logMessage("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]")
                     
                     self.logDivider("Alamofire END")
                 default:
@@ -95,14 +95,42 @@ extension Mesh {
     }
 
     private func logDivider(_ text: String) {
-        print("\n\n<><><><><>-「\(text)」-<><><><><>\n\n")
+        logMessage("<><><><><>-「\(text)」-<><><><><>")
     }
     
     private func logHeaders(headers: [AnyHashable : Any]) {
-        print("[")
         for (key, value) in headers {
-            print("  \(key): \(value)")
+            logMessage("\(key): \(value)")
         }
-        print("]")
+    }
+    
+    private func logMessage(_ text: String) {
+        if #available(iOS 14.0, *) {
+            logger.log(text)
+        } else {
+            debugPrint(text)
+        }
+    }
+    
+}
+ 
+@available(iOS 14.0, *)
+fileprivate let logger = MeshLog()
+@available(iOS 14.0, *)
+fileprivate struct MeshLog {
+    private let logger: Logger
+ 
+    public init(subsystem: String = "SwiftMesh", category: String = "Mesh") {
+        self.logger = Logger(subsystem: subsystem, category: category)
+    }
+}
+@available(iOS 14.0, *)
+fileprivate extension MeshLog {
+    func log(_ message: String, level: OSLogType = .default,  isPrivate: Bool = false) {
+        if isPrivate {
+            logger.log(level: level, "\(message, privacy: .private)")
+        } else {
+            logger.log(level: level, "\(message, privacy: .public)")
+        }
     }
 }
