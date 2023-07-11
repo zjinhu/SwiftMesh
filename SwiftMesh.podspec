@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SwiftMesh'
-  s.version          = '2.2.0'
+  s.version          = '2.2.1'
   s.summary          = '网络请求组件.'
  
   s.description      = <<-DESC
@@ -20,6 +20,6 @@ Pod::Spec.new do |s|
   s.frameworks   =  "Foundation" #支持的框架
   s.dependency 'Alamofire'
  
-  s.source_files = 'Sources/SwiftMesh/Mesh/**/*'
+  s.source_files = 'Sources/SwiftMesh/**/*'
 
 end

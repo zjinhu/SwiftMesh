@@ -122,7 +122,7 @@ fileprivate let logger = MeshLog()
 fileprivate struct MeshLog {
     private let logger: Logger
  
-    public init(subsystem: String = "SwiftMesh", category: String = "Mesh") {
+    public init(subsystem: String = "Mesh", category: String = "Mesh") {
         self.logger = Logger(subsystem: subsystem, category: category)
     }
 }
