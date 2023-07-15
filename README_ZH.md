@@ -10,11 +10,6 @@
 
 SwiftMesh是基于Alamofire和Codable的二次封装,使用Combine和Swift Concurrency,支持SwiftUI以及UIKit,去掉了闭包回调,更加简洁快速,使用更加方便。
 
-待完成：
-
-1. 上传
-2. 下载
-3. 表单上传
 
 涉及到的设计模式有：适配器，单例等等
 
