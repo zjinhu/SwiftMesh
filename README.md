@@ -10,11 +10,6 @@
 
 SwiftMesh is a secondary encapsulation based on Alamofire and Codable, uses Combine and Swift Concurrency, supports SwiftUI and UIKit, removes closure callbacks, is more concise, faster, and more convenient to use.
 
-To be completed:
-
-1. Upload
-2. Download
-3. Form upload
 
 The design patterns involved are: adapter, singleton, etc.
 
