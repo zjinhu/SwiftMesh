@@ -108,7 +108,15 @@ extension Mesh {
     
     private func logMessage(_ text: String, level: OSLogType) {
         if #available(iOS 14.0, *) {
-            logger.log(text, level: level)
+            switch level {
+            case .info:
+                logger.info(text)
+            case .error:
+                logger.error(text)
+            default:
+                logger.debug(text)
+            }
+
         } else {
             debugPrint(text)
         }
@@ -128,38 +136,16 @@ fileprivate struct MeshLog {
 }
 @available(iOS 14.0, *)
 fileprivate extension MeshLog {
-    func log(_ message: String, level: OSLogType = .default,  isPrivate: Bool = false) {
-        if isPrivate {
-            logger.log(level: level, "\(message, privacy: .private)")
-        } else {
-            logger.log(level: level, "\(message, privacy: .public)")
-        }
-    }
-    func log(_ message: String){
-        logger.log("\(message)")
-    }
-    func trace(_ message: String){
-        logger.trace("\(message)")
-    }
+
     func debug(_ message: String){
-        logger.debug("\(message)")
+        logger.debug("🌐\(message)")
     }
+    
     func info(_ message: String){
-        logger.info("\(message)")
+        logger.info("Ⓜ️\(message)")
     }
-    func notice(_ message: String){
-        logger.notice("\(message)")
-    }
-    func warning(_ message: String){
-        logger.warning("\(message)")
-    }
+    
     func error(_ message: String){
-        logger.error("\(message)")
-    }
-    func critical(_ message: String){
-        logger.critical("\(message)")
-    }
-    func fault(_ message: String){
-        logger.fault("\(message)")
+        logger.error("⭕️\(message)")
     }
 }
