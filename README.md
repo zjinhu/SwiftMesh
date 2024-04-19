@@ -166,11 +166,7 @@ class RequestModel: ObservableObject {
                 await MainActor.run {
                     self.yesterday = data
                 }
-                
-                 await MainActor. run {
-                     self.yesterday = data
-                 }
-                
+ 
              } catch let error {
                  print(error. localizedDescription)
              }
