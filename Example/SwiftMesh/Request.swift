@@ -52,11 +52,12 @@ class RequestModel: ObservableObject {
             //   config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
             //})
             //只解析需要的部分
-
-            yesterday = try await Mesh.shared.request(of: Forecast.self,
-                                                      modelKeyPath: "data.yesterday") { config in
-                config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
-            }
+            
+            yesterday =
+            try await Mesh.shared
+                .requestMethod(.get)
+                .url("http://t.weather.itboy.net/api/weather/city/101030100")
+                .request(of: Forecast.self, modelKeyPath: "data.yesterday")
             
         } catch let error {
             print(error.localizedDescription)
@@ -67,9 +68,10 @@ class RequestModel: ObservableObject {
     func download() async{
         
         do {
-            downloadUrl = try await Mesh.shared.download{ config in
-                config.URLString = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-            }
+            downloadUrl = 
+            try await Mesh.shared
+                .url("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4")
+                .download()
         } catch let error {
             print(error.localizedDescription)
         }

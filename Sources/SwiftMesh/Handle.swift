@@ -10,24 +10,24 @@ import Alamofire
 import Combine
 extension Mesh{
     ///私有方法
-    func mergeConfig(_ config: Config){
+    func mergeConfig(){
         ///设置默认参数
         var param = defaultParameters ?? [:]
-        param.merge(config.parameters ?? [:]) { (_, new) in new}
-        config.parameters = param
+        param.merge(parameters ?? [:]) { (_, new) in new}
+        parameters = param
         ///设置默认header
         guard let headers = globalHeaders else {
             return
         }
         
-        if let _ = config.addHeads{
+        if let _ = addHeads{
             
         }else{
-            config.addHeads = []
+            addHeads = []
         }
         
         headers.forEach {
-            config.addHeads?.update($0)
+            addHeads?.update($0)
         }
     }
     
@@ -57,6 +57,8 @@ extension Mesh{
     
     func handleDownload(request: DownloadRequest) async throws -> URL {
         
+        cleanCache()
+        
         let downloadTask = request.serializingDownloadedFileURL(automaticallyCancelling: true)
         let result = await downloadTask.response.result
         
@@ -72,8 +74,9 @@ extension Mesh{
     
     func handleCodable<T: Decodable>(of type: T.Type,
                                      request: DataRequest,
-                                     modelKeyPath: String? = nil,
-                                     config: Config) async throws -> T {
+                                     modelKeyPath: String? = nil) async throws -> T {
+        
+        cleanCache()
         
         if let path = modelKeyPath{
             let requestTask = request.serializingData(automaticallyCancelling: true)
@@ -129,6 +132,25 @@ extension Mesh{
             
             self.uploadProgress = completed/total
         }
+    }
+    
+    func cleanCache(){
+        interceptor = nil
+        addHeads = nil
+        requestMethod = .post
+        URLString = nil
+        requestEncoding = URLEncoding.default
+        parameters = nil
+        
+        downloadType = .download
+        destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
+        resumeData = nil
+        
+        uploadType = .file
+        fileURL = nil
+        fileData = nil
+        stream = nil
+        uploadDatas.removeAll()
     }
 }
  

@@ -16,69 +16,62 @@ extension Mesh{
     ///   - configClosure: 根据需要设置config的uploadType fileURL fileData stream uploadDatas等参数
     /// - Returns: 返回解析后的数据模型
     public func upload<T: Decodable>(of type: T.Type,
-                                     modelKeyPath: String? = nil,
-                                     _ configClosure: (_ config: Config) -> Void) async throws -> T{
-        
-        let config = Config()
-        configClosure(config)
-        
-        switch config.uploadType {
+                                     modelKeyPath: String? = nil) async throws -> T{
+
+        switch uploadType {
         case .multipart:
             return try await sendUploadMultipart(of: type,
-                                                 modelKeyPath: modelKeyPath,
-                                                 config: config)
+                                                 modelKeyPath: modelKeyPath)
         default:
             return try await sendUpload(of: type,
-                                        modelKeyPath: modelKeyPath,
-                                        config: config)
+                                        modelKeyPath: modelKeyPath)
         }
     }
 }
 
 extension Mesh{
     private func sendUpload<T: Decodable>(of type: T.Type,
-                                          modelKeyPath: String? = nil,
-                                          config: Config) async throws -> T{
+                                          modelKeyPath: String? = nil) async throws -> T{
         
-        guard let url = config.URLString else {
+        guard let url = URLString else {
             fatalError("URLString 为空")
         }
         
         var uploadRequest : UploadRequest
         
-        switch config.uploadType {
+        switch uploadType {
         case .file:
-            guard let fileURL = config.fileURL else {
+            guard let fileURL = fileURL else {
                 fatalError("fileURL 为空")
             }
             uploadRequest = AF.upload(fileURL,
                                       to: url,
-                                      method: config.requestMethod,
-                                      headers: config.addHeads,
-                                      interceptor: config.interceptor,
-                                      requestModifier: { request in request.timeoutInterval = config.timeout})
+                                      method: requestMethod,
+                                      headers: addHeads,
+                                      interceptor: interceptor,
+                                      requestModifier: { request in request.timeoutInterval = self.timeout})
             
         case .stream:
-            guard let stream = config.stream else {
+            guard let stream = stream else {
                 fatalError("stream 为空")
             }
             uploadRequest = AF.upload(stream,
                                       to: url,
-                                      method: config.requestMethod,
-                                      headers: config.addHeads,
-                                      interceptor: config.interceptor,
-                                      requestModifier: { request in request.timeoutInterval = config.timeout})
+                                      method: requestMethod,
+                                      headers: addHeads,
+                                      interceptor: interceptor,
+                                      requestModifier: { request in request.timeoutInterval = self.timeout})
             
         default:
-            guard let fileData = config.fileData else {
+            guard let fileData = fileData else {
                 fatalError("fileData 为空")
             }
             uploadRequest = AF.upload(fileData,
                                       to: url,
-                                      method: config.requestMethod,
-                                      headers: config.addHeads,
-                                      interceptor: config.interceptor,
-                                      requestModifier: { request in request.timeoutInterval = config.timeout})
+                                      method: requestMethod,
+                                      headers: addHeads,
+                                      interceptor: interceptor,
+                                      requestModifier: { request in request.timeoutInterval = self.timeout})
             
         }
 
@@ -86,23 +79,21 @@ extension Mesh{
         
         return try await handleCodable(of: type,
                                        request: uploadRequest,
-                                       modelKeyPath: modelKeyPath,
-                                       config: config)
+                                       modelKeyPath: modelKeyPath)
         
     }
     
     private func sendUploadMultipart<T: Decodable>(of type: T.Type,
-                                                   modelKeyPath: String? = nil,
-                                                   config: Config) async throws -> T{
+                                                   modelKeyPath: String? = nil) async throws -> T{
         
-        guard let url = config.URLString,
-              !config.uploadDatas.isEmpty  else {
+        guard let url = URLString,
+              !uploadDatas.isEmpty  else {
             fatalError("URLString / uploadDatas 为空")
         }
         
         let uploadRequest = AF.upload(multipartFormData: { multi in
             
-            config.uploadDatas.forEach { multipleUpload in
+            self.uploadDatas.forEach { multipleUpload in
                 if let fileData = multipleUpload.fileData{
                     ///Data数据表单,图片等类型
                     if let fileName = multipleUpload.fileName,
@@ -135,17 +126,16 @@ extension Mesh{
             }
         },
                                       to: url,
-                                      method: config.requestMethod,
-                                      headers: config.addHeads,
-                                      interceptor: config.interceptor,
-                                      requestModifier: { request in request.timeoutInterval = config.timeout}
+                                      method: requestMethod,
+                                      headers: addHeads,
+                                      interceptor: interceptor,
+                                      requestModifier: { request in request.timeoutInterval = self.timeout}
         )
         
         handleUploadProgress(request: uploadRequest)
         
         return try await handleCodable(of: type,
                                        request: uploadRequest,
-                                       modelKeyPath: modelKeyPath,
-                                       config: config)
+                                       modelKeyPath: modelKeyPath)
     }
 }

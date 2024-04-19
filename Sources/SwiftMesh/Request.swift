@@ -13,42 +13,26 @@ extension Mesh{
     /// - type : Model数据模型
     /// - configClosure: 配置config,请求类型
     public func request<T: Decodable>(of type: T.Type,
-                                      modelKeyPath: String? = nil,
-                                      _ configClosure: (_ config: Config) -> Void) async throws -> T  {
+                                      modelKeyPath: String? = nil) async throws -> T {
         
-        let config = Config()
-        configClosure(config)
-        
-        return try await requestWithConfig(of : T.self,
-                                           modelKeyPath: modelKeyPath,
-                                           config: config)
-    }
-}
-
-extension Mesh{
-    private func requestWithConfig<T: Decodable>(of type: T.Type,
-                                                 modelKeyPath: String? = nil,
-                                                 config: Config) async throws -> T {
-        
-        guard let url = config.URLString else {
+        guard let url = URLString else {
             fatalError("URLString 为空")
         }
         
-        mergeConfig(config)
+        mergeConfig()
         
         let request = AF.request(url,
-                                 method: config.requestMethod,
-                                 parameters: config.parameters,
-                                 encoding: config.requestEncoding,
-                                 headers: config.addHeads,
-                                 interceptor: config.interceptor,
-                                 requestModifier: { $0.timeoutInterval = config.timeout }
+                                 method: requestMethod,
+                                 parameters: parameters,
+                                 encoding: requestEncoding,
+                                 headers: addHeads,
+                                 interceptor: interceptor,
+                                 requestModifier: { $0.timeoutInterval = self.timeout }
         )
         
         return try await handleCodable(of: type,
                                        request: request,
-                                       modelKeyPath: modelKeyPath,
-                                       config: config)
+                                       modelKeyPath: modelKeyPath)
     }
     
 }

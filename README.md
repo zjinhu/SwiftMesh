@@ -81,7 +81,7 @@ struct SwiftUIView: View {
       // MARK: 设置默认参数
       /// 设置默认参数
       /// - Parameter parameters: 默认参数
-      public func setDefaultParameters(_ parameters: [String: Any]?) 
+     func setDefaultParameters(_ parameters: [String: Any]?) -> Self
   ```
 
 * Set default header     —setGlobalHeaders
@@ -90,9 +90,7 @@ struct SwiftUIView: View {
       // MARK: 设置全局 headers
       /// 设置全局 headers
       /// - Parameter headers:全局 headers
-      public func setGlobalHeaders(_ headers: HTTPHeaders?) {
-          globalHeaders = headers
-      }
+      func setGlobalHeaders(_ headers: HTTPHeaders?)  -> Self
   ```
 
 ### Config：adapter
@@ -100,23 +98,50 @@ struct SwiftUIView: View {
 The configuration file of the network request is used to set the request timeout, request method, parameters, header, API address, upload form, etc., and the response returned after the request is completed.
 
 ```swift
-/// Network request configuration
-public class MeshConfig {
-     //MARK: request related configuration
-     /// Timeout configuration
-     public var timeout : TimeInterval = 15.0
-     /// Add request header
-     public var addHeads : HTTPHeaders?
-     /// Request method
-     public var requestMethod : HTTPMethod = .get
-     /// request encoding
-     public var requestEncoding: ParameterEncoding = URLEncoding.default //PropertyListEncoding.xml//JSONEncoding.default
-     //MARK: request address and parameters
-     /// request address
-     public var URLString : String?
-     /// parameter form upload can also be used
-     public var parameters : [String: Any]?
-    
+///设置日志输出级别
+    func logStatus(_ log: LogLevel) -> Self 
+    /// 超时配置
+    func timeout(_ timeout: TimeInterval) -> Self
+    ///请求失败重试策略
+    func interceptor(_ interceptor: RequestInterceptor?) -> Self
+    /// 请求方式
+    func requestMethod(_ requestMethod: HTTPMethod) -> Self 
+    /// 添加请求头
+    func addHeads(_ addHeads: HTTPHeaders?) -> Self 
+    /// 请求编码
+    func requestEncoding(_ requestEncoding: ParameterEncoding) -> Self 
+    /// 请求地址
+    func url(_ url: String?) -> Self
+    ///参数  表单上传也用
+    func parameters(_ parameters: [String: Any]?) -> Self 
+    //下载类型
+    func downloadType(_ downloadType: DownloadType) -> Self 
+    //设置文件下载地址覆盖方式等等
+    func destination(_ destination: @escaping DownloadRequest.Destination) -> Self
+    ///已经下载的部分,下载续传用,从请求结果中获取
+    func resumeData(_ resumeData: Data?) -> Self
+    //上传类型
+    func uploadType(_ uploadType: UploadType) -> Self 
+    ///上传文件地址
+    func fileURL(_ fileURL: URL?) -> Self
+    ///上传文件地址
+    func fileData(_ fileData: Data?) -> Self 
+    ///上传文件InputStream
+    func stream(_ stream: InputStream?) -> Self
+    ///表单数据
+    func uploadDatas(_ uploadDatas: [MultipleUpload]) -> Self 
+    /// 表单数组快速添加表单
+    /// - Parameters:
+    ///   - name: 表单 name 必须
+    ///   - fileName: 文件名
+    ///   - fileData: 文件 Data
+    ///   - fileURL:  文件地址
+    ///   - mimeType: 数据类型
+    func addformData(name: String,
+                     fileName: String? = nil,
+                     fileData: Data? = nil,
+                     fileURL: URL? = nil,
+                     mimeType: String? = nil)  -> Self
 ```
 
 ### Request：parse request
@@ -130,18 +155,17 @@ class RequestModel: ObservableObject {
      func getAppliances() {
          Task {
              do {
-                 // parse all
-                 //let data = try await Mesh.shared.request(of: CityResult.self, configClosure: { config in
-                 //config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
-                 // })
-                
-                
+
                  // Only parse the required part of the path
-                 let data = try await Mesh.shared.request(of: Forecast.self,
-                                                          modelKeyPath: "data.yesterday",
-                                                          configClosure: { config in
-                     config.URLString = "http://t.weather.itboy.net/api/weather/city/101030100"
-                 })
+                let data  =
+            try await Mesh.shared
+                .requestMethod(.get)
+                .url("http://t.weather.itboy.net/api/weather/city/101030100")
+                .request(of: Forecast.self, modelKeyPath: "data.yesterday")
+
+                await MainActor.run {
+                    self.yesterday = data
+                }
                 
                  await MainActor. run {
                      self.yesterday = data
