@@ -24,36 +24,43 @@ public extension Mesh{
         return self
     }
     /// 超时配置
+    @discardableResult
     func timeout(_ timeout: TimeInterval) -> Self {
         self.timeout = timeout
         return self
     }
     ///请求失败重试策略
+    @discardableResult
     func interceptor(_ interceptor: RequestInterceptor?) -> Self {
         self.interceptor = interceptor
         return self
     }
     /// 请求方式
+    @discardableResult
     func requestMethod(_ requestMethod: HTTPMethod) -> Self {
         self.requestMethod = requestMethod
         return self
     }
     /// 添加请求头
+    @discardableResult
     func addHeads(_ addHeads: HTTPHeaders?) -> Self {
         self.addHeads = addHeads
         return self
     }
     /// 请求编码
+    @discardableResult
     func requestEncoding(_ requestEncoding: ParameterEncoding) -> Self {
         self.requestEncoding = requestEncoding
         return self
     }
     /// 请求地址
+    @discardableResult
     func url(_ url: String?) -> Self {
         self.URLString = url
         return self
     }
     ///参数  表单上传也用
+    @discardableResult
     func parameters(_ parameters: [String: Any]?) -> Self {
         self.parameters = parameters
         return self
@@ -62,17 +69,20 @@ public extension Mesh{
 //MARK: 下载
 public extension Mesh{
     //下载类型
+    @discardableResult
     func downloadType(_ downloadType: DownloadType) -> Self {
         self.downloadType = downloadType
         return self
     }
     //设置文件下载地址覆盖方式等等
+    @discardableResult
     func destination(_ destination: @escaping DownloadRequest.Destination) -> Self {
         self.destination = destination
         return self
     }
     
     ///已经下载的部分,下载续传用,从请求结果中获取
+    @discardableResult
     func resumeData(_ resumeData: Data?) -> Self {
         self.resumeData = resumeData
         return self
@@ -81,26 +91,31 @@ public extension Mesh{
 //MARK: 上传
 public extension Mesh{
     //上传类型
+    @discardableResult
     func uploadType(_ uploadType: UploadType) -> Self {
         self.uploadType = uploadType
         return self
     }
     ///上传文件地址
+    @discardableResult
     func fileURL(_ fileURL: URL?) -> Self {
         self.fileURL = fileURL
         return self
     }
     ///上传文件地址
+    @discardableResult
     func fileData(_ fileData: Data?) -> Self {
         self.fileData = fileData
         return self
     }
     ///上传文件InputStream
+    @discardableResult
     func stream(_ stream: InputStream?) -> Self {
         self.stream = stream
         return self
     }
     ///表单数据
+    @discardableResult
     func uploadDatas(_ uploadDatas: [MultipleUpload]) -> Self {
         self.uploadDatas = uploadDatas
         return self
@@ -113,11 +128,12 @@ public extension Mesh{
     ///   - fileData: 文件 Data
     ///   - fileURL:  文件地址
     ///   - mimeType: 数据类型
+    @discardableResult
     func addformData(name: String,
                      fileName: String? = nil,
                      fileData: Data? = nil,
                      fileURL: URL? = nil,
-                     mimeType: String? = nil)  -> Self {
+                     mimeType: String? = nil) -> Self {
         let config = MultipleUpload.formData(name: name,
                                              fileName: fileName,
                                              fileData: fileData,
@@ -133,14 +149,16 @@ public extension Mesh{
     // MARK: 设置全局 headers
     /// 设置全局 headers
     /// - Parameter headers:全局 headers
-    func setGlobalHeaders(_ headers: HTTPHeaders?)   -> Self {
-        defaultHeaders = headers
+    @discardableResult
+    func setDefaultHeaders(_ headers: [String: String]) -> Self {
+        defaultHeaders = HTTPHeaders(headers)
         return self
     }
     // MARK: 设置默认参数
     /// 设置默认参数
     /// - Parameter parameters: 默认参数
-    func setDefaultParameters(_ parameters: [String: Any]?)   -> Self {
+    @discardableResult
+    func setDefaultParameters(_ parameters: [String: Any]?) -> Self {
         defaultParameters = parameters
         return self
     }
