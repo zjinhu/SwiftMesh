@@ -7,8 +7,7 @@
 //
 
 import SwiftUI
-import SwiftBrick
-
+import BrickKit
 struct SwiftUIView: View {
 
     @StateObject var request = RequestModel()
@@ -22,7 +21,7 @@ struct SwiftUIView: View {
             Text(request.yesterday?.notice ?? "")
             
         }
-        .task {
+        .ss.task {
             await request.getResult()
         }
         

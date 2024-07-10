@@ -1,0 +1,52 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Alamofire",
+        "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
+        "state": {
+          "branch": null,
+          "revision": "f455c2975872ccd2d9c81594c658af65716e9b9a",
+          "version": "5.9.1"
+        }
+      },
+      {
+        "package": "Brick_SwiftUI",
+        "repositoryURL": "https://github.com/zjinhu/Brick_SwiftUI.git",
+        "state": {
+          "branch": null,
+          "revision": "e234dac4bd4548b0aee53e3486a1418b234ce751",
+          "version": "0.4.4"
+        }
+      },
+      {
+        "package": "ProgressHUD",
+        "repositoryURL": "https://github.com/relatedcode/ProgressHUD",
+        "state": {
+          "branch": null,
+          "revision": "9364904a42cb25f58d026451140c4080a868e72e",
+          "version": "14.1.3"
+        }
+      },
+      {
+        "package": "SnapKit",
+        "repositoryURL": "https://github.com/SnapKit/SnapKit",
+        "state": {
+          "branch": null,
+          "revision": "2842e6e84e82eb9a8dac0100ca90d9444b0307f4",
+          "version": "5.7.1"
+        }
+      },
+      {
+        "package": "SwiftBrick",
+        "repositoryURL": "https://github.com/zjinhu/SwiftBrick",
+        "state": {
+          "branch": null,
+          "revision": "92c92106d3c05773f43cd56ee1ea7e47351bda94",
+          "version": "2.5.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

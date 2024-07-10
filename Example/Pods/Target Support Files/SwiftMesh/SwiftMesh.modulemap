@@ -1,6 +1,0 @@
-framework module SwiftMesh {
-  umbrella header "SwiftMesh-umbrella.h"
-
-  export *
-  module * { export * }
-}

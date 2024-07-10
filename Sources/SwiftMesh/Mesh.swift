@@ -36,7 +36,7 @@ public class Mesh: ObservableObject {
     
     var log: LogLevel
     ///全局 headers
-    var globalHeaders: HTTPHeaders?
+    var defaultHeaders: HTTPHeaders?
     ///默认参数
     var defaultParameters: [String: Any]?
 

@@ -15,12 +15,14 @@
 		819E40522A0CD8CA00D1F708 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 819E40502A0CD8CA00D1F708 /* Main.storyboard */; };
 		819E40542A0CD8CB00D1F708 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 819E40532A0CD8CB00D1F708 /* Assets.xcassets */; };
 		819E40572A0CD8CB00D1F708 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 819E40552A0CD8CB00D1F708 /* LaunchScreen.storyboard */; };
-		FA8DA7132356A0AA7D775895 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E2C7479F9B383FEBB2EC88B /* Pods_Example.framework */; };
+		8C21E7492C3E59B900E73248 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 8C21E7482C3E59B900E73248 /* ProgressHUD */; };
+		8C21E74C2C3E59DB00E73248 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8C21E74B2C3E59DB00E73248 /* SnapKit */; };
+		8C21E74F2C3E5A1900E73248 /* SwiftBrick in Frameworks */ = {isa = PBXBuildFile; productRef = 8C21E74E2C3E5A1900E73248 /* SwiftBrick */; };
+		8C21E7522C3E5B1A00E73248 /* SwiftMesh in Frameworks */ = {isa = PBXBuildFile; productRef = 8C21E7512C3E5B1A00E73248 /* SwiftMesh */; };
+		8C21E7552C3E5B4800E73248 /* BrickKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8C21E7542C3E5B4800E73248 /* BrickKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		623D8D8FFBB085DFB8F10799 /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
-		7E2C7479F9B383FEBB2EC88B /* Pods_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81506EC02A136EB000502293 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		81506EC22A136EB800502293 /* SwiftUIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 		819E40472A0CD8CA00D1F708 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -31,7 +33,7 @@
 		819E40532A0CD8CB00D1F708 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		819E40562A0CD8CB00D1F708 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		819E40582A0CD8CB00D1F708 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D77A6ABC83803C7D1A007FAF /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
+		8C21E7462C3E58F600E73248 /* SwiftMesh */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SwiftMesh; path = ..; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,29 +41,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA8DA7132356A0AA7D775895 /* Pods_Example.framework in Frameworks */,
+				8C21E7492C3E59B900E73248 /* ProgressHUD in Frameworks */,
+				8C21E74F2C3E5A1900E73248 /* SwiftBrick in Frameworks */,
+				8C21E74C2C3E59DB00E73248 /* SnapKit in Frameworks */,
+				8C21E7552C3E5B4800E73248 /* BrickKit in Frameworks */,
+				8C21E7522C3E5B1A00E73248 /* SwiftMesh in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		56B191481736E4CD79325EBB /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				623D8D8FFBB085DFB8F10799 /* Pods-Example.debug.xcconfig */,
-				D77A6ABC83803C7D1A007FAF /* Pods-Example.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		819E403E2A0CD8CA00D1F708 = {
 			isa = PBXGroup;
 			children = (
 				819E40492A0CD8CA00D1F708 /* SwiftMesh */,
+				8C21E7462C3E58F600E73248 /* SwiftMesh */,
 				819E40482A0CD8CA00D1F708 /* Products */,
-				56B191481736E4CD79325EBB /* Pods */,
-				A7B00E4AA0589081184050F9 /* Frameworks */,
+				8C21E7502C3E5B1A00E73248 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -89,10 +86,9 @@
 			path = SwiftMesh;
 			sourceTree = "<group>";
 		};
-		A7B00E4AA0589081184050F9 /* Frameworks */ = {
+		8C21E7502C3E5B1A00E73248 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7E2C7479F9B383FEBB2EC88B /* Pods_Example.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -104,17 +100,22 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 819E405B2A0CD8CB00D1F708 /* Build configuration list for PBXNativeTarget "Example" */;
 			buildPhases = (
-				E256BE2BADD23A301F4DD970 /* [CP] Check Pods Manifest.lock */,
 				819E40432A0CD8CA00D1F708 /* Sources */,
 				819E40442A0CD8CA00D1F708 /* Frameworks */,
 				819E40452A0CD8CA00D1F708 /* Resources */,
-				C92C790A4516AC0516497656 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Example;
+			packageProductDependencies = (
+				8C21E7482C3E59B900E73248 /* ProgressHUD */,
+				8C21E74B2C3E59DB00E73248 /* SnapKit */,
+				8C21E74E2C3E5A1900E73248 /* SwiftBrick */,
+				8C21E7512C3E5B1A00E73248 /* SwiftMesh */,
+				8C21E7542C3E5B4800E73248 /* BrickKit */,
+			);
 			productName = SwiftMesh;
 			productReference = 819E40472A0CD8CA00D1F708 /* Example.app */;
 			productType = "com.apple.product-type.application";
@@ -143,6 +144,12 @@
 				Base,
 			);
 			mainGroup = 819E403E2A0CD8CA00D1F708;
+			packageReferences = (
+				8C21E7472C3E59B900E73248 /* XCRemoteSwiftPackageReference "ProgressHUD" */,
+				8C21E74A2C3E59DB00E73248 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				8C21E74D2C3E5A1900E73248 /* XCRemoteSwiftPackageReference "SwiftBrick" */,
+				8C21E7532C3E5B4800E73248 /* XCRemoteSwiftPackageReference "Brick_SwiftUI" */,
+			);
 			productRefGroup = 819E40482A0CD8CA00D1F708 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -164,48 +171,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		C92C790A4516AC0516497656 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Example/Pods-Example-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Example/Pods-Example-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Example/Pods-Example-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E256BE2BADD23A301F4DD970 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Example-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		819E40432A0CD8CA00D1F708 /* Sources */ = {
@@ -358,7 +323,6 @@
 		};
 		819E405C2A0CD8CB00D1F708 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 623D8D8FFBB085DFB8F10799 /* Pods-Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -389,7 +353,6 @@
 		};
 		819E405D2A0CD8CB00D1F708 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D77A6ABC83803C7D1A007FAF /* Pods-Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -440,6 +403,68 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8C21E7472C3E59B900E73248 /* XCRemoteSwiftPackageReference "ProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/relatedcode/ProgressHUD";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 14.1.3;
+			};
+		};
+		8C21E74A2C3E59DB00E73248 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		8C21E74D2C3E5A1900E73248 /* XCRemoteSwiftPackageReference "SwiftBrick" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/zjinhu/SwiftBrick";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.0;
+			};
+		};
+		8C21E7532C3E5B4800E73248 /* XCRemoteSwiftPackageReference "Brick_SwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/zjinhu/Brick_SwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8C21E7482C3E59B900E73248 /* ProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8C21E7472C3E59B900E73248 /* XCRemoteSwiftPackageReference "ProgressHUD" */;
+			productName = ProgressHUD;
+		};
+		8C21E74B2C3E59DB00E73248 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8C21E74A2C3E59DB00E73248 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		8C21E74E2C3E5A1900E73248 /* SwiftBrick */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8C21E74D2C3E5A1900E73248 /* XCRemoteSwiftPackageReference "SwiftBrick" */;
+			productName = SwiftBrick;
+		};
+		8C21E7512C3E5B1A00E73248 /* SwiftMesh */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SwiftMesh;
+		};
+		8C21E7542C3E5B4800E73248 /* BrickKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8C21E7532C3E5B4800E73248 /* XCRemoteSwiftPackageReference "Brick_SwiftUI" */;
+			productName = BrickKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 819E403F2A0CD8CA00D1F708 /* Project object */;
 }

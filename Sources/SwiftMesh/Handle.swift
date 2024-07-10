@@ -16,7 +16,7 @@ extension Mesh{
         param.merge(parameters ?? [:]) { (_, new) in new}
         parameters = param
         ///设置默认header
-        guard let headers = globalHeaders else {
+        guard let headers = defaultHeaders else {
             return
         }
         

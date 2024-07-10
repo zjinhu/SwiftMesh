@@ -134,7 +134,7 @@ public extension Mesh{
     /// 设置全局 headers
     /// - Parameter headers:全局 headers
     func setGlobalHeaders(_ headers: HTTPHeaders?)   -> Self {
-        globalHeaders = headers
+        defaultHeaders = headers
         return self
     }
     // MARK: 设置默认参数

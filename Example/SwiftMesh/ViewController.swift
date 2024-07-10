@@ -22,7 +22,7 @@ class ViewController: UIViewController {
         btn.setTitleColor(.black, for: .normal)
         btn.addTouchUpInSideBtnAction { [weak self]sender in
             Task{
-                ProgressHUD.show()
+                ProgressHUD.animate()
                 await self?.request.getResult()
                 ProgressHUD.dismiss()
             }
@@ -37,7 +37,7 @@ class ViewController: UIViewController {
         btn.setTitleColor(.black, for: .normal)
         btn.addTouchUpInSideBtnAction { [weak self]sender in
             Task{
-                ProgressHUD.show()
+                ProgressHUD.animate()
                 await self?.request.download()
                 ProgressHUD.dismiss()
             }
