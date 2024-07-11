@@ -20,6 +20,8 @@
 		8C21E74F2C3E5A1900E73248 /* SwiftBrick in Frameworks */ = {isa = PBXBuildFile; productRef = 8C21E74E2C3E5A1900E73248 /* SwiftBrick */; };
 		8C21E7522C3E5B1A00E73248 /* SwiftMesh in Frameworks */ = {isa = PBXBuildFile; productRef = 8C21E7512C3E5B1A00E73248 /* SwiftMesh */; };
 		8C21E7552C3E5B4800E73248 /* BrickKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8C21E7542C3E5B4800E73248 /* BrickKit */; };
+		8C21E76C2C3FD35D00E73248 /* SwiftJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C21E76B2C3FD35D00E73248 /* SwiftJson.swift */; };
+		8C21E76F2C3FD41400E73248 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 8C21E76E2C3FD41400E73248 /* SwiftyJSON */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,7 @@
 		819E40562A0CD8CB00D1F708 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		819E40582A0CD8CB00D1F708 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8C21E7462C3E58F600E73248 /* SwiftMesh */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SwiftMesh; path = ..; sourceTree = "<group>"; };
+		8C21E76B2C3FD35D00E73248 /* SwiftJson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftJson.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C21E76F2C3FD41400E73248 /* SwiftyJSON in Frameworks */,
 				8C21E7492C3E59B900E73248 /* ProgressHUD in Frameworks */,
 				8C21E74F2C3E5A1900E73248 /* SwiftBrick in Frameworks */,
 				8C21E74C2C3E59DB00E73248 /* SnapKit in Frameworks */,
@@ -78,6 +82,7 @@
 				81506EC02A136EB000502293 /* Request.swift */,
 				819E404E2A0CD8CA00D1F708 /* ViewController.swift */,
 				81506EC22A136EB800502293 /* SwiftUIView.swift */,
+				8C21E76B2C3FD35D00E73248 /* SwiftJson.swift */,
 				819E40502A0CD8CA00D1F708 /* Main.storyboard */,
 				819E40532A0CD8CB00D1F708 /* Assets.xcassets */,
 				819E40552A0CD8CB00D1F708 /* LaunchScreen.storyboard */,
@@ -115,6 +120,7 @@
 				8C21E74E2C3E5A1900E73248 /* SwiftBrick */,
 				8C21E7512C3E5B1A00E73248 /* SwiftMesh */,
 				8C21E7542C3E5B4800E73248 /* BrickKit */,
+				8C21E76E2C3FD41400E73248 /* SwiftyJSON */,
 			);
 			productName = SwiftMesh;
 			productReference = 819E40472A0CD8CA00D1F708 /* Example.app */;
@@ -149,6 +155,7 @@
 				8C21E74A2C3E59DB00E73248 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				8C21E74D2C3E5A1900E73248 /* XCRemoteSwiftPackageReference "SwiftBrick" */,
 				8C21E7532C3E5B4800E73248 /* XCRemoteSwiftPackageReference "Brick_SwiftUI" */,
+				8C21E76D2C3FD41400E73248 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 			);
 			productRefGroup = 819E40482A0CD8CA00D1F708 /* Products */;
 			projectDirPath = "";
@@ -178,6 +185,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				819E404F2A0CD8CA00D1F708 /* ViewController.swift in Sources */,
+				8C21E76C2C3FD35D00E73248 /* SwiftJson.swift in Sources */,
 				81506EC12A136EB000502293 /* Request.swift in Sources */,
 				819E404B2A0CD8CA00D1F708 /* AppDelegate.swift in Sources */,
 				819E404D2A0CD8CA00D1F708 /* SceneDelegate.swift in Sources */,
@@ -437,6 +445,14 @@
 				minimumVersion = 0.4.4;
 			};
 		};
+		8C21E76D2C3FD41400E73248 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -463,6 +479,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8C21E7532C3E5B4800E73248 /* XCRemoteSwiftPackageReference "Brick_SwiftUI" */;
 			productName = BrickKit;
+		};
+		8C21E76E2C3FD41400E73248 /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8C21E76D2C3FD41400E73248 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
