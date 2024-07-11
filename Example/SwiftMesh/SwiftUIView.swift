@@ -19,6 +19,7 @@ struct SwiftUIView: View {
             Text("Hello, World!")
             
             Text(request.yesterday?.notice ?? "")
+//            Text("\(request.yesterday?.getJson())")
             
         }
         .ss.task {
@@ -27,10 +28,19 @@ struct SwiftUIView: View {
         
     }
     
+
 }
 
 struct SwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
         SwiftUIView()
+    }
+}
+
+extension Data{
+    func getJson()-> [String: Any]?{
+
+            return try? JSONSerialization.jsonObject(with: self, options: []) as? [String: Any]
+
     }
 }

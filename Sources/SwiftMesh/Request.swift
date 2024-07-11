@@ -8,10 +8,10 @@
 import Foundation
 import Alamofire
 extension Mesh{
-    // MARK: 发送请求
+    // MARK: 发送请求返回Codable
     /// 设置默认参数
     /// - type : Model数据模型
-    /// - configClosure: 配置config,请求类型
+    /// - modelKeyPath: 可以指定解析路径用.区分比如 data.message
     public func request<T: Decodable>(of type: T.Type,
                                       modelKeyPath: String? = nil) async throws -> T {
         
@@ -33,6 +33,64 @@ extension Mesh{
         return try await handleCodable(of: type,
                                        request: request,
                                        modelKeyPath: modelKeyPath)
+    }
+    
+    // MARK: 发送请求返回jsonData,可以用于转换String或者Dic
+    public func requestData() async throws -> Data {
+        guard let url = URLString else {
+            fatalError("URLString 为空")
+        }
+        
+        mergeConfig()
+        
+        let request = AF.request(url,
+                                 method: requestMethod,
+                                 parameters: parameters,
+                                 encoding: requestEncoding,
+                                 headers: addHeads,
+                                 interceptor: interceptor,
+                                 requestModifier: { $0.timeoutInterval = self.timeout }
+        )
+        
+        let requestTask =  request.serializingData()
+        let result = await requestTask.response.result
+        return try await withCheckedThrowingContinuation { continuation in
+            switch result{
+            case .success(let date):
+                continuation.resume(returning: date)
+            case .failure(let error):
+                continuation.resume(throwing: self.handleError(error: error))
+            }
+        }
+    }
+    
+    // MARK: 发送请求返回json
+    public func requestString() async throws -> String {
+        guard let url = URLString else {
+            fatalError("URLString 为空")
+        }
+        
+        mergeConfig()
+        
+        let request = AF.request(url,
+                                 method: requestMethod,
+                                 parameters: parameters,
+                                 encoding: requestEncoding,
+                                 headers: addHeads,
+                                 interceptor: interceptor,
+                                 requestModifier: { $0.timeoutInterval = self.timeout }
+        )
+        
+        let requestTask =  request.serializingString()
+        let result = await requestTask.response.result
+        return try await withCheckedThrowingContinuation { continuation in
+            switch result{
+            case .success(let str):
+                continuation.resume(returning: str)
+            case .failure(let error):
+                continuation.resume(throwing: self.handleError(error: error))
+            }
+        }
     }
     
 }
