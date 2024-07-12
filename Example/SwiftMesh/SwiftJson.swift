@@ -8,12 +8,19 @@
 import Foundation
 import SwiftyJSON
 import Alamofire
+import SwiftMesh
+
+public protocol JSONable {
+    init(json: JSON)
+}
+
 public extension Mesh{
     func request<T: JSONable>(of type: T.Type) async throws -> T {
         
-        guard let url = URLString else {
-            fatalError("URLString 为空")
+        guard let urlHost, let urlPath else {
+            fatalError("urlHost OR urlPath nil")
         }
+        let url = urlHost + urlPath
         
         mergeConfig()
         
@@ -53,4 +60,8 @@ public extension Mesh{
             }
         }
     }
+}
+
+enum APIError: Error {
+    case jsonError(reason: String)
 }

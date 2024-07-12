@@ -25,9 +25,11 @@ extension Mesh{
 
 extension Mesh{
     private func sendDownload() async throws -> URL{
-        guard let url = URLString else {
-            fatalError("URLString 为空")
+        guard let urlHost, let urlPath else {
+            fatalError("urlHost OR urlPath nil")
         }
+        let url = urlHost + urlPath
+        
         let request = AF.download(url,
                                   method: requestMethod,
                                   parameters: parameters,
@@ -45,7 +47,7 @@ extension Mesh{
     
     private func sendDownloadResume() async throws -> URL{
         guard let resumeData = resumeData else {
-            fatalError("resumeData 为空")
+            fatalError("resumeData nil")
         }
         
         let request = AF.download(resumingWith: resumeData,

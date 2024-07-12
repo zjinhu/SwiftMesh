@@ -15,10 +15,10 @@ extension Mesh{
     public func request<T: Decodable>(of type: T.Type,
                                       modelKeyPath: String? = nil) async throws -> T {
         
-        guard let url = URLString else {
-            fatalError("URLString 为空")
+        guard let urlHost, let urlPath else {
+            fatalError("urlHost OR urlPath nil")
         }
-        
+        let url = urlHost + urlPath
         mergeConfig()
         
         let request = AF.request(url,
@@ -37,9 +37,10 @@ extension Mesh{
     
     // MARK: 发送请求返回jsonData,可以用于转换String或者Dic
     public func requestData() async throws -> Data {
-        guard let url = URLString else {
-            fatalError("URLString 为空")
+        guard let urlHost, let urlPath else {
+            fatalError("urlHost OR urlPath nil")
         }
+        let url = urlHost + urlPath
         
         mergeConfig()
         
@@ -66,9 +67,10 @@ extension Mesh{
     
     // MARK: 发送请求返回json
     public func requestString() async throws -> String {
-        guard let url = URLString else {
-            fatalError("URLString 为空")
+        guard let urlHost, let urlPath else {
+            fatalError("urlHost OR urlPath nil")
         }
+        let url = urlHost + urlPath
         
         mergeConfig()
         

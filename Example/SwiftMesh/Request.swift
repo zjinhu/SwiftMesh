@@ -55,8 +55,9 @@ class RequestModel: ObservableObject {
             
             yesterday =
             try await Mesh.shared
-                .requestMethod(.get)
-                .url("http://t.weather.itboy.net/api/weather/city/101030100")
+                .setRequestMethod(.get)
+                .setUrlHost("http://t.weather.itboy.net/api/")
+                .setUrlPath("weather/city/101030100")
                 .request(of: Forecast.self, modelKeyPath: "data.yesterday")
             
         } catch let error {
@@ -70,7 +71,8 @@ class RequestModel: ObservableObject {
         do {
             downloadUrl = 
             try await Mesh.shared
-                .url("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4")
+                .setUrlHost("http://clips.vorwaerts-gmbh.de/")
+                .setUrlPath("big_buck_bunny.mp4")
                 .download()
         } catch let error {
             print(error.localizedDescription)

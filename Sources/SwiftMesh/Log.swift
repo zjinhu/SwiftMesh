@@ -49,7 +49,7 @@ extension Mesh {
                      
                     self.logMessage("\(cURL)", level: .debug)
                     
-                    self.logDivider("状态", level: .debug)
+                    self.logDivider("State", level: .debug)
                      
                     self.logMessage("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]:", level: .debug)
                     
@@ -59,7 +59,7 @@ extension Mesh {
                     
                     guard let data = dataRequest.data else { break }
                     
-                    self.logDivider("报文", level: .debug)
+                    self.logDivider("Response", level: .debug)
                     
                     do {
                         let jsonObject = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
@@ -80,7 +80,7 @@ extension Mesh {
                      
                     self.logMessage("\(cURL)", level: .info)
                     
-                    self.logDivider("状态", level: .info)
+                    self.logDivider("State", level: .info)
  
                     self.logMessage("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]", level: .info)
                     

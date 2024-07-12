@@ -33,16 +33,17 @@ extension Mesh{
     private func sendUpload<T: Decodable>(of type: T.Type,
                                           modelKeyPath: String? = nil) async throws -> T{
         
-        guard let url = URLString else {
-            fatalError("URLString 为空")
+        guard let urlHost, let urlPath else {
+            fatalError("urlHost OR urlPath nil")
         }
+        let url = urlHost + urlPath
         
         var uploadRequest : UploadRequest
         
         switch uploadType {
         case .file:
             guard let fileURL = fileURL else {
-                fatalError("fileURL 为空")
+                fatalError("fileURL nil")
             }
             uploadRequest = AF.upload(fileURL,
                                       to: url,
@@ -53,7 +54,7 @@ extension Mesh{
             
         case .stream:
             guard let stream = stream else {
-                fatalError("stream 为空")
+                fatalError("stream nil")
             }
             uploadRequest = AF.upload(stream,
                                       to: url,
@@ -64,7 +65,7 @@ extension Mesh{
             
         default:
             guard let fileData = fileData else {
-                fatalError("fileData 为空")
+                fatalError("fileData nil")
             }
             uploadRequest = AF.upload(fileData,
                                       to: url,
@@ -85,11 +86,11 @@ extension Mesh{
     
     private func sendUploadMultipart<T: Decodable>(of type: T.Type,
                                                    modelKeyPath: String? = nil) async throws -> T{
-        
-        guard let url = URLString,
-              !uploadDatas.isEmpty  else {
-            fatalError("URLString / uploadDatas 为空")
+
+        guard let urlHost, let urlPath, !uploadDatas.isEmpty else {
+            fatalError("urlHost OR urlPath OR uploadDatas nil")
         }
+        let url = urlHost + urlPath
         
         let uploadRequest = AF.upload(multipartFormData: { multi in
             

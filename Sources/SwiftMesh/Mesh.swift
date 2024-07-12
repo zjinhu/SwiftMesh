@@ -34,43 +34,45 @@ public class Mesh: ObservableObject {
         stopLogging()
     }
     
-    var log: LogLevel
+    public var log: LogLevel
     ///全局 headers
     var defaultHeaders: HTTPHeaders?
     ///默认参数
     var defaultParameters: [String: Any]?
 
     /// 超时配置
-    var timeout : TimeInterval = 15.0
+    public var timeout : TimeInterval = 15.0
     ///请求失败重试
-    var interceptor: RequestInterceptor?
+    public var interceptor: RequestInterceptor?
     /// 请求方式
-    var requestMethod : HTTPMethod = .post
+    public var requestMethod : HTTPMethod = .post
     /// 添加请求头
-    var addHeads : HTTPHeaders?
+    public var addHeads : HTTPHeaders?
     /// 请求编码
-    var requestEncoding: ParameterEncoding = URLEncoding.default
+    public var requestEncoding: ParameterEncoding = URLEncoding.default
     /// 请求地址
-    var URLString : String?
+    public var urlHost : String?
+    public var urlPath : String?
+    
     ///参数  表单上传也可以用
-    var parameters : [String: Any]?
+    public var parameters : [String: Any]?
     
     //MARK: 下载
-    var downloadType : DownloadType = .download
+    public var downloadType : DownloadType = .download
     //设置文件下载地址覆盖方式等等
-    var destination : DownloadRequest.Destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
+    public var destination : DownloadRequest.Destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
     ///已经下载的部分,下载续传用,从请求结果中获取
-    var resumeData : Data?
+    public var resumeData : Data?
     
     //MARK: 上传
-    var uploadType : UploadType = .file
+    public var uploadType : UploadType = .file
     ///上传文件地址
-    var fileURL: URL?
+    public var fileURL: URL?
     ///上传文件地址
-    var fileData: Data?
+    public var fileData: Data?
     ///上传文件InputStream
-    var stream: InputStream?
+    public var stream: InputStream?
     ///表单数据
-    var uploadDatas : [MultipleUpload] = []
+    public var uploadDatas : [MultipleUpload] = []
 }
 

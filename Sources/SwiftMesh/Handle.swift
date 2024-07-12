@@ -10,7 +10,7 @@ import Alamofire
 import Combine
 extension Mesh{
     ///私有方法
-    func mergeConfig(){
+    public func mergeConfig(){
         ///设置默认参数
         var param = defaultParameters ?? [:]
         param.merge(parameters ?? [:]) { (_, new) in new}
@@ -31,7 +31,7 @@ extension Mesh{
         }
     }
     
-    func handleError(error: AFError) -> Error {
+    public func handleError(error: AFError) -> Error {
         if let underlyingError = error.underlyingError {
             let nserror = underlyingError as NSError
             let code = nserror.code
@@ -89,7 +89,7 @@ extension Mesh{
                     if let model = try? JSONDecoder.default.decode(T.self, from: data, keyPath: path){
                         continuation.resume(returning: model)
                     }else{
-                        continuation.resume(throwing: NSError(domain: "json解析失败,检查keyPath",
+                        continuation.resume(throwing: NSError(domain: "json parsing failure, check keyPath",
                                                               code: 0))
                     }
                 case .failure(let error):
@@ -138,7 +138,7 @@ extension Mesh{
         interceptor = nil
         addHeads = nil
         requestMethod = .post
-        URLString = nil
+        urlPath = nil
         requestEncoding = URLEncoding.default
         parameters = nil
         
@@ -154,3 +154,28 @@ extension Mesh{
     }
 }
  
+public class RetryPolicy: RequestInterceptor {
+    // 最大重试次数
+    private let maxRetryCount: Int
+
+    // 初始化方法
+    public init(maxRetryCount: Int = 3) {
+        self.maxRetryCount = maxRetryCount
+    }
+
+    // 是否应该重试请求的方法
+    public func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
+        // 获取当前重试次数
+        let retryCount = request.retryCount
+
+        // 如果当前重试次数小于最大重试次数，进行重试
+        if retryCount < maxRetryCount {
+            // 设置重试时间间隔，例如1秒后重试
+            let retryInterval = TimeInterval(retryCount + 1)
+            completion(.retryWithDelay(retryInterval))
+        } else {
+            // 达到最大重试次数，不再重试
+            completion(.doNotRetry)
+        }
+    }
+}
