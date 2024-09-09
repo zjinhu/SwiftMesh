@@ -12,6 +12,7 @@ extension Mesh{
     /// 设置默认参数
     /// - type : Model数据模型
     /// - modelKeyPath: 可以指定解析路径用.区分比如 data.message
+    @discardableResult
     public func request<T: Decodable>(of type: T.Type,
                                       modelKeyPath: String? = nil) async throws -> T {
         
@@ -94,5 +95,4 @@ extension Mesh{
             }
         }
     }
-    
 }

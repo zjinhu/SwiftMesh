@@ -8,7 +8,19 @@
 import Foundation
 import Alamofire
 extension Mesh{
-    
+    /**
+     表单上传
+     try await Mesh.shared
+         .setRequestMethod(.post)
+         .setUrlHost("http://192.168.0.18:8887/api/podcast/v1/")
+         .setUrlPath("upload/image")
+         .setUploadType(.multipart)
+         .setAddformData(name: "file",
+                         fileName: "file."+ImageFormat.get(from: imageData).rawValue,
+                         fileData: imageData,
+                         mimeType: "image/"+ImageFormat.get(from: imageData).rawValue)
+         .upload(of: EditResult.self)
+     */
     /// 上传文件
     /// - Parameters:
     ///   - type: 上传完成后接口返回的数据模型

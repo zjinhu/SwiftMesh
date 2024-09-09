@@ -56,9 +56,7 @@ extension Mesh{
     }
     
     func handleDownload(request: DownloadRequest) async throws -> URL {
-        
-        cleanCache()
-        
+
         let downloadTask = request.serializingDownloadedFileURL(automaticallyCancelling: true)
         let result = await downloadTask.response.result
         
@@ -75,9 +73,7 @@ extension Mesh{
     func handleCodable<T: Decodable>(of type: T.Type,
                                      request: DataRequest,
                                      modelKeyPath: String? = nil) async throws -> T {
-        
-        cleanCache()
-        
+
         if let path = modelKeyPath{
             let requestTask = request.serializingData(automaticallyCancelling: true)
             
@@ -136,9 +132,7 @@ extension Mesh{
     
     func cleanCache(){
         interceptor = nil
-        addHeads = nil
         requestMethod = .post
-        urlPath = nil
         requestEncoding = URLEncoding.default
         parameters = nil
         
@@ -147,7 +141,6 @@ extension Mesh{
         resumeData = nil
         
         uploadType = .file
-        fileURL = nil
         fileData = nil
         stream = nil
         uploadDatas.removeAll()
