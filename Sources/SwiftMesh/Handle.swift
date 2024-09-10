@@ -18,7 +18,7 @@ extension Mesh{
         ///设置默认header
         var headers = defaultHeaders ?? [:]
         addHeads.merge(headers) { (_, new) in new}
-        print("\(addHeads)")
+//        print("当前header:\(addHeads)")
     }
     
     public func handleError(error: AFError) -> Error {
@@ -120,11 +120,12 @@ extension Mesh{
         }
     }
     
-    func cleanCache(){
+    public func cleanCache(){
         interceptor = nil
-        requestMethod = .post
+        requestMethod = .get
         requestEncoding = URLEncoding.default
         parameters = nil
+        addHeads = [:]
         
         downloadType = .download
         destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
