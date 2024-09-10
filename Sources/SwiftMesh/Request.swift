@@ -36,6 +36,23 @@ extension Mesh{
                                        modelKeyPath: modelKeyPath)
     }
     
+    // MARK: 发送请求返回Codable
+    /// 设置默认参数
+    /// - type : Model数据模型
+    /// - modelKeyPath: 可以指定解析路径用.区分比如 data.message
+    @discardableResult
+    public func urlRequest<T: Decodable>(_ urlRequest: URLRequestConvertible,
+                                         type: T.Type,
+                                         modelKeyPath: String? = nil) async throws -> T {
+        
+        let request = AF.request(urlRequest,
+                                 interceptor: interceptor)
+        
+        return try await handleCodable(of: type,
+                                       request: request,
+                                       modelKeyPath: modelKeyPath)
+    }
+    
     // MARK: 发送请求返回jsonData,可以用于转换String或者Dic
     public func requestData() async throws -> Data {
         guard let urlHost, let urlPath else {

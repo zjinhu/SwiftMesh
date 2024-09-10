@@ -49,7 +49,7 @@ public class Mesh: ObservableObject {
     /// 添加请求头
     public var addHeads : HTTPHeaders?
     /// 请求编码
-    public var requestEncoding: ParameterEncoding = URLEncoding.default
+    public var requestEncoding: ParameterEncoding = URLEncoding.default //JSONEncoding.default
     /// 请求地址
     public var urlHost : String?
     public var urlPath : String?
