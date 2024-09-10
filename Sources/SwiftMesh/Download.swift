@@ -34,7 +34,7 @@ extension Mesh{
                                   method: requestMethod,
                                   parameters: parameters,
                                   encoding: requestEncoding,
-                                  headers: addHeads,
+                                  headers: HTTPHeaders(addHeads),
                                   interceptor: interceptor,
                                   requestModifier: { request in request.timeoutInterval = self.timeout},
                                   to: destination)

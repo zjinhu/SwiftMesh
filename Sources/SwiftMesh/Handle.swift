@@ -16,19 +16,9 @@ extension Mesh{
         param.merge(parameters ?? [:]) { (_, new) in new}
         parameters = param
         ///设置默认header
-        guard let headers = defaultHeaders else {
-            return
-        }
-        
-        if let _ = addHeads{
-            
-        }else{
-            addHeads = []
-        }
-        
-        headers.forEach {
-            addHeads?.update($0)
-        }
+        var headers = defaultHeaders ?? [:]
+        addHeads.merge(headers) { (_, new) in new}
+        print("\(addHeads)")
     }
     
     public func handleError(error: AFError) -> Error {

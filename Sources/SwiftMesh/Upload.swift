@@ -60,7 +60,7 @@ extension Mesh{
             uploadRequest = AF.upload(fileURL,
                                       to: url,
                                       method: requestMethod,
-                                      headers: addHeads,
+                                      headers: HTTPHeaders(addHeads),
                                       interceptor: interceptor,
                                       requestModifier: { request in request.timeoutInterval = self.timeout})
             
@@ -71,7 +71,7 @@ extension Mesh{
             uploadRequest = AF.upload(stream,
                                       to: url,
                                       method: requestMethod,
-                                      headers: addHeads,
+                                      headers: HTTPHeaders(addHeads),
                                       interceptor: interceptor,
                                       requestModifier: { request in request.timeoutInterval = self.timeout})
             
@@ -82,7 +82,7 @@ extension Mesh{
             uploadRequest = AF.upload(fileData,
                                       to: url,
                                       method: requestMethod,
-                                      headers: addHeads,
+                                      headers: HTTPHeaders(addHeads),
                                       interceptor: interceptor,
                                       requestModifier: { request in request.timeoutInterval = self.timeout})
             
@@ -140,7 +140,7 @@ extension Mesh{
         },
                                       to: url,
                                       method: requestMethod,
-                                      headers: addHeads,
+                                      headers: HTTPHeaders(addHeads),
                                       interceptor: interceptor,
                                       requestModifier: { request in request.timeoutInterval = self.timeout}
         )

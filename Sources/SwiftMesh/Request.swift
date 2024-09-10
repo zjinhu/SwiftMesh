@@ -26,7 +26,7 @@ extension Mesh{
                                  method: requestMethod,
                                  parameters: parameters,
                                  encoding: requestEncoding,
-                                 headers: addHeads,
+                                 headers: HTTPHeaders(addHeads),
                                  interceptor: interceptor,
                                  requestModifier: { $0.timeoutInterval = self.timeout }
         )
@@ -66,7 +66,7 @@ extension Mesh{
                                  method: requestMethod,
                                  parameters: parameters,
                                  encoding: requestEncoding,
-                                 headers: addHeads,
+                                 headers: HTTPHeaders(addHeads),
                                  interceptor: interceptor,
                                  requestModifier: { $0.timeoutInterval = self.timeout }
         )
@@ -96,7 +96,7 @@ extension Mesh{
                                  method: requestMethod,
                                  parameters: parameters,
                                  encoding: requestEncoding,
-                                 headers: addHeads,
+                                 headers: HTTPHeaders(addHeads),
                                  interceptor: interceptor,
                                  requestModifier: { $0.timeoutInterval = self.timeout }
         )

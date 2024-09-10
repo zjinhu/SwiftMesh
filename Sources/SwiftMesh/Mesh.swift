@@ -36,9 +36,9 @@ public class Mesh: ObservableObject {
     
     public var log: LogLevel
     ///全局 headers
-    var defaultHeaders: HTTPHeaders?
+    public var defaultHeaders: [String: String]?
     ///默认参数
-    var defaultParameters: [String: Any]?
+    public var defaultParameters: [String: Any]?
 
     /// 超时配置
     public var timeout : TimeInterval = 15.0
@@ -47,7 +47,7 @@ public class Mesh: ObservableObject {
     /// 请求方式
     public var requestMethod : HTTPMethod = .post
     /// 添加请求头
-    public var addHeads : HTTPHeaders?
+    public var addHeads : [String: String] = [:]
     /// 请求编码
     public var requestEncoding: ParameterEncoding = URLEncoding.default //JSONEncoding.default
     /// 请求地址

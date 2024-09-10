@@ -48,7 +48,7 @@ public extension Mesh{
     /// 添加请求头
     /// addHeads
     @discardableResult
-    func setHeads(_ addHeads: HTTPHeaders?) -> Self {
+    func setHeads(_ addHeads: [String: String]) -> Self {
         self.addHeads = addHeads
         return self
     }
@@ -167,7 +167,7 @@ public extension Mesh{
     /// - Parameter headers:全局 headers
     @discardableResult
     func setDefaultHeaders(_ headers: [String: String]) -> Self {
-        defaultHeaders = HTTPHeaders(headers)
+        defaultHeaders = headers
         return self
     }
     // MARK: 设置默认参数
