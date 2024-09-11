@@ -36,7 +36,7 @@ extension Mesh{
                                        modelKeyPath: modelKeyPath)
     }
     
-    // MARK: 发送请求返回Codable
+    // MARK: 发送URLRequest请求返回Codable
     /// 设置默认参数
     /// - type : Model数据模型
     /// - modelKeyPath: 可以指定解析路径用.区分比如 data.message
