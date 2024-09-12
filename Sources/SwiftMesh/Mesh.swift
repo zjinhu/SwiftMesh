@@ -23,9 +23,7 @@ public class Mesh: ObservableObject {
 //    /// 可观测上传进度0--1
 //    @Published public var uploadProgress: Float = 0
     
-    public init() {
-        startLogging()
-    }
+    public init() { }
     
     deinit {
         stopLogging()

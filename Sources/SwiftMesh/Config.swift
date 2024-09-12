@@ -22,6 +22,9 @@ public extension Mesh{
     @discardableResult
     func setLogLevel(_ log: LogLevel) -> Self {
         self.log = log
+        if log != .off{
+            startLogging()
+        }
         return self
     }
     /// 超时配置
