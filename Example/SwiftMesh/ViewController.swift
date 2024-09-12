@@ -75,12 +75,7 @@ class ViewController: UIViewController {
             make.height.equalTo(40)
             make.width.equalTo(100)
         }
-        Mesh.shared.$downloadProgress
-            .sink { (model) in
-                self.resultLabel.text = String(describing: model)
-                print("下载进度: \(String(describing: model))")
-         }.store(in: &cancellables)
-        
+ 
         request.$yesterday
             .receive(on: RunLoop.main)
             .sink { (model) in

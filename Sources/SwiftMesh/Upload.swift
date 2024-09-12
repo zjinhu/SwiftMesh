@@ -45,10 +45,7 @@ extension Mesh{
     private func sendUpload<T: Decodable>(of type: T.Type,
                                           modelKeyPath: String? = nil) async throws -> T{
         
-        guard let urlHost, let urlPath else {
-            fatalError("urlHost OR urlPath nil")
-        }
-        let url = urlHost + urlPath
+        let url = checkUrl()
         
         var uploadRequest : UploadRequest
         
@@ -88,7 +85,7 @@ extension Mesh{
             
         }
 
-        handleUploadProgress(request: uploadRequest)
+//        handleUploadProgress(request: uploadRequest)
         
         return try await handleCodable(of: type,
                                        request: uploadRequest,
@@ -99,10 +96,7 @@ extension Mesh{
     private func sendUploadMultipart<T: Decodable>(of type: T.Type,
                                                    modelKeyPath: String? = nil) async throws -> T{
 
-        guard let urlHost, let urlPath, !uploadDatas.isEmpty else {
-            fatalError("urlHost OR urlPath OR uploadDatas nil")
-        }
-        let url = urlHost + urlPath
+        let url = checkUrl()
         
         let uploadRequest = AF.upload(multipartFormData: { multi in
             
@@ -145,7 +139,7 @@ extension Mesh{
                                       requestModifier: { request in request.timeoutInterval = self.timeout}
         )
         
-        handleUploadProgress(request: uploadRequest)
+//        handleUploadProgress(request: uploadRequest)
         
         return try await handleCodable(of: type,
                                        request: uploadRequest,

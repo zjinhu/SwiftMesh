@@ -18,15 +18,12 @@ public enum LogLevel {
 public class Mesh: ObservableObject {
 
     /// 可观测下载进度0--1
-    @Published public var downloadProgress: Float = 0
+//    @Published public var downloadProgress: Float = 0
+//    
+//    /// 可观测上传进度0--1
+//    @Published public var uploadProgress: Float = 0
     
-    /// 可观测上传进度0--1
-    @Published public var uploadProgress: Float = 0
-    
-    public static let shared = Mesh()
-
-    private init() {
-        log = .off
+    public init() {
         startLogging()
     }
     
@@ -34,11 +31,12 @@ public class Mesh: ObservableObject {
         stopLogging()
     }
     
-    public var log: LogLevel
+    public var log: LogLevel = .off
     ///全局 headers
-    public var defaultHeaders: [String: String]?
+    public static var defaultHeaders: [String: String]?
     ///默认参数
-    public var defaultParameters: [String: Any]?
+    public static var defaultParameters: [String: Any]?
+    public static var defaultUrlHost : String?
 
     /// 超时配置
     public var timeout : TimeInterval = 15.0

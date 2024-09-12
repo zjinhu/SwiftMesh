@@ -17,10 +17,7 @@ public protocol JSONable {
 public extension Mesh{
     func request<T: JSONable>(of type: T.Type) async throws -> T {
         
-        guard let urlHost, let urlPath else {
-            fatalError("urlHost OR urlPath nil")
-        }
-        let url = urlHost + urlPath
+        let url = checkUrl()
         
         mergeConfig()
         
@@ -28,7 +25,7 @@ public extension Mesh{
                                  method: requestMethod,
                                  parameters: parameters,
                                  encoding: requestEncoding,
-                                 headers: addHeads,
+                                 headers: HTTPHeaders(addHeads),
                                  interceptor: interceptor,
                                  requestModifier: { $0.timeoutInterval = self.timeout }
         )

@@ -25,10 +25,8 @@ extension Mesh{
 
 extension Mesh{
     private func sendDownload() async throws -> URL{
-        guard let urlHost, let urlPath else {
-            fatalError("urlHost OR urlPath nil")
-        }
-        let url = urlHost + urlPath
+ 
+        let url = checkUrl()
         
         let request = AF.download(url,
                                   method: requestMethod,
@@ -39,7 +37,7 @@ extension Mesh{
                                   requestModifier: { request in request.timeoutInterval = self.timeout},
                                   to: destination)
         
-        handleDownloadProgress(request: request)
+//        handleDownloadProgress(request: request)
         
         return try await handleDownload(request: request)
         
@@ -54,7 +52,7 @@ extension Mesh{
                                   interceptor: interceptor,
                                   to: destination)
         
-        handleDownloadProgress(request: request)
+//        handleDownloadProgress(request: request)
         
         return try await handleDownload(request: request)
     }

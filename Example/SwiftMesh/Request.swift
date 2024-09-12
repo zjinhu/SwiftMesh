@@ -54,11 +54,13 @@ class RequestModel: ObservableObject {
             //只解析需要的部分
             
             yesterday =
-            try await Mesh.shared
+            try await Mesh()
                 .setRequestMethod(.get)
                 .setUrlHost("http://t.weather.itboy.net/api/")
                 .setUrlPath("weather/city/101030100")
+                .setLogLevel(.debug)
                 .request(of: Forecast.self, modelKeyPath: "data.yesterday")
+                
             
         } catch let error {
             print(error.localizedDescription)
@@ -70,7 +72,7 @@ class RequestModel: ObservableObject {
         
         do {
             downloadUrl = 
-            try await Mesh.shared
+            try await Mesh()
                 .setUrlHost("http://clips.vorwaerts-gmbh.de/")
                 .setUrlPath("big_buck_bunny.mp4")
                 .download()

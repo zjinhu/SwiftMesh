@@ -9,16 +9,35 @@ import Foundation
 import Alamofire
 import Combine
 extension Mesh{
-    ///私有方法
+    public func checkUrl() -> String{
+        guard let urlPath else {
+            fatalError("urlHost OR urlPath nil")
+        }
+        
+        var url: String?
+        
+        if let host = Mesh.defaultUrlHost{
+            url = host
+        }
+        
+        if let urlHost{
+            url = urlHost
+        }
+        
+        guard let url else {
+            fatalError("urlHost nil")
+        }
+        return url + urlPath
+    }
+ 
     public func mergeConfig(){
         ///设置默认参数
-        var param = defaultParameters ?? [:]
+        var param = Mesh.defaultParameters ?? [:]
         param.merge(parameters ?? [:]) { (_, new) in new}
         parameters = param
         ///设置默认header
-        var headers = defaultHeaders ?? [:]
+        let headers = Mesh.defaultHeaders ?? [:]
         addHeads.merge(headers) { (_, new) in new}
-//        print("当前header:\(addHeads)")
     }
     
     public func handleError(error: AFError) -> Error {
@@ -99,43 +118,31 @@ extension Mesh{
             }
         }
     }
-    
-    func handleDownloadProgress(request: DownloadRequest){
-        
-        request.downloadProgress { progress in
-            let completed: Float = Float(progress.completedUnitCount)
-            let total: Float = Float(progress.totalUnitCount)
-            
-            self.downloadProgress = completed/total
-        }
-    }
-    
-    func handleUploadProgress(request: UploadRequest){
-        
-        request.uploadProgress { progress in
-            let completed: Float = Float(progress.completedUnitCount)
-            let total: Float = Float(progress.totalUnitCount)
-            
-            self.uploadProgress = completed/total
-        }
-    }
-    
-    public func cleanCache(){
-        interceptor = nil
-        requestMethod = .get
-        requestEncoding = URLEncoding.default
-        parameters = nil
-        addHeads = [:]
-        
-        downloadType = .download
-        destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
-        resumeData = nil
-        
-        uploadType = .file
-        fileData = nil
-        stream = nil
-        uploadDatas.removeAll()
-    }
+//    
+//    func handleDownloadProgress(request: DownloadRequest){
+//        
+//        request.downloadProgress { progress in
+//            
+//            print(progress.fractionCompleted)
+//            
+//            DispatchQueue.main.async {
+//                let completed: Float = Float(progress.completedUnitCount)
+//                let total: Float = Float(progress.totalUnitCount)
+//                self.downloadProgress = completed/total
+//            }
+//        }
+//    }
+//    
+//    func handleUploadProgress(request: UploadRequest){
+//        
+//        request.uploadProgress { progress in
+//            let completed: Float = Float(progress.completedUnitCount)
+//            let total: Float = Float(progress.totalUnitCount)
+//            
+//            self.uploadProgress = completed/total
+//        }
+//    }
+// 
 }
  
 public class RetryPolicy: RequestInterceptor {

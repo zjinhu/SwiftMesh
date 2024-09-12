@@ -16,10 +16,7 @@ extension Mesh{
     public func request<T: Decodable>(of type: T.Type,
                                       modelKeyPath: String? = nil) async throws -> T {
         
-        guard let urlHost, let urlPath else {
-            fatalError("urlHost OR urlPath nil")
-        }
-        let url = urlHost + urlPath
+        let url = checkUrl()
         mergeConfig()
         
         let request = AF.request(url,
@@ -55,10 +52,7 @@ extension Mesh{
     
     // MARK: 发送请求返回jsonData,可以用于转换String或者Dic
     public func requestData() async throws -> Data {
-        guard let urlHost, let urlPath else {
-            fatalError("urlHost OR urlPath nil")
-        }
-        let url = urlHost + urlPath
+        let url = checkUrl()
         
         mergeConfig()
         
@@ -85,10 +79,7 @@ extension Mesh{
     
     // MARK: 发送请求返回json
     public func requestString() async throws -> String {
-        guard let urlHost, let urlPath else {
-            fatalError("urlHost OR urlPath nil")
-        }
-        let url = urlHost + urlPath
+        let url = checkUrl()
         
         mergeConfig()
         

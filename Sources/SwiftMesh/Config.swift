@@ -20,7 +20,7 @@ public extension Mesh{
     ///设置日志输出级别
     ///Setting the log output level
     @discardableResult
-    func setLogStatus(_ log: LogLevel) -> Self {
+    func setLogLevel(_ log: LogLevel) -> Self {
         self.log = log
         return self
     }
@@ -165,21 +165,21 @@ public extension Mesh{
     // MARK: 设置全局 headers
     /// 设置全局 headers
     /// - Parameter headers:全局 headers
-    @discardableResult
-    func setDefaultHeaders(_ headers: [String: String]) -> Self {
-        defaultHeaders = headers
-        return self
+    static func setDefaultHeaders(_ headers: [String: String]){
+        Mesh.defaultHeaders = headers
     }
     // MARK: 设置默认参数
     /// 设置默认参数
     /// - Parameter parameters: 默认参数
-    @discardableResult
-    func setDefaultParameters(_ parameters: [String: Any]?) -> Self {
-        defaultParameters = parameters
-        return self
+    static func setDefaultParameters(_ parameters: [String: Any]?){
+        Mesh.defaultParameters = parameters
     }
     // MARK: 设置默认Url Host
     /// - Parameter url: 默认urlHost,用于拼接完整的URL地址,设置一次即可
+    static func setDefaultUrlHost(_ url: String?){
+        Mesh.defaultUrlHost = url
+    }
+    
     @discardableResult
     func setUrlHost(_ url: String?) -> Self {
         self.urlHost = url
