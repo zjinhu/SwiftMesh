@@ -33,8 +33,6 @@ extension Mesh {
                     self.logMessage("\(error)", level: .error)
                     
                     self.logDivider("Alamofire END", level: .error)
-                default:
-                    break
                 }
             } else {
                 guard let response = task.response as? HTTPURLResponse else { return }

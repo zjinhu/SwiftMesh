@@ -8,8 +8,12 @@
 import Foundation
 import Alamofire
 
-public enum LogLevel {
+public enum LogStaus {
     case off
+    case on
+}
+
+public enum LogLevel {
     case debug
     case info
     case error
@@ -23,18 +27,25 @@ public class Mesh: ObservableObject {
 //    /// 可观测上传进度0--1
 //    @Published public var uploadProgress: Float = 0
     
-    public init() { }
+    public init() {
+        if Mesh.defaultLogStaus == .on{
+            startLogging()
+        }
+    }
     
     deinit {
         stopLogging()
     }
     
-    public var log: LogLevel = .off
+    public var log: LogLevel = .debug
     ///全局 headers
-    public static var defaultHeaders: [String: String]?
-    ///默认参数
-    public static var defaultParameters: [String: Any]?
-    public static var defaultUrlHost : String?
+    static var defaultHeaders: [String: String]?
+    ///全局 默认参数
+    static var defaultParameters: [String: Any]?
+    ///全局 UrlHost
+    static var defaultUrlHost : String?
+    ///全局 Log 开关
+    static var defaultLogStaus : LogStaus = .off
 
     /// 超时配置
     public var timeout : TimeInterval = 15.0

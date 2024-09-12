@@ -22,9 +22,6 @@ public extension Mesh{
     @discardableResult
     func setLogLevel(_ log: LogLevel) -> Self {
         self.log = log
-        if log != .off{
-            startLogging()
-        }
         return self
     }
     /// 超时配置
@@ -164,25 +161,30 @@ public extension Mesh{
 }
 
 public extension Mesh{
+    ///全局 Log 开关
+    static func setLogStaus(_ status: LogStaus){
+        Mesh.defaultLogStaus = status
+    }
     
     // MARK: 设置全局 headers
     /// 设置全局 headers
     /// - Parameter headers:全局 headers
-    static func setDefaultHeaders(_ headers: [String: String]){
+    static func setHeaders(_ headers: [String: String]){
         Mesh.defaultHeaders = headers
     }
-    // MARK: 设置默认参数
-    /// 设置默认参数
+    // MARK: 设置全局默认参数
+    /// 设置全局默认参数
     /// - Parameter parameters: 默认参数
-    static func setDefaultParameters(_ parameters: [String: Any]?){
+    static func setParameters(_ parameters: [String: Any]?){
         Mesh.defaultParameters = parameters
     }
-    // MARK: 设置默认Url Host
-    /// - Parameter url: 默认urlHost,用于拼接完整的URL地址,设置一次即可
-    static func setDefaultUrlHost(_ url: String?){
+    // MARK: 设置全局默认Url Host
+    /// - Parameter url: 全局默认urlHost,用于拼接完整的URL地址,设置一次即可
+    static func setUrlHost(_ url: String?){
         Mesh.defaultUrlHost = url
     }
-    
+    // MARK: 设置当次Url Host
+    /// 仅当次请求有效
     @discardableResult
     func setUrlHost(_ url: String?) -> Self {
         self.urlHost = url
