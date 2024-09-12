@@ -39,13 +39,13 @@ public class Mesh: ObservableObject {
     
     public var log: LogLevel = .debug
     ///全局 headers
-    static var defaultHeaders: [String: String]?
+    public static var defaultHeaders: [String: String]?
     ///全局 默认参数
-    static var defaultParameters: [String: Any]?
+    public static var defaultParameters: [String: Any]?
     ///全局 UrlHost
-    static var defaultUrlHost : String?
+    public static var defaultUrlHost : String?
     ///全局 Log 开关
-    static var defaultLogStaus : LogStaus = .off
+    public static var defaultLogStaus : LogStaus = .off
 
     /// 超时配置
     public var timeout : TimeInterval = 15.0
