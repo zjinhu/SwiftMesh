@@ -39,19 +39,14 @@ extension MeshLog {
                 let cURL = dataRequest.cURLDescription()
                 
                 self.logDivider("Alamofire Log", level: .debug)
-                
-                self.logMessage("\(httpMethod) '\(requestURL.absoluteString)'", level: .debug)
-                
+//                self.logMessage("\(httpMethod) '\(requestURL.absoluteString)'", level: .debug)
                 self.logMessage("\(cURL)", level: .debug)
                 
                 self.logDivider("State", level: .debug)
                 
                 self.logMessage("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]:", level: .debug)
-                
-                self.logDivider("Header", level: .debug)
-                
-                self.logHeaders(headers: response.allHeaderFields, level: .debug)
-                
+//                self.logDivider("Header", level: .debug)
+//                self.logHeaders(headers: response.allHeaderFields, level: .debug)
                 guard let data = dataRequest.data else { return }
                 
                 self.logDivider("Response", level: .debug)
