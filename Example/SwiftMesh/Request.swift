@@ -58,7 +58,6 @@ class RequestModel: ObservableObject {
                 .setRequestMethod(.get)
                 .setUrlHost("http://t.weather.itboy.net/api/")
                 .setUrlPath("weather/city/101030100")
-                .setLogLevel(.debug)
                 .request(of: Forecast.self, modelKeyPath: "data.yesterday")
                 
             

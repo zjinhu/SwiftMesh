@@ -17,13 +17,6 @@ public enum UploadType : Int {
 }
 
 public extension Mesh{
-    ///设置日志输出级别
-    ///Setting the log output level
-    @discardableResult
-    func setLogLevel(_ log: LogLevel) -> Self {
-        self.log = log
-        return self
-    }
     /// 超时配置
     /// timeout
     @discardableResult
@@ -162,10 +155,9 @@ public extension Mesh{
 
 public extension Mesh{
     ///全局 Log 开关
-    static func setLogStaus(_ status: LogStaus){
-        Mesh.defaultLogStaus = status
+    static func enableLog(){
+        MeshLog.shared.startLogging()
     }
-    
     // MARK: 设置全局 headers
     /// 设置全局 headers
     /// - Parameter headers:全局 headers

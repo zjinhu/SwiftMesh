@@ -46,7 +46,7 @@ extension Mesh{
                                           modelKeyPath: String? = nil) async throws -> T{
         
         let url = checkUrl()
-        
+        mergeConfig()
         var uploadRequest : UploadRequest
         
         switch uploadType {
@@ -84,9 +84,7 @@ extension Mesh{
                                       requestModifier: { request in request.timeoutInterval = self.timeout})
             
         }
-
 //        handleUploadProgress(request: uploadRequest)
-        
         return try await handleCodable(of: type,
                                        request: uploadRequest,
                                        modelKeyPath: modelKeyPath)
@@ -97,7 +95,7 @@ extension Mesh{
                                                    modelKeyPath: String? = nil) async throws -> T{
 
         let url = checkUrl()
-        
+        mergeConfig()
         let uploadRequest = AF.upload(multipartFormData: { multi in
             
             self.uploadDatas.forEach { multipleUpload in
@@ -138,9 +136,7 @@ extension Mesh{
                                       interceptor: interceptor,
                                       requestModifier: { request in request.timeoutInterval = self.timeout}
         )
-        
 //        handleUploadProgress(request: uploadRequest)
-        
         return try await handleCodable(of: type,
                                        request: uploadRequest,
                                        modelKeyPath: modelKeyPath)
