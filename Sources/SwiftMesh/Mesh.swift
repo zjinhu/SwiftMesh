@@ -8,7 +8,7 @@
 import Foundation
 import Alamofire
  
-public class Mesh: ObservableObject {
+public class Mesh {
 
     /// 可观测下载进度0--1
 //    @Published public var downloadProgress: Float = 0
