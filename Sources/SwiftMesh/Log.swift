@@ -107,10 +107,10 @@ struct MeshLog {
 fileprivate extension MeshLog {
     
     func debug(_ message: String){
-        logger.log("🌐\(message)")
+        logger.log("🌐\(message, privacy: .public)")
     }
     
     func error(_ message: String){
-        logger.log("⭕️\(message)")
+        logger.log("⭕️\(message, privacy: .public)")
     }
 }
