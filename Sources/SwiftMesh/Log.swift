@@ -39,14 +39,14 @@ extension MeshLog {
                 let cURL = dataRequest.cURLDescription()
                 
                 self.logDivider("Alamofire Log", level: .debug)
-//                self.logMessage("\(httpMethod) '\(requestURL.absoluteString)'", level: .debug)
+                //                self.logMessage("\(httpMethod) '\(requestURL.absoluteString)'", level: .debug)
                 self.logMessage("\(cURL)", level: .debug)
                 
                 self.logDivider("State", level: .debug)
                 
                 self.logMessage("\(String(response.statusCode)) [\(String(format: "%.04f", elapsedTime)) s]:", level: .debug)
-//                self.logDivider("Header", level: .debug)
-//                self.logHeaders(headers: response.allHeaderFields, level: .debug)
+                //                self.logDivider("Header", level: .debug)
+                //                self.logHeaders(headers: response.allHeaderFields, level: .debug)
                 guard let data = dataRequest.data else { return }
                 
                 self.logDivider("Response", level: .debug)
@@ -83,6 +83,15 @@ extension MeshLog {
     }
     
     private func logMessage(_ text: String, level: OSLogType) {
+#if DEBUG
+        
+        switch level {
+        case .error:
+            print("⭕️\(text)")
+        default:
+            print("🌐\(text)")
+        }
+#else
         
         switch level {
         case .error:
@@ -90,8 +99,14 @@ extension MeshLog {
         default:
             debug(text)
         }
+#endif
     }
     
+}
+
+public enum LogType{
+    case print
+    case log
 }
 
 struct MeshLog {
@@ -102,6 +117,7 @@ struct MeshLog {
     public init(subsystem: String = "Mesh", category: String = "Mesh") {
         self.logger = Logger(subsystem: subsystem, category: category)
     }
+    
 }
 
 fileprivate extension MeshLog {
