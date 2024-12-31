@@ -83,23 +83,22 @@ extension MeshLog {
     }
     
     private func logMessage(_ text: String, level: OSLogType) {
-#if DEBUG
-        
-        switch level {
-        case .error:
-            print("⭕️\(text)")
-        default:
-            print("🌐\(text)")
+
+        if type == .print {
+            switch level {
+            case .error:
+                print("⭕️\(text)")
+            default:
+                print("🌐\(text)")
+            }
+        }else{
+            switch level {
+            case .error:
+                error(text)
+            default:
+                debug(text)
+            }
         }
-#else
-        
-        switch level {
-        case .error:
-            error(text)
-        default:
-            debug(text)
-        }
-#endif
     }
     
 }
@@ -109,10 +108,12 @@ public enum LogType{
     case log
 }
 
-struct MeshLog {
+class MeshLog {
     static let shared = MeshLog()
     
     private let logger: Logger
+    
+    public var type: LogType = .log
     
     public init(subsystem: String = "Mesh", category: String = "Mesh") {
         self.logger = Logger(subsystem: subsystem, category: category)

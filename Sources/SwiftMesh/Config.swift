@@ -155,7 +155,8 @@ public extension Mesh{
 
 public extension Mesh{
     ///全局 Log 开关
-    static func enableLog(){
+    static func enableLog(_ type: LogType = .log){
+        MeshLog.shared.type = type
         MeshLog.shared.startLogging()
     }
     // MARK: 设置全局 headers
