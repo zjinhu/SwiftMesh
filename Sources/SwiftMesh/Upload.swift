@@ -129,6 +129,13 @@ extension Mesh{
                     }
                 }
             }
+            // ✅ Append normal parameters
+            if let parameters = self.parameters {
+                for (key, value) in parameters {
+                    let data = "\(value)".data(using: .utf8) ?? Data()
+                    multi.append(data, withName: key)
+                }
+            }
         },
                                       to: url,
                                       method: requestMethod,
