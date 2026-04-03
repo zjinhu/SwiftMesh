@@ -6,12 +6,91 @@
 ![iOS 13.0+](https://img.shields.io/badge/iOS-13.0%2B-blue.svg)
 ![Swift 5.0+](https://img.shields.io/badge/Swift-5.0%2B-orange.svg)
 
-
-
 SwiftMesh is a secondary encapsulation based on Alamofire and Codable, uses Combine and Swift Concurrency, supports SwiftUI and UIKit, removes closure callbacks, is more concise, faster, and more convenient to use.
 
+The design patterns involved are: adapter, singleton, builder, and property wrapper.
 
-The design patterns involved are: adapter, singleton, etc.
+## Features
+
+- **Async/Await API** — All request methods use `async throws`, eliminating callback hell
+- **Fluent/Chainable Configuration** — Builder pattern with methods like `.setRequestMethod(.get).setUrlHost("...")`
+- **JSON Key Path Parsing** — Extract nested JSON values at dot-separated paths (e.g., `"data.yesterday"`)
+- **File Upload** — Supports file URL, Data, InputStream, and multipart form uploads
+- **File Download** — Supports standard and resumable downloads
+- **Global Defaults** — Set default headers, parameters, and URL host once; they merge with per-request overrides
+- **Resilient Codable** — Property wrappers (`@Default`, `@IgnoreError`, `@ConvertToString`, etc.) for handling inconsistent API responses
+- **Built-in Retry Policy** — Configurable retry with linear backoff
+- **Network Logging** — Built-in logger that outputs cURL commands, status codes, timing, and pretty-printed JSON
+- **Combine Integration** — Works naturally with `ObservableObject` and `@Published` for reactive UI updates
+- **SwiftUI + UIKit Support** — Designed for mixed development environments
+
+## Quick Start
+
+### 1. Basic GET Request
+
+```swift
+let result = try await Mesh()
+    .setRequestMethod(.get)
+    .setUrlHost("https://api.example.com")
+    .setUrlPath("/weather/city/101030100")
+    .request(of: Weather.self)
+```
+
+### 2. GET with JSON Key Path
+
+Extract only a nested portion of the JSON:
+
+```swift
+// JSON: { "code": 200, "data": { "yesterday": { "temp": 25 } } }
+let yesterday = try await Mesh()
+    .setRequestMethod(.get)
+    .setUrlHost("https://api.example.com")
+    .setUrlPath("/weather")
+    .request(of: Forecast.self, modelKeyPath: "data.yesterday")
+```
+
+### 3. POST with Parameters
+
+```swift
+let result = try await Mesh()
+    .setRequestMethod(.post)
+    .setUrlHost("https://api.example.com")
+    .setUrlPath("/login")
+    .setParameters(["username": "admin", "password": "123456"])
+    .request(of: LoginResult.self)
+```
+
+### 4. File Download
+
+```swift
+let fileURL = try await Mesh()
+    .setRequestMethod(.get)
+    .setUrlHost("https://example.com")
+    .setUrlPath("/files/document.pdf")
+    .setDestination { _, _ in
+        let dest = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("document.pdf")
+        return (dest, [.removePreviousFile, .createIntermediateDirectories])
+    }
+    .download()
+```
+
+### 5. File Upload (Multipart)
+
+```swift
+let result = try await Mesh()
+    .setRequestMethod(.post)
+    .setUrlHost("https://api.example.com")
+    .setUrlPath("/upload/image")
+    .setUploadType(.multipart)
+    .setAddformData(name: "file",
+                    fileName: "photo.jpg",
+                    fileData: imageData,
+                    mimeType: "image/jpeg")
+    .upload(of: UploadResult.self)
+```
+
+---
 
 ## Usage
 
@@ -21,6 +100,7 @@ The design patterns involved are: adapter, singleton, etc.
 import UIKit
 import Combine
 import SwiftMesh
+
 class ViewController: UIViewController {
     var request = RequestModel()
     private var cancellables: Set<AnyCancellable> = []
@@ -33,19 +113,17 @@ class ViewController: UIViewController {
         request.$cityResult
             .receive(on: RunLoop.main)
             .sink { (model) in
-                print("请求数据Model \(String(describing: model))")
+                print("Request Data Model \(String(describing: model))")
          }.store(in: &cancellables)
         
         request.$yesterday
             .receive(on: RunLoop.main)
             .sink { (model) in
-                print("请求数据Model \(String(describing: model))")
+                print("Request Data Model \(String(describing: model))")
          }.store(in: &cancellables)
     }
  
 }
-
-
 ```
 
 #### SwiftUI：
@@ -68,147 +146,204 @@ struct SwiftUIView: View {
 }
 ```
 
+---
 
+## API Reference
 
-## Example
+### Mesh：Core Builder Class
 
+The central configuration holder for all network requests. Supports fluent chaining.
 
-### Mesh：singleton
+#### Global Static Methods
 
-* Set default parameters     —setDefaultParameters
+| Method | Description |
+|--------|-------------|
+| `Mesh.enableLog(_:)` | Enable network logging (`.print` or `.log`) |
+| `Mesh.setHeaders(_:)` | Set global default headers for all requests |
+| `Mesh.setParameters(_:)` | Set global default parameters for all requests |
+| `Mesh.setUrlHost(_:)` | Set global default URL host |
 
-  ```swift
-      // MARK: 设置默认参数
-      /// 设置默认参数
-      /// - Parameter parameters: 默认参数
-     func setDefaultParameters(_ parameters: [String: Any]?) -> Self
-  ```
+#### Instance Configuration (Chainable)
 
-* Set default header     —setGlobalHeaders
+| Method | Description |
+|--------|-------------|
+| `.setTimeout(_:)` | Request timeout in seconds (default: 15) |
+| `.setInterceptor(_:)` | Request interceptor (e.g., RetryPolicy) |
+| `.setRequestMethod(_:)` | HTTP method (GET, POST, PUT, DELETE, etc.) |
+| `.setHeads(_:)` | Per-request headers |
+| `.setRequestEncoding(_:)` | Parameter encoding (URLEncoding, JSONEncoding) |
+| `.setUrlHost(_:)` | Per-request URL host |
+| `.setUrlPath(_:)` | URL path |
+| `.setParameters(_:)` | Request parameters |
 
-  ```swift
-      // MARK: 设置全局 headers
-      /// 设置全局 headers
-      /// - Parameter headers:全局 headers
-      func setGlobalHeaders(_ headers: HTTPHeaders?)  -> Self
-  ```
+#### Download Configuration
 
-### Config：adapter
+| Method | Description |
+|--------|-------------|
+| `.setDownloadType(_:)` | `.download` or `.resume` |
+| `.setDestination(_:)` | File save location and behavior |
+| `.setResumeData(_:)` | Resume data from interrupted download |
 
-The configuration file of the network request is used to set the request timeout, request method, parameters, header, API address, upload form, etc., and the response returned after the request is completed.
+#### Upload Configuration
+
+| Method | Description |
+|--------|-------------|
+| `.setUploadType(_:)` | `.file`, `.data`, `.stream`, or `.multipart` |
+| `.setFileURL(_:)` | File URL for upload |
+| `.setFileData(_:)` | File Data for upload |
+| `.setStream(_:)` | InputStream for upload |
+| `.setUploadDatas(_:)` | Array of multipart form entries |
+| `.setAddformData(...)` | Quick add a single form field |
+
+### Request：Execute Requests
+
+| Method | Description |
+|--------|-------------|
+| `.request(of:modelKeyPath:)` | Send request and decode to Codable model |
+| `.urlRequest(_:type:modelKeyPath:)` | Send URLRequest and decode to Codable model |
+| `.requestData()` | Return raw response Data |
+| `.requestString()` | Return response as String |
+| `.upload(of:modelKeyPath:)` | Upload file and decode response |
+| `.download()` | Download file and return local URL |
+
+### Resilient Codable Wrappers
+
+| Wrapper | Default Behavior |
+|---------|-----------------|
+| `@Default.True` | Missing → `true` |
+| `@Default.False` | Missing → `false` |
+| `@Default.EmptyString` | Missing → `""` |
+| `@Default.EmptyInt` | Missing → `0` |
+| `@Default.EmptyArray` | Missing → `[]` |
+| `@Default.EmptyDictionary` | Missing → `[:]` |
+| `@Default.Now` | Missing → `Date()` |
+| `@IgnoreError` | Invalid → `nil` (no crash) |
+| `@ConvertToString` | String/Int/Double → `String?` |
+| `@ConvertToInt` | Int/String/Double → `Int?` |
+| `@ConvertToDouble` | Double/Int/Float/String → `Double?` |
+| `@ConvertToFloat` | Float/Int/Double/String → `Float?` |
+
+### RetryPolicy
+
+Built-in retry with linear backoff (1s, 2s, 3s...):
 
 ```swift
-///设置日志输出级别
-    func logStatus(_ log: LogLevel) -> Self 
-    /// 超时配置
-    func timeout(_ timeout: TimeInterval) -> Self
-    ///请求失败重试策略
-    func interceptor(_ interceptor: RequestInterceptor?) -> Self
-    /// 请求方式
-    func requestMethod(_ requestMethod: HTTPMethod) -> Self 
-    /// 添加请求头
-    func addHeads(_ addHeads: HTTPHeaders?) -> Self 
-    /// 请求编码
-    func requestEncoding(_ requestEncoding: ParameterEncoding) -> Self 
-    /// 请求地址
-    func url(_ url: String?) -> Self
-    ///参数  表单上传也用
-    func parameters(_ parameters: [String: Any]?) -> Self 
-    //下载类型
-    func downloadType(_ downloadType: DownloadType) -> Self 
-    //设置文件下载地址覆盖方式等等
-    func destination(_ destination: @escaping DownloadRequest.Destination) -> Self
-    ///已经下载的部分,下载续传用,从请求结果中获取
-    func resumeData(_ resumeData: Data?) -> Self
-    //上传类型
-    func uploadType(_ uploadType: UploadType) -> Self 
-    ///上传文件地址
-    func fileURL(_ fileURL: URL?) -> Self
-    ///上传文件地址
-    func fileData(_ fileData: Data?) -> Self 
-    ///上传文件InputStream
-    func stream(_ stream: InputStream?) -> Self
-    ///表单数据
-    func uploadDatas(_ uploadDatas: [MultipleUpload]) -> Self 
-    /// 表单数组快速添加表单
-    /// - Parameters:
-    ///   - name: 表单 name 必须
-    ///   - fileName: 文件名
-    ///   - fileData: 文件 Data
-    ///   - fileURL:  文件地址
-    ///   - mimeType: 数据类型
-    func addformData(name: String,
-                     fileName: String? = nil,
-                     fileData: Data? = nil,
-                     fileURL: URL? = nil,
-                     mimeType: String? = nil)  -> Self
+let policy = RetryPolicy(maxRetryCount: 3)  // default: 3 retries
 ```
 
-### Request：parse request
-Please create it yourself based on your usage. Use ObservableObject to facilitate the mixed development of SwiftUI and UIKit, combined with Combine. Use case reference Request class:
-```swift
-class RequestModel: ObservableObject {
-     @MainActor @Published var yesterday: Forecast?
+---
 
-     @MainActor @Published var cityResult: CityResult?
-    
-     func getAppliances() {
-         Task {
-             do {
+## AI Skills Guide
 
-                 // Only parse the required part of the path
-                let data  =
-            try await Mesh.shared
-                .requestMethod(.get)
-                .url("http://t.weather.itboy.net/api/weather/city/101030100")
-                .request(of: Forecast.self, modelKeyPath: "data.yesterday")
+SwiftMesh includes a comprehensive **SKILL.md** file designed for AI coding assistants. This file serves as a complete reference that AI tools can use to generate correct SwiftMesh code.
 
-                await MainActor.run {
-                    self.yesterday = data
-                }
- 
-             } catch let error {
-                 print(error. localizedDescription)
-             }
-         }
-        
-     }
-}
+### What is SKILL.md?
+
+`SKILL.md` is a structured documentation file that contains:
+- Complete API reference with all methods and parameters
+- 16+ ready-to-use code examples covering every scenario
+- Property wrapper usage patterns
+- AI prompt templates for common tasks
+- Error handling and configuration guides
+
+### How AI Uses SKILL.md
+
+When working with an AI coding assistant (like Cursor, GitHub Copilot, Claude, or ChatGPT), the AI can reference `SKILL.md` to:
+
+1. **Understand the API** — All methods, parameters, and return types are documented
+2. **Generate correct code** — Examples show the exact syntax and chaining patterns
+3. **Handle edge cases** — Resilient Codable wrappers for inconsistent APIs
+4. **Follow best practices** — Proper Combine integration, error handling, etc.
+
+### Using SKILL.md with AI Assistants
+
+#### Method 1: Reference the File Directly
+
+Tell your AI assistant to read the SKILL.md file:
+
+```
+Read the SKILL.md file in this project and use it to generate SwiftMesh code for my request.
 ```
 
+#### Method 2: Use AI Prompt Templates
 
+The SKILL.md includes pre-built prompt templates. Copy and fill them in:
+
+**For GET requests:**
+```
+Use SwiftMesh to make a GET request to https://api.example.com/weather and decode the response into a Weather struct. Use key path "data.current" to extract nested data.
+```
+
+**For file uploads:**
+```
+Use SwiftMesh to upload an image Data to https://api.example.com/upload with multipart form field name "photo" and MIME type "image/jpeg". Decode the response as UploadResult.
+```
+
+**For handling inconsistent APIs:**
+```
+Create a Codable struct for this JSON: {"code": 200, "data": {"name": "test", "count": "42"}}. Use @Default, @IgnoreError, and @ConvertTo* wrappers to handle missing or inconsistent types.
+```
+
+#### Method 3: Quick Reference Card
+
+The SKILL.md starts with a Quick Reference Card that AI can use for fast lookups:
+
+| Need | Use |
+|------|-----|
+| GET request | `.request(of: Model.self)` |
+| Nested JSON | `.request(of: Model.self, modelKeyPath: "data.user")` |
+| Upload file | `.upload(of: Result.self)` |
+| Download file | `.download()` |
+| Auto-retry | `.setInterceptor(RetryPolicy())` |
+| Enable logging | `Mesh.enableLog()` |
+
+### SKILL.md Contents Overview
+
+| Section | Content |
+|---------|---------|
+| Quick Reference Card | One-line lookup for common tasks |
+| Core Architecture | File structure and design patterns |
+| Usage Patterns | 16 complete code examples |
+| Global Configuration | App-level setup |
+| Resilient Codable | All property wrappers with examples |
+| JSON Key Path | Nested extraction usage |
+| Combine + SwiftUI | ObservableObject patterns |
+| Error Handling | Error types and catching |
+| RetryPolicy | Retry configuration |
+| Logging | Logger setup and output |
+| Method Reference | Complete API table |
+| AI Prompt Templates | Fill-in-the-blank prompts |
+
+---
 
 ## Install
 
 ### Cocoapods
 
 1. Add `pod 'SwiftMesh'` to Podfile
-
-2. Execute `pod install or pod update`
-
+2. Execute `pod install` or `pod update`
 3. Import `import SwiftMesh`
 
 ### Swift Package Manager
 
 Starting from Xcode 11, the Swift Package Manager is integrated, which is very convenient to use. SwiftMesh also supports integration via the Swift Package Manager.
 
-Select `File > Swift Packages > Add Pacakage Dependency` in Xcode's menu bar, and enter in the search bar
+Select `File > Swift Packages > Add Package Dependency` in Xcode's menu bar, and enter in the search bar:
 
-`https://github.com/jackiehu/SwiftMesh`, you can complete the integration and rely on Alamofire by default.
+`https://github.com/zjinhu/SwiftMesh`, you can complete the integration and rely on Alamofire by default.
 
-### Manual integration
+### Manual Integration
 
-SwiftMesh also supports manual integration, just drag the SwiftMesh folder in the Sources folder into the project that needs to be integrated
+SwiftMesh also supports manual integration, just drag the SwiftMesh folder in the Sources folder into the project that needs to be integrated.
 
-
+---
 
 ## More tools to speed up APP development
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftBrick&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftBrick)
+[![ReadMe Card](https://github-readme-stats-sigma-five.vercel.app/api/pin/?username=zjinhu&repo=SwiftBrick&theme=radical)](https://github.com/zjinhu/SwiftBrick)
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftMediator&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftMediator)
+[![ReadMe Card](https://github-readme-stats-sigma-five.vercel.app/api/pin/?username=zjinhu&repo=SwiftMediator&theme=radical)](https://github.com/zjinhu/SwiftMediator)
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftLog&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftLog)
+[![ReadMe Card](https://github-readme-stats-sigma-five.vercel.app/api/pin/?username=zjinhu&repo=SwiftLog&theme=radical)](https://github.com/zjinhu/SwiftLog)
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftNotification&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftNotification)
-
+[![ReadMe Card](https://github-readme-stats-sigma-five.vercel.app/api/pin/?username=zjinhu&repo=SwiftNotification&theme=radical)](https://github.com/zjinhu/SwiftNotification)
