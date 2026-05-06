@@ -114,4 +114,10 @@ public class Mesh {
     /// Multipart form data entries (used with .multipart upload type)
     /// 多部分表单数据条目（用于 .multipart 上传类型）
     public var uploadDatas: [MultipleUpload] = []
+
+    // MARK: - Initializer / 初始化方法
+
+    /// Creates a new Mesh instance with default configuration
+    /// 创建具有默认配置的 Mesh 实例
+    public init() {}
 }
